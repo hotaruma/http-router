@@ -1,0 +1,33 @@
+{
+    "name": "hotaruma/http-router",
+    "description": "Simple http router",
+    "keywords": [
+        "router",
+        "php"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hotaruma\\HttpRouter\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Max Denusenko",
+            "email": "maxdenusenko@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
+    },
+    "scripts": {
+        "test": [
+            "phpunit tests"
+        ]
+    }
+}
