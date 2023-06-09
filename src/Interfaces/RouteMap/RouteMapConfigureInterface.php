@@ -4,67 +4,52 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interfaces\RouteMap;
 
+use Closure;
 use Hotaruma\HttpRouter\Interfaces\Method;
 use Hotaruma\HttpRouter\Interfaces\Route\RouteInterface;
 
 interface RouteMapConfigureInterface
 {
     /**
-     * @param array<string,string> $rules Regex rules for attributes in path
-     * @return RouteMapConfigureInterface
-     */
-    public function rules(array $rules): RouteMapConfigureInterface;
-
-    /**
-     * @param array<string,string> $defaults Default values for attributes in path
-     * @return RouteMapConfigureInterface
-     */
-    public function defaults(array $defaults): RouteMapConfigureInterface;
-
-    /**
-     * @param callable|array $defaults Middlewares list
-     * @return RouteMapConfigureInterface
-     */
-    public function middlewares(callable|array $defaults): RouteMapConfigureInterface;
-
-    /**
-     * @param string $path Path prefix
-     * @return RouteMapConfigureInterface
-     */
-    public function path(string $path): RouteMapConfigureInterface;
-
-    /**
-     * @param string $name Name prefix
-     * @return RouteMapConfigureInterface
-     */
-    public function name(string $name): RouteMapConfigureInterface;
-
-    /**
-     * @param Method|array<Method> $methods Http methods
-     * @return RouteMapConfigureInterface
-     */
-    public function methods(Method|array $methods): RouteMapConfigureInterface;
-
-    /**
-     * Group routes by config.
+     * Set route map group config, merge config with prev group.
      *
-     * @param array $rules
-     * @param array $defaults
-     * @param callable|array $middlewares
-     * @param string $path
-     * @param string $name
-     * @param Method|array $methods
-     * @param null|callable $group
+     * @param array $rules Regex rules for attributes in path
+     * @param array $defaults Default values for attributes in path
+     * @param Closure|array $middlewares Middlewares list
+     * @param string $pathPrefix Path prefix
+     * @param string $namePrefix Name prefix
+     * @param Method|array $methods Http methods
+     * @return void
+     */
+    public function config(
+        array         $rules = [],
+        array         $defaults = [],
+        Closure|array $middlewares = [],
+        string        $pathPrefix = '',
+        string        $namePrefix = '',
+        Method|array  $methods = []
+    ): void;
+
+    /**
+     * Create group routes by config.
+     *
+     * @param array $rules Regex rules for attributes in path
+     * @param array $defaults Default values for attributes in path
+     * @param Closure|array $middlewares Middlewares list
+     * @param string $pathPrefix Path prefix
+     * @param string $namePrefix Name prefix
+     * @param Method|array $methods Http methods
+     * @param callable $group function (RouteMapInterface $routeMap) {}
      * @return void
      */
     public function group(
-        array $rules = [],
-        array $defaults = [],
-        callable|array $middlewares = [],
-        string $path = '',
-        string $name = '',
-        Method|array $methods = [],
-        callable $group = null
+        callable      $group,
+        array         $rules = [],
+        array         $defaults = [],
+        Closure|array $middlewares = [],
+        string        $pathPrefix = '',
+        string        $namePrefix = '',
+        Method|array  $methods = []
     ): void;
 
     /**

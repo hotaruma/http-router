@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Route;
 
+use Closure;
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgument;
 use Hotaruma\HttpRouter\Interfaces\{Route\RouteConfigureInterface, Route\RouteInterface, Method};
 use Hotaruma\HttpRouter\Utils\RouteTrait;
 
+/**
+ * @method mergeConfigWithGroup(mixed ...$arg)
+ */
 class Route implements RouteInterface
 {
     use RouteTrait;
@@ -48,6 +52,11 @@ class Route implements RouteInterface
     protected mixed $action;
 
     /**
+     * @property Closure|null $mergeConfigWithGroup This function used for merge config with RouteMap group.
+     */
+    protected Closure $mergeConfigWithGroup;
+
+    /**
      * @inheritDoc
      */
     public function rules(array $rules): RouteConfigureInterface
@@ -68,7 +77,7 @@ class Route implements RouteInterface
     /**
      * @inheritDoc
      */
-    public function middlewares(callable|array $middlewares): RouteConfigureInterface
+    public function middlewares(Closure|array $middlewares): RouteConfigureInterface
     {
         $this->middlewares = (array)$middlewares;
         return $this;
@@ -171,5 +180,26 @@ class Route implements RouteInterface
     public function getMiddlewares(): array
     {
         return $this->middlewares;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function config(array $rules = null, array $defaults = null, Closure|array $middlewares = null): void
+    {
+        isset($this->mergeConfigWithGroup) and $this->mergeConfigWithGroup(
+            $this,
+            rules: $rules,
+            defaults: $defaults,
+            middlewares: $middlewares
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function fnMergeConfigWithGroup(Closure $fn): void
+    {
+        $this->mergeConfigWithGroup = $fn;
     }
 }

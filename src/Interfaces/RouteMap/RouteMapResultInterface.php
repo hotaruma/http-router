@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interfaces\RouteMap;
 
-use Hotaruma\HttpRouter\Interfaces\Route\RouteInterface;
+use Hotaruma\HttpRouter\Interfaces\Route\RouteCollectionInterface;
 
 interface RouteMapResultInterface
 {
     /**
-     * Get result routes list.
+     * Get result routes collection.
      *
-     * @return array<RouteInterface>
+     * @return RouteCollectionInterface
      */
-    public function getRoutes(): array;
+    public function getRoutes(): RouteCollectionInterface;
 }

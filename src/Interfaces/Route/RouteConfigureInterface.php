@@ -4,23 +4,17 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interfaces\Route;
 
+use Closure;
+
 interface RouteConfigureInterface
 {
     /**
-     * @param array<string,string> $rules Regex rules for attributes in path
-     * @return RouteConfigureInterface
+     * Set route config.
+     *
+     * @param array $rules Regex rules for attributes in path
+     * @param array $defaults Default values for attributes in path
+     * @param Closure|array $middlewares Middlewares list
+     * @return void
      */
-    public function rules(array $rules): RouteConfigureInterface;
-
-    /**
-     * @param array<string,string> $defaults Default values for attributes in path
-     * @return RouteConfigureInterface
-     */
-    public function defaults(array $defaults): RouteConfigureInterface;
-
-    /**
-     * @param callable|array $middlewares Middlewares list
-     * @return RouteConfigureInterface
-     */
-    public function middlewares(callable|array $middlewares): RouteConfigureInterface;
+    public function config(array $rules = [], array $defaults = [], Closure|array $middlewares = []): void;
 }
