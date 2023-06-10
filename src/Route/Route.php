@@ -6,139 +6,29 @@ namespace Hotaruma\HttpRouter\Route;
 
 use Closure;
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgument;
-use Hotaruma\HttpRouter\Interfaces\{Route\RouteConfigureInterface, Route\RouteInterface, Method};
-use Hotaruma\HttpRouter\Utils\RouteTrait;
+use Hotaruma\HttpRouter\Interfaces\{Method,
+    Route\RouteInterface,
+    RouteConfig\RouteConfigInterface
+};
+use Hotaruma\HttpRouter\RouteConfig\RouteConfig;
 
-/**
- * @method mergeConfigWithGroup(mixed ...$arg)
- */
 class Route implements RouteInterface
 {
-    use RouteTrait;
-
-    /**
-     * @var array<Method>
-     */
-    protected array $methods;
-
-    /**
-     * @var string
-     */
-    protected string $path;
-
-    /**
-     * @var string
-     */
-    protected string $name = '';
-
-    /**
-     * @var array<string,string>
-     */
-    protected array $rules = [];
-
-    /**
-     * @var array<string,string>
-     */
-    protected array $defaults = [];
-
-    /**
-     * @var array
-     */
-    protected array $middlewares = [];
-
     /**
      * @var mixed
      */
     protected mixed $action;
 
     /**
-     * @property Closure|null $mergeConfigWithGroup This function used for merge config with RouteMap group.
+     * @var null|RouteConfigInterface
      */
-    protected Closure $mergeConfigWithGroup;
+    protected ?RouteConfigInterface $routeMapGroupConfig = null;
 
     /**
-     * @inheritDoc
+     * @param RouteConfigInterface $routeConfig
      */
-    public function rules(array $rules): RouteConfigureInterface
+    public function __construct(protected RouteConfigInterface $routeConfig = new RouteConfig())
     {
-        $this->rules = $rules;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function defaults(array $defaults): RouteConfigureInterface
-    {
-        $this->defaults = $defaults;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function middlewares(Closure|array $middlewares): RouteConfigureInterface
-    {
-        $this->middlewares = (array)$middlewares;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function path(string $path): RouteInterface
-    {
-        $this->path = $this->normalizePath($path);
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function name(string $name): RouteInterface
-    {
-        $this->name = $this->normalizeName($name);
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function methods(Method|array $methods): RouteInterface
-    {
-        $methods = (array)$methods;
-
-        foreach ($methods as $method) {
-            if (!$method instanceof Method) {
-                throw new RouteInvalidArgument("Invalid argument. Expected instance of Method.");
-            }
-        }
-        $this->methods = $methods;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMethods(): array
-    {
-        return $this->methods;
     }
 
     /**
@@ -146,6 +36,9 @@ class Route implements RouteInterface
      */
     public function action(mixed $action): RouteInterface
     {
+        if (empty($path)) {
+            throw new RouteInvalidArgument("Invalid argument: action cannot be empty");
+        }
         $this->action = $action;
         return $this;
     }
@@ -161,45 +54,56 @@ class Route implements RouteInterface
     /**
      * @inheritDoc
      */
-    public function getRules(): array
+    public function routeConfig(RouteConfigInterface $routeConfig): void
     {
-        return $this->rules;
+        $this->routeConfig = $routeConfig;
     }
 
     /**
      * @inheritDoc
      */
-    public function getDefaults(): array
+    public function config(
+        array         $rules = null,
+        array         $defaults = null,
+        Closure|array $middlewares = null,
+        string        $path = null,
+        string        $name = null,
+        Method|array  $methods = null,
+    ): void
     {
-        return $this->defaults;
+        isset($rules) and $this->getConfig()->rules($rules);
+        isset($defaults) and $this->getConfig()->defaults($defaults);
+        isset($middlewares) and $this->getConfig()->middlewares($middlewares);
+        isset($path) and $this->getConfig()->path($path);
+        isset($name) and $this->getConfig()->name($name);
+        isset($methods) and $this->getConfig()->methods($methods);
+
+        if ($routeMapGroupConfig = $this->getRouteMapGroupConfig()) {
+            $this->getConfig()->mergeConfig($routeMapGroupConfig);
+        }
+    }
+
+    /**
+     * @return RouteConfigInterface
+     */
+    public function getConfig(): RouteConfigInterface
+    {
+        return $this->routeConfig;
     }
 
     /**
      * @inheritDoc
      */
-    public function getMiddlewares(): array
+    public function routeMapGroupConfig(RouteConfigInterface $routeMapGroupConfig): void
     {
-        return $this->middlewares;
+        $this->routeMapGroupConfig = $routeMapGroupConfig;
     }
 
     /**
-     * @inheritDoc
+     * @return RouteConfigInterface|null
      */
-    public function config(array $rules = null, array $defaults = null, Closure|array $middlewares = null): void
+    protected function getRouteMapGroupConfig(): ?RouteConfigInterface
     {
-        isset($this->mergeConfigWithGroup) and $this->mergeConfigWithGroup(
-            $this,
-            rules: $rules,
-            defaults: $defaults,
-            middlewares: $middlewares
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function fnMergeConfigWithGroup(Closure $fn): void
-    {
-        $this->mergeConfigWithGroup = $fn;
+        return $this->routeMapGroupConfig;
     }
 }

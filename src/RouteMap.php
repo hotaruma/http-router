@@ -6,90 +6,103 @@ namespace Hotaruma\HttpRouter;
 
 use Closure;
 use Hotaruma\HttpRouter\Enums\{AdditionalMethod, HttpMethod};
-use Hotaruma\HttpRouter\Route\{Route, RouteCollection};
-use Hotaruma\HttpRouter\Utils\GroupConfig;
-use Hotaruma\HttpRouter\Interfaces\{Route\RouteCollectionInterface,
-    Route\RouteConfigureInterface,
+use Hotaruma\HttpRouter\RouteConfig\RouteConfigFactory;
+use Hotaruma\HttpRouter\Interfaces\{Method,
+    Route\RouteCollectionInterface,
+    Route\RouteFactoryInterface,
     Route\RouteInterface,
+    RouteConfig\ConfigurableInterface,
+    RouteConfig\RouteConfigFactoryInterface,
+    RouteConfig\RouteConfigInterface,
     RouteMap\RouteMapConfigureInterface,
-    RouteMap\RouteMapInterface,
-    Method
+    RouteMap\RouteMapInterface
 };
+use Hotaruma\HttpRouter\Route\{RouteCollection, RouteFactory};
+use Hotaruma\HttpRouter\RouteConfig\RouteConfig;
 
 class RouteMap implements RouteMapInterface
 {
-    final protected const KEY_REDUCE = 1;
-    final protected const MERGE_REDUCE = 2;
-    final protected const CONCATENATE_REDUCE = 3;
-
-    protected const PATH_SEPARATOR = '/';
-    protected const NAME_SEPARATOR = '.';
-
     /**
-     * Current group config.
-     *
-     * @var GroupConfig
+     * @var RouteConfig
      */
-    protected GroupConfig $groupConfig;
+    protected RouteConfig $groupConfig;
 
     /**
      * All previous groups config.
      *
-     * @var GroupConfig
+     * @var RouteConfig
      */
-    protected GroupConfig $mergedConfig;
+    protected RouteConfig $mergedGroupConfig;
 
     /**
-     * @param RouteInterface $route Route for clone
+     * @param RouteFactoryInterface $routeFactory Route factory
+     * @param RouteConfigFactoryInterface $routeConfigFactory Routes config factory
      * @param RouteCollectionInterface $routesCollection Routes collection
      */
     public function __construct(
-        protected RouteInterface           $route = new Route(),
-        protected RouteCollectionInterface $routesCollection = new RouteCollection(),
+        protected RouteFactoryInterface       $routeFactory = new RouteFactory(),
+        protected RouteConfigFactoryInterface $routeConfigFactory = new RouteConfigFactory(),
+        protected RouteCollectionInterface    $routesCollection = new RouteCollection()
     )
     {
-        $this->groupConfig = $this->mergedConfig = new GroupConfig();
+        $groupConfig = $this->routeConfigFactory::createRouteConfig();
+        $this->groupConfig($groupConfig);
+        $this->mergedGroupConfig($groupConfig);
     }
 
     /**
      * @inheritDoc
      */
-    public function baseRoute(RouteInterface $route): RouteMapConfigureInterface
+    public function routeFactory(RouteFactoryInterface $routeFactory): RouteMapConfigureInterface
     {
-        $this->route = $route;
+        $this->routeFactory = $routeFactory;
         return $this;
     }
 
     /**
      * @inheritDoc
      */
+    public function routeConfigFactory(RouteConfigFactoryInterface $routeConfigFactory): RouteMapConfigureInterface
+    {
+        $this->routeConfigFactory = $routeConfigFactory;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getConfig(): RouteConfigInterface
+    {
+        return $this->groupConfig;
+    }
+
     public function config(
         array         $rules = null,
         array         $defaults = null,
         Closure|array $middlewares = null,
-        string        $pathPrefix = null,
-        string        $namePrefix = null,
+        string        $path = null,
+        string        $name = null,
         Method|array  $methods = null,
-        ?GroupConfig  $baseConfig = null
+        bool          $mergeWithPreviousConfig = false
     ): void
     {
-        isset($rules) and $rules = $this->reduceConfig([$this->getMergedConfig()->getRules(), $rules], self::KEY_REDUCE);
-        isset($defaults) and $defaults = $this->reduceConfig([$this->getMergedConfig()->getDefaults(), $defaults], self::KEY_REDUCE);
-        isset($middlewares) and $middlewares = $this->reduceConfig([$this->getMergedConfig()->getMiddlewares(), $middlewares], self::MERGE_REDUCE);
-        isset($pathPrefix) and $pathPrefix = $this->reduceConfig([$this->getMergedConfig()->getPathPrefix(), $pathPrefix], self::CONCATENATE_REDUCE, self::PATH_SEPARATOR);
-        isset($namePrefix) and $namePrefix = $this->reduceConfig([$this->getMergedConfig()->getNamePrefix(), $namePrefix], self::CONCATENATE_REDUCE, self::NAME_SEPARATOR);
-        isset($methods) and $methods = $this->reduceConfig([$this->getMergedConfig()->getMethods(), $methods], self::MERGE_REDUCE);
+        $groupConfig = $this->routeConfigFactory::createRouteConfig();
 
-        $this->groupConfig(
-            new GroupConfig(
-                rules: $rules ?? $baseConfig?->getRules() ?? $this->getGroupConfig()->getRules(),
-                defaults: $defaults ?? $baseConfig?->getDefaults() ?? $this->getGroupConfig()->getDefaults(),
-                middlewares: $middlewares ?? $baseConfig?->getMiddlewares() ?? $this->getGroupConfig()->getMiddlewares(),
-                pathPrefix: $pathPrefix ?? $baseConfig?->getPathPrefix() ?? $this->getGroupConfig()->getPathPrefix(),
-                namePrefix: $namePrefix ?? $baseConfig?->getNamePrefix() ?? $this->getGroupConfig()->getNamePrefix(),
-                methods: $methods ?? $baseConfig?->getMethods() ?? $this->getGroupConfig()->getMethods()
-            )
-        );
+        isset($rules) and $groupConfig->rules($rules);
+        isset($defaults) and $groupConfig->defaults($defaults);
+        isset($middlewares) and $groupConfig->middlewares($middlewares);
+        isset($path) and $groupConfig->path($path);
+        isset($name) and $groupConfig->name($name);
+        isset($methods) and $groupConfig->methods($methods);
+
+        $groupConfig->mergeConfig($this->getMergedGroupConfig());
+
+        isset($rules) || $mergeWithPreviousConfig and $this->getGroupConfig()->rules($groupConfig->getRules());
+        isset($defaults) || $mergeWithPreviousConfig and $this->getGroupConfig()->defaults($groupConfig->getDefaults());
+        isset($middlewares) || $mergeWithPreviousConfig and $this->getGroupConfig()->middlewares($groupConfig->getMiddlewares());
+        isset($path) || $mergeWithPreviousConfig and $this->getGroupConfig()->path($groupConfig->getPath());
+        isset($name) || $mergeWithPreviousConfig and $this->getGroupConfig()->name($groupConfig->getName());
+        isset($methods) || $mergeWithPreviousConfig and $this->getGroupConfig()->methods($groupConfig->getMethods());
     }
 
     /**
@@ -105,17 +118,17 @@ class RouteMap implements RouteMapInterface
         Method|array  $methods = null
     ): void
     {
-        $this->mergedConfig($this->getGroupConfig());
-        $this->groupConfig(new GroupConfig());
+        $this->mergedGroupConfig($this->getGroupConfig());
+        $this->groupConfig($this->routeConfigFactory::createRouteConfig());
 
         $this->config(
             rules: $rules,
             defaults: $defaults,
             middlewares: $middlewares,
-            pathPrefix: $pathPrefix,
-            namePrefix: $namePrefix,
+            path: $pathPrefix,
+            name: $namePrefix,
             methods: $methods,
-            baseConfig: $this->getMergedConfig()
+            mergeWithPreviousConfig: true
         );
 
         $group($this);
@@ -124,7 +137,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function create(string $path, mixed $action, Method|array $methods, string $name = ''): RouteConfigureInterface
+    public function create(string $path, mixed $action, Method|array $methods, string $name = ''): ConfigurableInterface
     {
         $methods = (array)$methods;
         return $this->addRoute($path, $action, $methods, $name);
@@ -133,7 +146,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function any(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function any(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [AdditionalMethod::ANY], $name);
     }
@@ -141,7 +154,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function get(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function get(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [HttpMethod::GET], $name);
     }
@@ -149,7 +162,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function post(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function post(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [HttpMethod::POST], $name);
     }
@@ -157,7 +170,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function put(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function put(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [HttpMethod::PUT], $name);
     }
@@ -165,7 +178,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function delete(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function delete(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [HttpMethod::DELETE], $name);
     }
@@ -173,7 +186,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function head(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function head(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [HttpMethod::HEAD], $name);
     }
@@ -181,7 +194,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function options(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function options(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [HttpMethod::OPTIONS], $name);
     }
@@ -189,7 +202,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function trace(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function trace(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [HttpMethod::TRACE], $name);
     }
@@ -197,7 +210,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function connect(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function connect(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [HttpMethod::CONNECT], $name);
     }
@@ -205,7 +218,7 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function patch(string $path, mixed $action, string $name = ''): RouteConfigureInterface
+    public function patch(string $path, mixed $action, string $name = ''): ConfigurableInterface
     {
         return $this->addRoute($path, $action, [HttpMethod::PATCH], $name);
     }
@@ -221,10 +234,10 @@ class RouteMap implements RouteMapInterface
     /**
      * Set current group config.
      *
-     * @param GroupConfig $groupConfig
+     * @param RouteConfig $groupConfig
      * @return void
      */
-    protected function groupConfig(GroupConfig $groupConfig): void
+    protected function groupConfig(RouteConfig $groupConfig): void
     {
         $this->groupConfig = $groupConfig;
     }
@@ -232,9 +245,9 @@ class RouteMap implements RouteMapInterface
     /**
      * Get current group config.
      *
-     * @return GroupConfig
+     * @return RouteConfig
      */
-    protected function getGroupConfig(): GroupConfig
+    protected function getGroupConfig(): RouteConfig
     {
         return $this->groupConfig;
     }
@@ -242,22 +255,22 @@ class RouteMap implements RouteMapInterface
     /**
      * Set merged config.
      *
-     * @param GroupConfig $mergedConfig
+     * @param RouteConfig $mergedGroupConfig
      * @return void
      */
-    protected function mergedConfig(GroupConfig $mergedConfig): void
+    protected function mergedGroupConfig(RouteConfig $mergedGroupConfig): void
     {
-        $this->mergedConfig = $mergedConfig;
+        $this->mergedGroupConfig = $mergedGroupConfig;
     }
 
     /**
      * Get merged config.
      *
-     * @return GroupConfig
+     * @return RouteConfig
      */
-    protected function getMergedConfig(): GroupConfig
+    protected function getMergedGroupConfig(): RouteConfig
     {
-        return $this->mergedConfig;
+        return $this->mergedGroupConfig;
     }
 
     /**
@@ -271,76 +284,14 @@ class RouteMap implements RouteMapInterface
      */
     protected function addRoute(string $path, mixed $action, array $methods, string $name = ''): RouteInterface
     {
-        $route = clone $this->route;
+        $route = $this->routeFactory::createRoute();
+
         $route->action($action);
-        $route->fnMergeConfigWithGroup($this->mergeRouteWithGroupConfig(...));
+        $route->config(path: $path, methods: $methods, name: $name);
+        $route->getConfig()->mergeConfig($this->getGroupConfig());
+        $route->routeMapGroupConfig($this->getGroupConfig());
 
-        $this->mergeRouteWithGroupConfig($route, path: $path, methods: $methods, name: $name);
         $this->routesCollection->add($route);
-
         return $route;
-    }
-
-    /**
-     * Merge route config with current group.
-     *
-     * @param RouteInterface $route
-     * @param string|null $path
-     * @param array|null $methods
-     * @param string|null $name
-     * @param array|null $rules
-     * @param array|null $defaults
-     * @param Closure|array|null $middlewares
-     * @return void
-     */
-    protected function mergeRouteWithGroupConfig(
-        RouteInterface $route,
-        string         $path = null,
-        array          $methods = null,
-        string         $name = null,
-        array          $rules = null,
-        array          $defaults = null,
-        Closure|array  $middlewares = null
-    ): void
-    {
-        isset($path) && $route->path($this->reduceConfig([$this->getGroupConfig()->getPathPrefix(), $path], self::CONCATENATE_REDUCE, self::PATH_SEPARATOR));
-        isset($methods) && $route->methods($this->reduceConfig([$this->getGroupConfig()->getMethods(), $methods], self::MERGE_REDUCE));
-        isset($name) && $route->name($this->reduceConfig([$this->getGroupConfig()->getNamePrefix(), $name], self::CONCATENATE_REDUCE, self::NAME_SEPARATOR));
-        isset($rules) && $route->rules($this->reduceConfig([$this->getGroupConfig()->getRules(), $rules], self::KEY_REDUCE));
-        isset($defaults) && $route->defaults($this->reduceConfig([$this->getGroupConfig()->getDefaults(), $defaults], self::KEY_REDUCE));
-        isset($middlewares) && $route->middlewares($this->reduceConfig([$this->getGroupConfig()->getMiddlewares(), $middlewares], self::MERGE_REDUCE));
-    }
-
-    /**
-     * Reduce array by type.
-     *
-     * @param array $items
-     * @param int $reduceType
-     * @param string $separator
-     * @return mixed
-     */
-    protected function reduceConfig(array $items, int $reduceType, string $separator = ''): mixed
-    {
-        $reduceConfig = static function (array $config, callable $fn, $separator = ''): mixed {
-            return array_reduce($config, function ($carry, $item) use ($fn, $separator) {
-                if ($carry === null) {
-                    return $item;
-                }
-                return $fn($carry, $item, $separator);
-            });
-        };
-
-        return match ($reduceType) {
-            self::KEY_REDUCE => $reduceConfig($items, function ($carry, $item): array {
-                return (array)$item + (array)$carry;
-            }, $separator),
-            self::MERGE_REDUCE => $reduceConfig($items, function ($carry, $item): array {
-                return array_merge((array)$carry, (array)$item);
-            }, $separator),
-            self::CONCATENATE_REDUCE => $reduceConfig($items, function ($carry, $item, $separator): string {
-                return $carry . $separator . $item;
-            }, $separator),
-            default => $items,
-        };
     }
 }

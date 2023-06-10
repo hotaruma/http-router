@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Utils;
 
-trait RouteTrait
+trait ConfigNormalizeUtils
 {
     /**
      * Remove {/} duplicates, check start and end have {/}.

@@ -10,12 +10,12 @@ use Hotaruma\HttpRouter\Interfaces\{Method,
     RouteMap\RouteMapResultInterface,
     RouteMatcher\RouteMatcherInterface,
     RouteMatcher\RouteMatcherResultInterface};
-use Hotaruma\HttpRouter\Utils\RouteTrait;
+use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 use Psr\Http\Message\ServerRequestInterface;
 
 class RouteMatcher implements RouteMatcherInterface
 {
-    use RouteTrait;
+    use ConfigNormalizeUtils;
 
     /**
      * @var RouteMapResultInterface
