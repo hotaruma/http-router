@@ -71,22 +71,22 @@ class Route implements RouteInterface
         Method|array  $methods = null,
     ): void
     {
-        isset($rules) and $this->getConfig()->rules($rules);
-        isset($defaults) and $this->getConfig()->defaults($defaults);
-        isset($middlewares) and $this->getConfig()->middlewares($middlewares);
-        isset($path) and $this->getConfig()->path($path);
-        isset($name) and $this->getConfig()->name($name);
-        isset($methods) and $this->getConfig()->methods($methods);
+        isset($rules) and $this->getRouteConfig()->rules($rules);
+        isset($defaults) and $this->getRouteConfig()->defaults($defaults);
+        isset($middlewares) and $this->getRouteConfig()->middlewares($middlewares);
+        isset($path) and $this->getRouteConfig()->path($path);
+        isset($name) and $this->getRouteConfig()->name($name);
+        isset($methods) and $this->getRouteConfig()->methods($methods);
 
         if ($routeMapGroupConfig = $this->getRouteMapGroupConfig()) {
-            $this->getConfig()->mergeConfig($routeMapGroupConfig);
+            $this->getRouteConfig()->mergeConfig($routeMapGroupConfig);
         }
     }
 
     /**
      * @return RouteConfigInterface
      */
-    public function getConfig(): RouteConfigInterface
+    public function getRouteConfig(): RouteConfigInterface
     {
         return $this->routeConfig;
     }

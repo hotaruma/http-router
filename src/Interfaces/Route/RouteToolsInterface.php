@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interfaces\Route;
 
+use Hotaruma\HttpRouter\Exception\RouteInvalidArgument;
 use Hotaruma\HttpRouter\Interfaces\RouteConfig\RouteConfigInterface;
 
 interface RouteToolsInterface
@@ -11,6 +12,8 @@ interface RouteToolsInterface
     /**
      * @param mixed $action Route action
      * @return RouteInterface
+     *
+     * @throws RouteInvalidArgument
      */
     public function action(mixed $action): RouteInterface;
 
@@ -26,6 +29,11 @@ interface RouteToolsInterface
      * @return void
      */
     public function routeConfig(RouteConfigInterface $routeConfig): void;
+
+    /**
+     * @return RouteConfigInterface
+     */
+    public function getRouteConfig(): RouteConfigInterface;
 
     /**
      * Set route map group config.

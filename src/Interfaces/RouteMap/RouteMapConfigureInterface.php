@@ -5,32 +5,58 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Interfaces\RouteMap;
 
 use Closure;
+use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgument;
 use Hotaruma\HttpRouter\Interfaces\Method;
 use Hotaruma\HttpRouter\Interfaces\Route\RouteFactoryInterface;
 use Hotaruma\HttpRouter\Interfaces\RouteConfig\RouteConfigFactoryInterface;
+use Hotaruma\HttpRouter\Interfaces\RouteConfig\RouteConfigInterface;
 
 interface RouteMapConfigureInterface
 {
     /**
+     * Set route group config.
+     *
+     * @param array<string,string>|null $rules Regex rules for attributes in path
+     * @param array<string,string>|null $defaults Default values for attributes in path
+     * @param Closure|array|null $middlewares Middlewares list
+     * @param string|null $pathPrefix Url path prefix
+     * @param string|null $namePrefix Route name prefix
+     * @param Method|array<Method>|null $methods Http methods
+     * @return void
+     *
+     * @throws RouteConfigInvalidArgument
+     */
+    public function changeGroupConfig(
+        array         $rules = null,
+        array         $defaults = null,
+        Closure|array $middlewares = null,
+        string        $pathPrefix = null,
+        string        $namePrefix = null,
+        Method|array  $methods = null
+    ): void;
+
+    /**
      * Create group routes by config.
      *
-     * @param array $rules Regex rules for attributes in path
-     * @param array $defaults Default values for attributes in path
-     * @param Closure|array $middlewares Middlewares list
-     * @param string $pathPrefix Path prefix
-     * @param string $namePrefix Name prefix
-     * @param Method|array $methods Http methods
      * @param callable $group function (RouteMapInterface $routeMap) {}
+     * @param array<string,string>|null $rules Regex rules for attributes in path
+     * @param array<string,string>|null $defaults Default values for attributes in path
+     * @param Closure|array|null $middlewares Middlewares list
+     * @param string|null $pathPrefix Url path prefix
+     * @param string|null $namePrefix Routes name prefix
+     * @param Method|array<Method>|null $methods Http methods
      * @return void
+     *
+     * @throws RouteConfigInvalidArgument
      */
     public function group(
         callable      $group,
-        array         $rules = [],
-        array         $defaults = [],
-        Closure|array $middlewares = [],
-        string        $pathPrefix = '',
-        string        $namePrefix = '',
-        Method|array  $methods = []
+        array         $rules = null,
+        array         $defaults = null,
+        Closure|array $middlewares = null,
+        string        $pathPrefix = null,
+        string        $namePrefix = null,
+        Method|array  $methods = null
     ): void;
 
     /**
@@ -42,10 +68,15 @@ interface RouteMapConfigureInterface
     public function routeFactory(RouteFactoryInterface $routeFactory): RouteMapConfigureInterface;
 
     /**
-     * Set route config factory.
+     * Set route group config factory.
      *
-     * @param RouteConfigFactoryInterface $routeConfigFactory
+     * @param RouteConfigFactoryInterface $routeGroupConfigFactory
      * @return RouteMapConfigureInterface
      */
-    public function routeConfigFactory(RouteConfigFactoryInterface $routeConfigFactory): RouteMapConfigureInterface;
+    public function routeGroupConfigFactory(RouteConfigFactoryInterface $routeGroupConfigFactory): RouteMapConfigureInterface;
+
+    /**
+     * @return RouteConfigInterface
+     */
+    public function getRouteGroupConfig(): RouteConfigInterface;
 }

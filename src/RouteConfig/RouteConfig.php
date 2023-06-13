@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\RouteConfig;
 
 use Closure;
-use Hotaruma\HttpRouter\Exception\RouteInvalidArgument;
+use Hotaruma\HttpRouter\RouteConfigValidators\RouteConfigValidator;
 use Hotaruma\HttpRouter\Interfaces\{Method,
     RouteConfig\RouteConfigInterface,
-    RouteConfig\RouteConfigToolsInterface
-};
+    RouteConfig\RouteConfigConfigureInterface,
+    RouteConfig\RouteConfigToolsInterface,
+    RouteConfigValidator\RouteConfigValidatorInterface};
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
 class RouteConfig implements RouteConfigInterface
@@ -30,6 +31,7 @@ class RouteConfig implements RouteConfigInterface
      * @param string $path
      * @param string $name
      * @param Method|array<Method> $methods
+     * @param RouteConfigValidatorInterface $configValidator
      */
     public function __construct(
         protected array         $rules = [],
@@ -37,7 +39,8 @@ class RouteConfig implements RouteConfigInterface
         protected Closure|array $middlewares = [],
         protected string        $path = '',
         protected string        $name = '',
-        protected Method|array  $methods = []
+        protected Method|array  $methods = [],
+        protected RouteConfigValidatorInterface $configValidator = new RouteConfigValidator()
     )
     {
     }
@@ -45,8 +48,18 @@ class RouteConfig implements RouteConfigInterface
     /**
      * @inheritDoc
      */
-    public function rules(array $rules): RouteConfigToolsInterface
+    public function validator(RouteConfigValidatorInterface $configValidator): RouteConfigToolsInterface
     {
+        $this->configValidator = $configValidator;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function rules(array $rules): RouteConfigConfigureInterface
+    {
+        $this->getConfigValidator()->validateRules($rules);
         $this->rules = $rules;
         return $this;
     }
@@ -62,8 +75,9 @@ class RouteConfig implements RouteConfigInterface
     /**
      * @inheritDoc
      */
-    public function defaults(array $defaults): RouteConfigToolsInterface
+    public function defaults(array $defaults): RouteConfigConfigureInterface
     {
+        $this->getConfigValidator()->validateDefaults($defaults);
         $this->defaults = $defaults;
         return $this;
     }
@@ -79,9 +93,10 @@ class RouteConfig implements RouteConfigInterface
     /**
      * @inheritDoc
      */
-    public function middlewares(array|Closure $middlewares): RouteConfigToolsInterface
+    public function middlewares(array|Closure $middlewares): RouteConfigConfigureInterface
     {
         $this->middlewares = (array)$middlewares;
+        $this->getConfigValidator()->validateMiddlewares($middlewares);
         return $this;
     }
 
@@ -96,11 +111,9 @@ class RouteConfig implements RouteConfigInterface
     /**
      * @inheritDoc
      */
-    public function path(string $path): RouteConfigToolsInterface
+    public function path(string $path): RouteConfigConfigureInterface
     {
-        if (empty($path)) {
-            throw new RouteInvalidArgument("Invalid argument: path cannot be empty");
-        }
+        $this->getConfigValidator()->validatePath($path);
         $this->path = $this->normalizePath($path);
         return $this;
     }
@@ -116,8 +129,9 @@ class RouteConfig implements RouteConfigInterface
     /**
      * @inheritDoc
      */
-    public function name(string $name): RouteConfigToolsInterface
+    public function name(string $name): RouteConfigConfigureInterface
     {
+        $this->getConfigValidator()->validateName($name);
         $this->name = $this->normalizeName($name);
         return $this;
     }
@@ -133,15 +147,10 @@ class RouteConfig implements RouteConfigInterface
     /**
      * @inheritDoc
      */
-    public function methods(Method|array $methods): RouteConfigToolsInterface
+    public function methods(Method|array $methods): RouteConfigConfigureInterface
     {
         $methods = (array)$methods;
-
-        foreach ($methods as $method) {
-            if (!$method instanceof Method) {
-                throw new RouteInvalidArgument("Invalid argument. Expected instance of Method.");
-            }
-        }
+        $this->getConfigValidator()->validateMethods($methods);
         $this->methods = $methods;
         return $this;
     }
@@ -198,5 +207,13 @@ class RouteConfig implements RouteConfigInterface
             }, $separator),
             default => $items,
         };
+    }
+
+    /**
+     * @return RouteConfigValidatorInterface
+     */
+    private function getConfigValidator(): RouteConfigValidatorInterface
+    {
+        return $this->configValidator;
     }
 }
