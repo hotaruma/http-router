@@ -7,6 +7,6 @@ namespace Hotaruma\HttpRouter\Exception;
 use Hotaruma\HttpRouter\Interface\Exception\RouterExceptionInterface;
 use RuntimeException;
 
-class RouteGenerateWrongValues extends RuntimeException implements RouterExceptionInterface
+class RouteDispatcherNotFoundException extends RuntimeException implements RouterExceptionInterface
 {
 }

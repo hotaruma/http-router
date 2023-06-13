@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter;
 
 use Closure;
-use Hotaruma\HttpRouter\Enums\{AdditionalMethod, HttpMethod};
-use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgument;
-use Hotaruma\HttpRouter\Exception\RouteInvalidArgument;
-use Hotaruma\HttpRouter\RouteConfig\RouteGroupConfigFactory;
-use Hotaruma\HttpRouter\Interfaces\{Method,
-    Route\RouteCollectionInterface,
+use Hotaruma\HttpRouter\Collection\RouteCollection;
+use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
+use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgument, RouteInvalidArgument};
+use Hotaruma\HttpRouter\Factory\{RouteFactory, RouteGroupConfigFactory};
+use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
+    Enum\Method,
+    Factory\RouteConfigFactoryInterface,
+    Factory\RouteFactoryInterface,
     Route\RouteConfigureInterface,
-    Route\RouteFactoryInterface,
     Route\RouteInterface,
-    RouteConfig\RouteConfigFactoryInterface,
     RouteConfig\RouteConfigInterface,
     RouteMap\RouteMapConfigureInterface,
     RouteMap\RouteMapInterface};
-use Hotaruma\HttpRouter\Route\{RouteCollection, RouteFactory};
-use Hotaruma\HttpRouter\RouteConfig\RouteConfig;
+use Hotaruma\HttpRouter\RouteConfig\{RouteConfig};
 
 class RouteMap implements RouteMapInterface
 {

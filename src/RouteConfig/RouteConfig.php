@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\RouteConfig;
 
 use Closure;
-use Hotaruma\HttpRouter\RouteConfigValidators\RouteConfigValidator;
-use Hotaruma\HttpRouter\Interfaces\{Method,
-    RouteConfig\RouteConfigInterface,
+use Hotaruma\HttpRouter\Interface\{Enum\Method,
     RouteConfig\RouteConfigConfigureInterface,
+    RouteConfig\RouteConfigInterface,
     RouteConfig\RouteConfigToolsInterface,
-    RouteConfigValidator\RouteConfigValidatorInterface};
+    Validator\RouteConfigValidatorInterface};
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
+use Hotaruma\HttpRouter\Validator\RouteConfigValidator;
 
 class RouteConfig implements RouteConfigInterface
 {

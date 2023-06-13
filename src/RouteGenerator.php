@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter;
 
 use Hotaruma\HttpRouter\Exception\{RouteGenerateNotFoundException, RouteGenerateWrongValues};
-use Hotaruma\HttpRouter\Interfaces\{Route\RouteInterface,
+use Hotaruma\HttpRouter\Interface\{Route\RouteInterface,
     RouteGenerator\RouteGeneratorInterface,
     RouteMap\RouteMapResultInterface};
 
@@ -41,7 +41,7 @@ class RouteGenerator implements RouteGeneratorInterface
     {
         $routes = $this->routeMapResult->getRoutes();
         foreach ($routes as $route) {
-            if ($route->getName() === $routeName) {
+            if ($route->getRouteConfig()->getName() === $routeName) {
                 return $this->generateByRoute($route, $attributes, $strict);
             }
         }
@@ -62,27 +62,27 @@ class RouteGenerator implements RouteGeneratorInterface
             '/{([^}]+)}/',
             function ($attributeName) use ($route, $attributes, $strict) {
                 $attributeName = $attributeName[1];
-                $argumentValue = $attributes[$attributeName] ?? $route->getDefaults()[$attributeName] ?? null;
+                $argumentValue = $attributes[$attributeName] ?? $route->getRouteConfig()->getDefaults()[$attributeName] ?? null;
 
                 if (!isset($argumentValue)) {
                     throw new RouteGenerateWrongValues(
-                        sprintf('Route %s has no value for attribute %s', $route->getName(), $attributeName)
+                        sprintf('Route %s has no value for attribute %s', $route->getRouteConfig()->getName(), $attributeName)
                     );
                 }
 
                 $argumentValue = (string)$argumentValue;
                 if (
-                    $strict && isset($route->getRules()[$attributeName]) &&
-                    !preg_match(sprintf("/^%s$/", $route->getRules()[$attributeName]), $argumentValue)
+                    $strict && isset($route->getRouteConfig()->getRules()[$attributeName]) &&
+                    !preg_match(sprintf("/^%s$/", $route->getRouteConfig()->getRules()[$attributeName]), $argumentValue)
                 ) {
                     throw new RouteGenerateWrongValues(
-                        sprintf('Route %s has wrong value for attribute %s', $route->getName(), $attributeName)
+                        sprintf('Route %s has wrong value for attribute %s', $route->getRouteConfig()->getName(), $attributeName)
                     );
                 }
 
                 return $argumentValue;
             },
-            $route->getPath()
+            $route->getRouteConfig()->getPath()
         );
     }
 }

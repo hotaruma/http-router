@@ -6,10 +6,7 @@ namespace Hotaruma\HttpRouter\Route;
 
 use Closure;
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgument;
-use Hotaruma\HttpRouter\Interfaces\{Method,
-    Route\RouteInterface,
-    RouteConfig\RouteConfigInterface
-};
+use Hotaruma\HttpRouter\Interface\{Enum\Method, Route\RouteInterface, RouteConfig\RouteConfigInterface};
 use Hotaruma\HttpRouter\RouteConfig\RouteConfig;
 
 class Route implements RouteInterface
@@ -18,6 +15,11 @@ class Route implements RouteInterface
      * @var mixed
      */
     protected mixed $action;
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $attributes;
 
     /**
      * @var null|RouteConfigInterface
@@ -48,7 +50,24 @@ class Route implements RouteInterface
      */
     public function getAction(): mixed
     {
-        return $this->action;
+        return $this->action ?? null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function attributes(array $attributes): RouteInterface
+    {
+        $this->attributes = $attributes;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
     }
 
     /**
