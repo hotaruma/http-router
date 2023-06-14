@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interface\Route;
 
-use Hotaruma\HttpRouter\Exception\RouteInvalidArgument;
+use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\RouteConfig\RouteConfigInterface;
 
 interface RouteToolsInterface
@@ -13,7 +13,7 @@ interface RouteToolsInterface
      * @param mixed $action Route action
      * @return RouteInterface
      *
-     * @throws RouteInvalidArgument
+     * @throws RouteInvalidArgumentException
      */
     public function action(mixed $action): RouteInterface;
 
@@ -32,6 +32,17 @@ interface RouteToolsInterface
      * @return array<string, string>
      */
     public function getAttributes(): array;
+
+    /**
+     * @param string $url
+     * @return RouteInterface
+     */
+    public function url(string $url): RouteInterface;
+
+    /**
+     * @return string
+     */
+    public function getUrl(): string;
 
     /**
      * Set route config implementation.

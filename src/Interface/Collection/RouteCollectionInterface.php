@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interface\Collection;
 
-use Hotaruma\HttpRouter\Exception\RouteCollectionInvalidArgument;
+use Hotaruma\HttpRouter\Exception\RouteCollectionInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use IteratorAggregate;
@@ -33,7 +33,7 @@ interface RouteCollectionInterface extends IteratorAggregate
      * @param string $class
      * @return void
      *
-     * @throws RouteCollectionInvalidArgument
+     * @throws RouteCollectionInvalidArgumentException
      */
     public function iterator(string $class): void;
 

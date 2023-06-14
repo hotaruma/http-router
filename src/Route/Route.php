@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Route;
 
 use Closure;
-use Hotaruma\HttpRouter\Exception\RouteInvalidArgument;
-use Hotaruma\HttpRouter\Interface\{Enum\Method, Route\RouteInterface, RouteConfig\RouteConfigInterface};
+use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
+use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface, Route\RouteInterface, RouteConfig\RouteConfigInterface};
 use Hotaruma\HttpRouter\RouteConfig\RouteConfig;
 
 class Route implements RouteInterface
@@ -20,6 +20,11 @@ class Route implements RouteInterface
      * @var array<string, string>
      */
     protected array $attributes;
+
+    /**
+     * @var string
+     */
+    protected string $url = '';
 
     /**
      * @var null|RouteConfigInterface
@@ -39,7 +44,7 @@ class Route implements RouteInterface
     public function action(mixed $action): RouteInterface
     {
         if (empty($path)) {
-            throw new RouteInvalidArgument("Invalid argument: action cannot be empty");
+            throw new RouteInvalidArgumentException('Invalid argument: action cannot be empty');
         }
         $this->action = $action;
         return $this;
@@ -58,6 +63,11 @@ class Route implements RouteInterface
      */
     public function attributes(array $attributes): RouteInterface
     {
+        foreach ($attributes as $name => $attribute) {
+            if (!is_string($name) || !is_string($attribute)) {
+                throw new RouteInvalidArgumentException('Invalid format for route attribute. Attributes must be specified as strings.');
+            }
+        }
         $this->attributes = $attributes;
         return $this;
     }
@@ -73,6 +83,23 @@ class Route implements RouteInterface
     /**
      * @inheritDoc
      */
+    public function url(string $url): RouteInterface
+    {
+        $this->url = $url;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function routeConfig(RouteConfigInterface $routeConfig): void
     {
         $this->routeConfig = $routeConfig;
@@ -82,12 +109,12 @@ class Route implements RouteInterface
      * @inheritDoc
      */
     public function config(
-        array         $rules = null,
-        array         $defaults = null,
-        Closure|array $middlewares = null,
-        string        $path = null,
-        string        $name = null,
-        Method|array  $methods = null,
+        array                        $rules = null,
+        array                        $defaults = null,
+        Closure|array                $middlewares = null,
+        string                       $path = null,
+        string                       $name = null,
+        RequestMethodInterface|array $methods = null,
     ): void
     {
         isset($rules) and $this->getRouteConfig()->rules($rules);

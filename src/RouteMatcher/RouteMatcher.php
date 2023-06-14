@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\RouteMatcher;
 
 use Hotaruma\HttpRouter\Enum\AdditionalMethod;
-use Hotaruma\HttpRouter\Interface\Enum\Method;
+use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Interface\RouteMatcher\RouteMatcherInterface;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
@@ -17,7 +17,7 @@ class RouteMatcher implements RouteMatcherInterface
     /**
      * @inheritDoc
      */
-    public function matchRouteByHttpMethod(RouteInterface $route, Method $method): bool
+    public function matchRouteByHttpMethod(RouteInterface $route, RequestMethodInterface $method): bool
     {
         $routeHttpMethods = $route->getRouteConfig()->getMethods();
         return in_array($method, $routeHttpMethods) || in_array(AdditionalMethod::ANY, $routeHttpMethods);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interface\Validator;
 
-use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgument;
+use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
 
 interface RouteConfigValidatorInterface
 {
@@ -12,7 +12,7 @@ interface RouteConfigValidatorInterface
      * @param array $rules
      * @return void
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function validateRules(array $rules): void;
 
@@ -20,7 +20,7 @@ interface RouteConfigValidatorInterface
      * @param array $defaults
      * @return void
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function validateDefaults(array $defaults): void;
 
@@ -28,7 +28,7 @@ interface RouteConfigValidatorInterface
      * @param array $middlewares
      * @return void
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function validateMiddlewares(array $middlewares): void;
 
@@ -36,7 +36,7 @@ interface RouteConfigValidatorInterface
      * @param string $path
      * @return void
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function validatePath(string $path): void;
 
@@ -44,7 +44,7 @@ interface RouteConfigValidatorInterface
      * @param string $name
      * @return void
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function validateName(string $name): void;
 
@@ -52,7 +52,7 @@ interface RouteConfigValidatorInterface
      * @param array $methods
      * @return void
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function validateMethods(array $methods): void;
 }

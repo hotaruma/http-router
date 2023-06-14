@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Collection;
 
-use Hotaruma\HttpRouter\Exception\RouteCollectionInvalidArgument;
+use Hotaruma\HttpRouter\Exception\RouteCollectionInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\Collection\RouteCollectionInterface;
 use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
@@ -27,8 +27,8 @@ class RouteCollection implements RouteCollectionInterface
      */
     public function iterator(string $class): void
     {
-        if (!is_subclass_of($this->iterator, RouteIteratorInterface::class)) {
-            throw new RouteCollectionInvalidArgument('Invalid iterator type. Must be a subclass of RouteIteratorInterface.');
+        if (!is_subclass_of($class, RouteIteratorInterface::class)) {
+            throw new RouteCollectionInvalidArgumentException(sprintf('Invalid iterator type. %s must be a subclass of RouteIteratorInterface.', $class));
         }
 
         $this->iterator = $class;

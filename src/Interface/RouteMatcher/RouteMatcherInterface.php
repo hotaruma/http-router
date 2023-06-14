@@ -2,7 +2,7 @@
 
 namespace Hotaruma\HttpRouter\Interface\RouteMatcher;
 
-use Hotaruma\HttpRouter\Interface\Enum\Method;
+use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 
 interface RouteMatcherInterface
@@ -11,10 +11,10 @@ interface RouteMatcherInterface
      * Checks if the given route matches the specified HTTP method.
      *
      * @param RouteInterface $route
-     * @param Method $method
+     * @param RequestMethodInterface $method
      * @return bool
      */
-    public function matchRouteByHttpMethod(RouteInterface $route, Method $method): bool;
+    public function matchRouteByHttpMethod(RouteInterface $route, RequestMethodInterface $method): bool;
 
     /**
      * Matches the given route using regular expressions and retrieves the route attributes.

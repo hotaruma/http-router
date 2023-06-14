@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\RouteConfig;
 
 use Closure;
-use Hotaruma\HttpRouter\Interface\{Enum\Method,
+use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
     RouteConfig\RouteConfigConfigureInterface,
     RouteConfig\RouteConfigInterface,
     RouteConfig\RouteConfigToolsInterface,
@@ -30,16 +30,16 @@ class RouteConfig implements RouteConfigInterface
      * @param Closure|array $middlewares
      * @param string $path
      * @param string $name
-     * @param Method|array<Method> $methods
+     * @param RequestMethodInterface|array<RequestMethodInterface> $methods
      * @param RouteConfigValidatorInterface $configValidator
      */
     public function __construct(
-        protected array         $rules = [],
-        protected array         $defaults = [],
-        protected Closure|array $middlewares = [],
-        protected string        $path = '',
-        protected string        $name = '',
-        protected Method|array  $methods = [],
+        protected array                         $rules = [],
+        protected array                         $defaults = [],
+        protected Closure|array                 $middlewares = [],
+        protected string                        $path = '',
+        protected string                        $name = '',
+        protected RequestMethodInterface|array  $methods = [],
         protected RouteConfigValidatorInterface $configValidator = new RouteConfigValidator()
     )
     {
@@ -147,7 +147,7 @@ class RouteConfig implements RouteConfigInterface
     /**
      * @inheritDoc
      */
-    public function methods(Method|array $methods): RouteConfigConfigureInterface
+    public function methods(RequestMethodInterface|array $methods): RouteConfigConfigureInterface
     {
         $methods = (array)$methods;
         $this->getConfigValidator()->validateMethods($methods);

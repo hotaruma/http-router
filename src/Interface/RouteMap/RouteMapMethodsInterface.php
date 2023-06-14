@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interface\RouteMap;
 
-use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgument;
-use Hotaruma\HttpRouter\Exception\RouteInvalidArgument;
+use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
+use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\Route\RouteConfigureInterface;
 
 interface RouteMapMethodsInterface
@@ -17,7 +17,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function any(string $path, mixed $action): RouteConfigureInterface;
 
@@ -26,7 +26,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function get(string $path, mixed $action): RouteConfigureInterface;
 
@@ -35,7 +35,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function post(string $path, mixed $action): RouteConfigureInterface;
 
@@ -44,7 +44,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function put(string $path, mixed $action): RouteConfigureInterface;
 
@@ -53,7 +53,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function delete(string $path, mixed $action): RouteConfigureInterface;
 
@@ -62,7 +62,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function head(string $path, mixed $action): RouteConfigureInterface;
 
@@ -71,7 +71,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function options(string $path, mixed $action): RouteConfigureInterface;
 
@@ -80,7 +80,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function trace(string $path, mixed $action): RouteConfigureInterface;
 
@@ -89,7 +89,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function connect(string $path, mixed $action): RouteConfigureInterface;
 
@@ -98,7 +98,7 @@ interface RouteMapMethodsInterface
      * @param mixed $action Callable action
      * @return RouteConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     public function patch(string $path, mixed $action): RouteConfigureInterface;
 }

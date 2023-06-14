@@ -7,17 +7,18 @@ namespace Hotaruma\HttpRouter;
 use Closure;
 use Hotaruma\HttpRouter\Collection\RouteCollection;
 use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
-use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgument, RouteInvalidArgument};
+use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgumentException, RouteInvalidArgumentException};
 use Hotaruma\HttpRouter\Factory\{RouteFactory, RouteGroupConfigFactory};
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
-    Enum\Method,
+    Enum\RequestMethodInterface,
     Factory\RouteConfigFactoryInterface,
     Factory\RouteFactoryInterface,
     Route\RouteConfigureInterface,
     Route\RouteInterface,
     RouteConfig\RouteConfigInterface,
     RouteMap\RouteMapConfigureInterface,
-    RouteMap\RouteMapInterface};
+    RouteMap\RouteMapInterface
+};
 use Hotaruma\HttpRouter\RouteConfig\{RouteConfig};
 
 class RouteMap implements RouteMapInterface
@@ -80,13 +81,13 @@ class RouteMap implements RouteMapInterface
      * @inheritDoc
      */
     public function changeGroupConfig(
-        array         $rules = null,
-        array         $defaults = null,
-        Closure|array $middlewares = null,
-        string        $pathPrefix = null,
-        string        $namePrefix = null,
-        Method|array  $methods = null,
-        bool          $mergeWithPreviousConfig = false
+        array                        $rules = null,
+        array                        $defaults = null,
+        Closure|array                $middlewares = null,
+        string                       $pathPrefix = null,
+        string                       $namePrefix = null,
+        RequestMethodInterface|array $methods = null,
+        bool                         $mergeWithPreviousConfig = false
     ): void
     {
         $groupConfig = $this->getRouteGroupConfigFactory()::createRouteConfig();
@@ -112,13 +113,13 @@ class RouteMap implements RouteMapInterface
      * @inheritDoc
      */
     public function group(
-        callable      $group,
-        array         $rules = null,
-        array         $defaults = null,
-        Closure|array $middlewares = null,
-        string        $pathPrefix = null,
-        string        $namePrefix = null,
-        Method|array  $methods = null
+        callable                     $group,
+        array                        $rules = null,
+        array                        $defaults = null,
+        Closure|array                $middlewares = null,
+        string                       $pathPrefix = null,
+        string                       $namePrefix = null,
+        RequestMethodInterface|array $methods = null
     ): void
     {
         $this->mergedGroupConfig($this->getGroupConfig());
@@ -272,11 +273,11 @@ class RouteMap implements RouteMapInterface
      *
      * @param string $path
      * @param mixed $action
-     * @param array<Method> $methods
+     * @param array<RequestMethodInterface> $methods
      * @param string $name
      * @return RouteInterface
      *
-     * @throws RouteConfigInvalidArgument|RouteInvalidArgument
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
     protected function addRoute(string $path, mixed $action, array $methods, string $name = ''): RouteInterface
     {

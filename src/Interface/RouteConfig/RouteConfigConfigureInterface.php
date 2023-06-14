@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Interface\RouteConfig;
 
 use Closure;
-use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgument;
-use Hotaruma\HttpRouter\Interface\Enum\Method;
+use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
+use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 
 interface RouteConfigConfigureInterface
 {
@@ -14,7 +14,7 @@ interface RouteConfigConfigureInterface
      * @param string $path New path
      * @return RouteConfigConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function path(string $path): RouteConfigConfigureInterface;
 
@@ -27,7 +27,7 @@ interface RouteConfigConfigureInterface
      * @param string $name New name
      * @return RouteConfigConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function name(string $name): RouteConfigConfigureInterface;
 
@@ -37,15 +37,15 @@ interface RouteConfigConfigureInterface
     public function getName(): string;
 
     /**
-     * @param Method|array<Method> $methods Http methods
+     * @param RequestMethodInterface|array<RequestMethodInterface> $methods Http methods
      * @return RouteConfigConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
-    public function methods(Method|array $methods): RouteConfigConfigureInterface;
+    public function methods(RequestMethodInterface|array $methods): RouteConfigConfigureInterface;
 
     /**
-     * @return array<Method> Current methods
+     * @return array<RequestMethodInterface> Current methods
      */
     public function getMethods(): array;
 
@@ -53,7 +53,7 @@ interface RouteConfigConfigureInterface
      * @param array<string,string> $rules Regex rules for attributes in path
      * @return RouteConfigConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function rules(array $rules): RouteConfigConfigureInterface;
 
@@ -66,7 +66,7 @@ interface RouteConfigConfigureInterface
      * @param array<string,string> $defaults Default values for attributes in path
      * @return RouteConfigConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function defaults(array $defaults): RouteConfigConfigureInterface;
 
@@ -79,7 +79,7 @@ interface RouteConfigConfigureInterface
      * @param Closure|array $middlewares Middlewares list
      * @return RouteConfigConfigureInterface
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function middlewares(Closure|array $middlewares): RouteConfigConfigureInterface;
 

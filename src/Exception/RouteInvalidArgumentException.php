@@ -7,6 +7,6 @@ namespace Hotaruma\HttpRouter\Exception;
 use Hotaruma\HttpRouter\Interface\Exception\RouterExceptionInterface;
 use InvalidArgumentException;
 
-class RouteConfigInvalidArgument extends InvalidArgumentException implements RouterExceptionInterface
+class RouteInvalidArgumentException extends InvalidArgumentException implements RouterExceptionInterface
 {
 }

@@ -6,6 +6,6 @@ namespace Hotaruma\HttpRouter\Interface\Enum;
 
 use BackedEnum;
 
-interface Method extends BackedEnum
+interface RequestMethodInterface extends BackedEnum
 {
 }

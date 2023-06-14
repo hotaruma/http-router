@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Interface\RouteMap;
 
 use Closure;
-use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgument;
-use Hotaruma\HttpRouter\Interface\Enum\Method;
+use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
+use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Factory\RouteConfigFactoryInterface;
 use Hotaruma\HttpRouter\Interface\Factory\RouteFactoryInterface;
 use Hotaruma\HttpRouter\Interface\RouteConfig\RouteConfigInterface;
@@ -21,10 +21,10 @@ interface RouteMapConfigureInterface
      * @param Closure|array|null $middlewares Middlewares list
      * @param string|null $pathPrefix Url path prefix
      * @param string|null $namePrefix Route name prefix
-     * @param Method|array<Method>|null $methods Http methods
+     * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods
      * @return void
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function changeGroupConfig(
         array         $rules = null,
@@ -32,7 +32,7 @@ interface RouteMapConfigureInterface
         Closure|array $middlewares = null,
         string        $pathPrefix = null,
         string        $namePrefix = null,
-        Method|array  $methods = null
+        RequestMethodInterface|array $methods = null
     ): void;
 
     /**
@@ -44,10 +44,10 @@ interface RouteMapConfigureInterface
      * @param Closure|array|null $middlewares Middlewares list
      * @param string|null $pathPrefix Url path prefix
      * @param string|null $namePrefix Routes name prefix
-     * @param Method|array<Method>|null $methods Http methods
+     * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods
      * @return void
      *
-     * @throws RouteConfigInvalidArgument
+     * @throws RouteConfigInvalidArgumentException
      */
     public function group(
         callable      $group,
@@ -56,7 +56,7 @@ interface RouteMapConfigureInterface
         Closure|array $middlewares = null,
         string        $pathPrefix = null,
         string        $namePrefix = null,
-        Method|array  $methods = null
+        RequestMethodInterface|array $methods = null
     ): void;
 
     /**

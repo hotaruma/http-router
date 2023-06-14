@@ -8,18 +8,19 @@ use Hotaruma\HttpRouter\Collection\RouteCollection;
 use Hotaruma\HttpRouter\Enum\AdditionalMethod;
 use Hotaruma\HttpRouter\Exception\RouteDispatcherNotFoundException;
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
-    Enum\Method,
+    Enum\RequestMethodInterface,
     Route\RouteInterface,
     RouteDispatcher\RouteDispatcherInterface,
-    RouteMatcher\RouteMatcherInterface};
+    RouteMatcher\RouteMatcherInterface
+};
 use Hotaruma\HttpRouter\RouteMatcher\RouteMatcher;
 
 class RouteDispatcher implements RouteDispatcherInterface
 {
     /**
-     * @var Method Http method
+     * @var RequestMethodInterface Http method
      */
-    protected Method $requestHttpMethod = AdditionalMethod::ANY;
+    protected RequestMethodInterface $requestHttpMethod = AdditionalMethod::ANY;
 
     /**
      * @var string Uri path
@@ -35,14 +36,14 @@ class RouteDispatcher implements RouteDispatcherInterface
         protected RouteMatcherInterface $routeMatcher = new RouteMatcher()
     )
     {
-        $this->routesCollection = new RouteCollection();
+        $this->routesCollection(new RouteCollection());
     }
 
     /**
      * @inheritDoc
      */
     public function config(
-        Method                   $requestHttpMethod = null,
+        RequestMethodInterface   $requestHttpMethod = null,
         string                   $requestPath = null,
         RouteCollectionInterface $routes = null
     ): void
@@ -75,22 +76,22 @@ class RouteDispatcher implements RouteDispatcherInterface
             }
         }
 
-        throw new RouteDispatcherNotFoundException("No matching route found for the current request.");
+        throw new RouteDispatcherNotFoundException('No matching route found for the current request.');
     }
 
     /**
-     * @param Method $requestHttpMethod
+     * @param RequestMethodInterface $requestHttpMethod
      * @return void
      */
-    protected function requestHttpMethod(Method $requestHttpMethod): void
+    protected function requestHttpMethod(RequestMethodInterface $requestHttpMethod): void
     {
         $this->requestHttpMethod = $requestHttpMethod;
     }
 
     /**
-     * @return Method
+     * @return RequestMethodInterface
      */
-    protected function getRequestHttpMethod(): Method
+    protected function getRequestHttpMethod(): RequestMethodInterface
     {
         return $this->requestHttpMethod;
     }

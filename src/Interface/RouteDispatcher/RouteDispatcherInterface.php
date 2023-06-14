@@ -6,19 +6,19 @@ namespace Hotaruma\HttpRouter\Interface\RouteDispatcher;
 
 use Hotaruma\HttpRouter\Exception\RouteDispatcherNotFoundException;
 use Hotaruma\HttpRouter\Interface\Collection\RouteCollectionInterface;
-use Hotaruma\HttpRouter\Interface\Enum\Method;
+use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Interface\RouteMatcher\RouteMatcherInterface;
 
 interface RouteDispatcherInterface
 {
     /**
-     * @param Method|null $requestHttpMethod Http method
+     * @param RequestMethodInterface|null $requestHttpMethod Http method
      * @param string|null $requestPath Uri path
      * @param RouteCollectionInterface|null $routes Route collection for matching
      */
     public function config(
-        Method                   $requestHttpMethod = null,
+        RequestMethodInterface   $requestHttpMethod = null,
         string                   $requestPath = null,
         RouteCollectionInterface $routes = null
     ): void;

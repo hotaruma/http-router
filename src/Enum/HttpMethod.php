@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Enum;
 
-use Hotaruma\HttpRouter\Interface\Enum\Method;
+use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 
-enum HttpMethod: string implements Method
+enum HttpMethod: string implements RequestMethodInterface
 {
     case CONNECT = 'CONNECT';
     case DELETE = 'DELETE';

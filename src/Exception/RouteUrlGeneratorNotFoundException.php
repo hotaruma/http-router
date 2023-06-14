@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Exception;
 
 use Hotaruma\HttpRouter\Interface\Exception\RouterExceptionInterface;
-use InvalidArgumentException;
+use RuntimeException;
 
-class RouteIteratorInvalidArgument extends InvalidArgumentException implements RouterExceptionInterface
+class RouteUrlGeneratorNotFoundException extends RuntimeException implements RouterExceptionInterface
 {
 }
