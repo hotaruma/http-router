@@ -8,9 +8,12 @@ use Closure;
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface, Route\RouteInterface, RouteConfig\RouteConfigInterface};
 use Hotaruma\HttpRouter\RouteConfig\RouteConfig;
+use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
 class Route implements RouteInterface
 {
+    use ConfigNormalizeUtils;
+
     /**
      * @var mixed
      */
@@ -43,7 +46,7 @@ class Route implements RouteInterface
      */
     public function action(mixed $action): RouteInterface
     {
-        if (empty($path)) {
+        if (empty($action)) {
             throw new RouteInvalidArgumentException('Invalid argument: action cannot be empty');
         }
         $this->action = $action;
@@ -85,7 +88,7 @@ class Route implements RouteInterface
      */
     public function url(string $url): RouteInterface
     {
-        $this->url = $url;
+        $this->url = $this->normalizePath($url);
         return $this;
     }
 

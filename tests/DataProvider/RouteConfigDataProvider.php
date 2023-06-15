@@ -54,6 +54,7 @@ class RouteConfigDataProvider
     public static function pathDataProvider(): array
     {
         return [
+            ['news/m/{page}', '/news/m/{page}/'],
             ['/example/path/', '/example/path/'],
             ['example//path', '/example/path/'],
             ['//example//path///', '/example/path/'],

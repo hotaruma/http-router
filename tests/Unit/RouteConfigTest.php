@@ -7,7 +7,6 @@ namespace Tests\Unit;
 use Closure;
 use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Factory\RouteConfigFactory;
-use Hotaruma\HttpRouter\RouteConfig\RouteConfig;
 use PHPUnit\Framework\TestCase;
 
 class RouteConfigTest extends TestCase
