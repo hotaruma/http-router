@@ -9,7 +9,10 @@ use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
     RouteConfig\RouteConfigConfigureInterface,
     RouteConfig\RouteConfigInterface,
     RouteConfig\RouteConfigToolsInterface,
-    Validator\RouteConfigValidatorInterface};
+    Validator\RouteConfigValidatorInterface
+};
+use Hotaruma\HttpRouter\Enum\AdditionalMethod;
+use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 use Hotaruma\HttpRouter\Validator\RouteConfigValidator;
 
@@ -20,6 +23,7 @@ class RouteConfig implements RouteConfigInterface
     protected const KEY_REDUCE = 1;
     protected const MERGE_REDUCE = 2;
     protected const CONCATENATE_REDUCE = 3;
+    protected const ENUM_MERGE_REDUCE = 4;
 
     protected const PATH_SEPARATOR = '/';
     protected const NAME_SEPARATOR = '.';
@@ -37,9 +41,9 @@ class RouteConfig implements RouteConfigInterface
         protected array                         $rules = [],
         protected array                         $defaults = [],
         protected Closure|array                 $middlewares = [],
-        protected string                        $path = '',
+        protected string                        $path = '/',
         protected string                        $name = '',
-        protected RequestMethodInterface|array  $methods = [],
+        protected RequestMethodInterface|array  $methods = [AdditionalMethod::ANY],
         protected RouteConfigValidatorInterface $configValidator = new RouteConfigValidator()
     )
     {
@@ -95,8 +99,9 @@ class RouteConfig implements RouteConfigInterface
      */
     public function middlewares(array|Closure $middlewares): RouteConfigConfigureInterface
     {
-        $this->middlewares = (array)$middlewares;
+        $middlewares = is_array($middlewares) ? $middlewares : [$middlewares];
         $this->getConfigValidator()->validateMiddlewares($middlewares);
+        $this->middlewares = $middlewares;
         return $this;
     }
 
@@ -105,7 +110,7 @@ class RouteConfig implements RouteConfigInterface
      */
     public function getMiddlewares(): array
     {
-        return (array)$this->middlewares;
+        return $this->middlewares;
     }
 
     /**
@@ -149,7 +154,7 @@ class RouteConfig implements RouteConfigInterface
      */
     public function methods(RequestMethodInterface|array $methods): RouteConfigConfigureInterface
     {
-        $methods = (array)$methods;
+        $methods = is_array($methods) ? $methods : [$methods];
         $this->getConfigValidator()->validateMethods($methods);
         $this->methods = $methods;
         return $this;
@@ -160,7 +165,7 @@ class RouteConfig implements RouteConfigInterface
      */
     public function getMethods(): array
     {
-        return (array)$this->methods;
+        return $this->methods;
     }
 
     /**
@@ -169,7 +174,7 @@ class RouteConfig implements RouteConfigInterface
     public function mergeConfig(RouteConfigInterface $routeConfig): void
     {
         $this->path($this->reduceConfig([$routeConfig->getPath(), $this->getPath()], self::CONCATENATE_REDUCE, self::PATH_SEPARATOR));
-        $this->methods($this->reduceConfig([$routeConfig->getMethods(), $this->getMethods()], self::MERGE_REDUCE));
+        $this->methods($this->reduceConfig([$routeConfig->getMethods(), $this->getMethods()], self::ENUM_MERGE_REDUCE));
         $this->name($this->reduceConfig([$routeConfig->getName(), $this->getName()], self::CONCATENATE_REDUCE, self::NAME_SEPARATOR));
         $this->rules($this->reduceConfig([$routeConfig->getRules(), $this->getRules()], self::KEY_REDUCE));
         $this->defaults($this->reduceConfig([$routeConfig->getDefaults(), $this->getDefaults()], self::KEY_REDUCE));
@@ -177,17 +182,19 @@ class RouteConfig implements RouteConfigInterface
     }
 
     /**
-     * Reduce array by type.
+     * Reduce config by type.
      *
      * @param array $items
      * @param int $reduceType
      * @param string $separator
-     * @return mixed
+     * @return array|string
+     *
+     * @throws RouteConfigInvalidArgumentException
      */
-    protected function reduceConfig(array $items, int $reduceType, string $separator = ''): mixed
+    protected function reduceConfig(array $items, int $reduceType, string $separator = ''): array|string
     {
-        $reduceConfig = static function (array $config, callable $fn, $separator = ''): mixed {
-            return array_reduce($config, function ($carry, $item) use ($fn, $separator) {
+        $reduceConfig = static function (array $config, callable $fn, string $separator = ''): array|string {
+            return array_reduce($config, function (array|string|null $carry, array|string $item) use ($fn, $separator) {
                 if ($carry === null) {
                     return $item;
                 }
@@ -196,16 +203,19 @@ class RouteConfig implements RouteConfigInterface
         };
 
         return match ($reduceType) {
-            self::KEY_REDUCE => $reduceConfig($items, function ($carry, $item): array {
-                return (array)$item + (array)$carry;
+            self::KEY_REDUCE => $reduceConfig($items, function (array $carry, array $item): array {
+                return $item + $carry;
             }, $separator),
-            self::MERGE_REDUCE => $reduceConfig($items, function ($carry, $item): array {
-                return array_merge((array)$carry, (array)$item);
+            self::MERGE_REDUCE => array_unique($reduceConfig($items, function (array $carry, array $item): array {
+                return array_merge($carry, $item);
+            }, $separator)),
+            self::ENUM_MERGE_REDUCE => $reduceConfig($items, function (array $carry, array $item): array {
+                return array_merge($carry, $item);
             }, $separator),
-            self::CONCATENATE_REDUCE => $reduceConfig($items, function ($carry, $item, $separator): string {
+            self::CONCATENATE_REDUCE => $reduceConfig($items, function (string $carry, string $item, string $separator): string {
                 return $carry . $separator . $item;
             }, $separator),
-            default => $items,
+            default => throw new RouteConfigInvalidArgumentException(sprintf('Unsupported reduce type: %s', $reduceType)),
         };
     }
 

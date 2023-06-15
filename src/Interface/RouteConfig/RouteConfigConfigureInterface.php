@@ -93,6 +93,8 @@ interface RouteConfigConfigureInterface
      *
      * @param RouteConfigInterface $routeConfig
      * @return void
+     *
+     * @throws RouteConfigInvalidArgumentException
      */
     public function mergeConfig(RouteConfigInterface $routeConfig): void;
 }
