@@ -17,18 +17,18 @@ class RouteMatcher implements RouteMatcherInterface
     /**
      * @inheritDoc
      */
-    public function matchRouteByHttpMethod(RouteInterface $route, RequestMethodInterface $method): bool
+    public function matchRouteByHttpMethod(RouteInterface $route, RequestMethodInterface $requestMethod): bool
     {
         $routeHttpMethods = $route->getRouteConfig()->getMethods();
-        return in_array($method, $routeHttpMethods) || in_array(AdditionalMethod::ANY, $routeHttpMethods);
+        return in_array($requestMethod, $routeHttpMethods) || in_array(AdditionalMethod::ANY, $routeHttpMethods);
     }
 
     /**
      * @inheritDoc
      */
-    public function matchRouteByRegex(RouteInterface $route, string $path): ?array
+    public function matchRouteByRegex(RouteInterface $route, string $requestPath): ?array
     {
-        if (preg_match($this->generatePattern($route), $this->normalizePath($path), $matches)) {
+        if (preg_match($this->generatePattern($route), $this->normalizePath($requestPath), $matches)) {
             return array_filter($matches, '\is_string', ARRAY_FILTER_USE_KEY);
         }
         return null;
@@ -44,18 +44,17 @@ class RouteMatcher implements RouteMatcherInterface
         $routePath = str_replace(['\{', '\}'], ['{', '}'], $routePath);
 
         $pattern = preg_replace_callback(
-            '/{([^{}]+)}/',
+            '#{([^{}]+)}#',
             function ($attributeName) use ($route) {
                 $attributeName = $attributeName[1];
                 return sprintf(
                     '(?P<%s>%s)',
                     $attributeName,
-                    ($route->getRouteConfig()->getRules()[$attributeName] ?? '[^}]+')
+                    ($route->getRouteConfig()->getRules()[$attributeName] ?? '[^}/]+')
                 );
             },
             $routePath
         );
-
-        return sprintf("/^%s$/", $pattern);
+        return sprintf("#^%s$#", $pattern);
     }
 }

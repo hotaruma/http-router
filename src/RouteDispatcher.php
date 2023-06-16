@@ -36,7 +36,6 @@ class RouteDispatcher implements RouteDispatcherInterface
         protected RouteMatcherInterface $routeMatcher = new RouteMatcher()
     )
     {
-        $this->routesCollection(new RouteCollection());
     }
 
     /**
@@ -127,7 +126,7 @@ class RouteDispatcher implements RouteDispatcherInterface
      */
     protected function getRoutesCollection(): RouteCollectionInterface
     {
-        return $this->routesCollection;
+        return $this->routesCollection ??= new RouteCollection();
     }
 
     /**

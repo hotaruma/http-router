@@ -11,17 +11,17 @@ interface RouteMatcherInterface
      * Checks if the given route matches the specified HTTP method.
      *
      * @param RouteInterface $route
-     * @param RequestMethodInterface $method
+     * @param RequestMethodInterface $requestMethod
      * @return bool
      */
-    public function matchRouteByHttpMethod(RouteInterface $route, RequestMethodInterface $method): bool;
+    public function matchRouteByHttpMethod(RouteInterface $route, RequestMethodInterface $requestMethod): bool;
 
     /**
      * Matches the given route using regular expressions and retrieves the route attributes.
      *
      * @param RouteInterface $route
-     * @param string $path
+     * @param string $requestPath
      * @return array<string, string>|null Route attributes
      */
-    public function matchRouteByRegex(RouteInterface $route, string $path): ?array;
+    public function matchRouteByRegex(RouteInterface $route, string $requestPath): ?array;
 }
