@@ -45,10 +45,19 @@ class RouteDispatcherTest extends TestCase
         );
         $route = $routeDispatcher->match();
         $this->assertEquals([], $route->getAttributes());
+    }
+
+    public function testInvalidMatch(): void
+    {
+        $routeDispatcher = new RouteDispatcher();
+        $routeMap = new RouteMap();
+
+        $routeMap->get('/get/{id}/', stdClass::class);
 
         $routeDispatcher->config(
             requestHttpMethod: HttpMethod::HEAD,
             requestPath: '/head/',
+            routes: $routeMap->getRoutes(),
         );
         $this->expectException(RouteDispatcherNotFoundException::class);
         $routeDispatcher->match();
