@@ -10,10 +10,10 @@ use Iterator;
 interface RouteIteratorInterface extends Iterator
 {
     /**
-     * @param array<RouteInterface> $routes
+     * @param Iterator<RouteInterface> $routes
      * @return void
      */
-    public function routes(array $routes): void;
+    public function routes(Iterator $routes): void;
 
     /**
      * @return RouteInterface|null

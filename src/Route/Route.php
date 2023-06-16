@@ -6,8 +6,12 @@ namespace Hotaruma\HttpRouter\Route;
 
 use Closure;
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
-use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface, Route\RouteInterface, RouteConfig\RouteConfigInterface};
-use Hotaruma\HttpRouter\RouteConfig\RouteConfig;
+use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
+    Factory\RouteConfigFactoryInterface,
+    Route\RouteInterface,
+    RouteConfig\RouteConfigInterface
+};
+use Hotaruma\HttpRouter\Factory\RouteConfigFactory;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
 class Route implements RouteInterface
@@ -35,9 +39,16 @@ class Route implements RouteInterface
     protected ?RouteConfigInterface $routeMapGroupConfig = null;
 
     /**
-     * @param RouteConfigInterface $routeConfig
+     * @var RouteConfigInterface
      */
-    public function __construct(protected RouteConfigInterface $routeConfig = new RouteConfig())
+    protected RouteConfigInterface $routeConfig;
+
+    /**
+     * @param RouteConfigFactoryInterface $routeConfigFactory
+     */
+    public function __construct(
+        protected RouteConfigFactoryInterface $routeConfigFactory = new RouteConfigFactory()
+    )
     {
     }
 
@@ -103,9 +114,9 @@ class Route implements RouteInterface
     /**
      * @inheritDoc
      */
-    public function routeConfig(RouteConfigInterface $routeConfig): void
+    public function routeConfigFactory(RouteConfigFactoryInterface $routeConfigFactory): void
     {
-        $this->routeConfig = $routeConfig;
+        $this->routeConfigFactory = $routeConfigFactory;
     }
 
     /**
@@ -120,16 +131,26 @@ class Route implements RouteInterface
         RequestMethodInterface|array $methods = null,
     ): void
     {
-        isset($rules) and $this->getRouteConfig()->rules($rules);
-        isset($defaults) and $this->getRouteConfig()->defaults($defaults);
-        isset($middlewares) and $this->getRouteConfig()->middlewares($middlewares);
-        isset($path) and $this->getRouteConfig()->path($path);
-        isset($name) and $this->getRouteConfig()->name($name);
-        isset($methods) and $this->getRouteConfig()->methods($methods);
-
+        $routeConfig = $this->getRouteConfigFactory()::createRouteConfig();
+        $routeConfig->config(
+            rules: $rules,
+            defaults: $defaults,
+            middlewares: $middlewares,
+            path: $path,
+            name: $name,
+            methods: $methods,
+        );
         if ($routeMapGroupConfig = $this->getRouteMapGroupConfig()) {
-            $this->getRouteConfig()->mergeConfig($routeMapGroupConfig);
+            $routeConfig->mergeConfig($routeMapGroupConfig);
         }
+        $this->getRouteConfig()->config(
+            rules: isset($rules) ? $routeConfig->getRules() : null,
+            defaults: isset($defaults) ? $routeConfig->getDefaults() : null,
+            middlewares: isset($middlewares) ? $routeConfig->getMiddlewares() : null,
+            path: isset($path) ? $routeConfig->getPath() : null,
+            name: isset($name) ? $routeConfig->getName() : null,
+            methods: isset($methods) ? $routeConfig->getMethods() : null,
+        );
     }
 
     /**
@@ -137,7 +158,7 @@ class Route implements RouteInterface
      */
     public function getRouteConfig(): RouteConfigInterface
     {
-        return $this->routeConfig;
+        return $this->routeConfig ??= $this->getRouteConfigFactory()::createRouteConfig();
     }
 
     /**
@@ -154,5 +175,13 @@ class Route implements RouteInterface
     protected function getRouteMapGroupConfig(): ?RouteConfigInterface
     {
         return $this->routeMapGroupConfig;
+    }
+
+    /**
+     * @return RouteConfigFactory
+     */
+    protected function getRouteConfigFactory(): RouteConfigFactory
+    {
+        return $this->routeConfigFactory;
     }
 }

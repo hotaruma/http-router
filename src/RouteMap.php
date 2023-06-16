@@ -46,9 +46,6 @@ class RouteMap implements RouteMapInterface
         protected RouteCollectionInterface    $routesCollection = new RouteCollection()
     )
     {
-        $groupConfig = $this->getRouteGroupConfigFactory()::createRouteConfig();
-        $this->groupConfig($groupConfig);
-        $this->mergedGroupConfig($groupConfig);
     }
 
     /**
@@ -91,22 +88,24 @@ class RouteMap implements RouteMapInterface
     ): void
     {
         $groupConfig = $this->getRouteGroupConfigFactory()::createRouteConfig();
-
-        isset($rules) and $groupConfig->rules($rules);
-        isset($defaults) and $groupConfig->defaults($defaults);
-        isset($middlewares) and $groupConfig->middlewares($middlewares);
-        isset($pathPrefix) and $groupConfig->path($pathPrefix);
-        isset($namePrefix) and $groupConfig->name($namePrefix);
-        isset($methods) and $groupConfig->methods($methods);
-
+        $groupConfig->config(
+            rules: $rules,
+            defaults: $defaults,
+            middlewares: $middlewares,
+            path: $pathPrefix,
+            name: $namePrefix,
+            methods: $methods,
+        );
         $groupConfig->mergeConfig($this->getMergedGroupConfig());
 
-        isset($rules) || $mergeWithPreviousConfig and $this->getGroupConfig()->rules($groupConfig->getRules());
-        isset($defaults) || $mergeWithPreviousConfig and $this->getGroupConfig()->defaults($groupConfig->getDefaults());
-        isset($middlewares) || $mergeWithPreviousConfig and $this->getGroupConfig()->middlewares($groupConfig->getMiddlewares());
-        isset($pathPrefix) || $mergeWithPreviousConfig and $this->getGroupConfig()->path($groupConfig->getPath());
-        isset($namePrefix) || $mergeWithPreviousConfig and $this->getGroupConfig()->name($groupConfig->getName());
-        isset($methods) || $mergeWithPreviousConfig and $this->getGroupConfig()->methods($groupConfig->getMethods());
+        $this->getGroupConfig()->config(
+            rules: isset($rules) ? $groupConfig->getRules() : null,
+            defaults: isset($defaults) ? $groupConfig->getDefaults() : null,
+            middlewares: isset($middlewares) ? $groupConfig->getMiddlewares() : null,
+            path: isset($pathPrefix) ? $groupConfig->getPath() : null,
+            name: isset($namePrefix) ? $groupConfig->getName() : null,
+            methods: isset($methods) ? $groupConfig->getMethods() : null,
+        );
     }
 
     /**
@@ -244,7 +243,7 @@ class RouteMap implements RouteMapInterface
      */
     protected function getGroupConfig(): RouteConfig
     {
-        return $this->groupConfig;
+        return $this->groupConfig ??= $this->getRouteGroupConfigFactory()::createRouteConfig();
     }
 
     /**
@@ -265,7 +264,7 @@ class RouteMap implements RouteMapInterface
      */
     protected function getMergedGroupConfig(): RouteConfig
     {
-        return $this->mergedGroupConfig;
+        return $this->mergedGroupConfig ??= $this->getRouteGroupConfigFactory()::createRouteConfig();
     }
 
     /**
@@ -284,11 +283,12 @@ class RouteMap implements RouteMapInterface
         $route = $this->getRouteFactory()::createRoute();
 
         $route->action($action);
-        $route->config(path: $path, methods: $methods, name: $name);
-        $route->getRouteConfig()->mergeConfig($this->getGroupConfig());
         $route->routeMapGroupConfig($this->getGroupConfig());
 
-        $this->routesCollection->add($route);
+        $route->getRouteConfig()->mergeConfig($this->getGroupConfig());
+        $route->config(path: $path, methods: $methods, name: $name);
+
+        $this->getRoutes()->add($route);
         return $route;
     }
 

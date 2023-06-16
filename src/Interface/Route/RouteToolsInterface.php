@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Interface\Route;
 
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
+use Hotaruma\HttpRouter\Interface\Factory\RouteConfigFactoryInterface;
 use Hotaruma\HttpRouter\Interface\RouteConfig\RouteConfigInterface;
 
 interface RouteToolsInterface
@@ -47,10 +48,10 @@ interface RouteToolsInterface
     /**
      * Set route config implementation.
      *
-     * @param RouteConfigInterface $routeConfig
+     * @param RouteConfigFactoryInterface $routeConfigFactory
      * @return void
      */
-    public function routeConfig(RouteConfigInterface $routeConfig): void;
+    public function routeConfigFactory(RouteConfigFactoryInterface $routeConfigFactory): void;
 
     /**
      * @return RouteConfigInterface

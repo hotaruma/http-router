@@ -9,18 +9,20 @@ use Hotaruma\HttpRouter\Interface\Collection\RouteCollectionInterface;
 use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Iterator\RouteIterator;
+use SplObjectStorage;
 
 class RouteCollection implements RouteCollectionInterface
 {
     /**
-     * @var array<RouteInterface>
-     */
-    protected array $routes;
-
-    /**
      * @var string Iterator class
      */
     protected string $iterator = RouteIterator::class;
+
+    public function __construct(
+        protected SplObjectStorage $routes = new SplObjectStorage()
+    )
+    {
+    }
 
     /**
      * @inheritDoc
@@ -40,7 +42,7 @@ class RouteCollection implements RouteCollectionInterface
     public function getIterator(): RouteIteratorInterface
     {
         $iterator = $this->createIterator();
-        $iterator->routes($this->routes);
+        $iterator->routes($this->getRoutes());
 
         return $iterator;
     }
@@ -50,16 +52,26 @@ class RouteCollection implements RouteCollectionInterface
      */
     public function add(RouteInterface $route): void
     {
-        $name = $route->getRouteConfig()->getName();
-        $this->routes[$name ?: count($this->routes)] = $route;
+        if ($this->getRoutes()->contains($route)) {
+            throw new RouteCollectionInvalidArgumentException('Route already exists in the collection.');
+        }
+        $this->getRoutes()->attach($route);
     }
 
     /**
      * @inheritDoc
      */
-    public function get(int|string $index): ?RouteInterface
+    public function unset(RouteInterface $route): void
     {
-        return $this->routes[$index] ?? null;
+        $this->getRoutes()->detach($route);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function count(): int
+    {
+        return $this->getRoutes()->count();
     }
 
     /**
@@ -70,5 +82,13 @@ class RouteCollection implements RouteCollectionInterface
     protected function createIterator(): RouteIteratorInterface
     {
         return new $this->iterator;
+    }
+
+    /**
+     * @return SplObjectStorage
+     */
+    protected function getRoutes(): SplObjectStorage
+    {
+        return $this->routes;
     }
 }

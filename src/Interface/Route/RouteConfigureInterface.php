@@ -24,11 +24,11 @@ interface RouteConfigureInterface
      * @throws RouteConfigInvalidArgumentException
      */
     public function config(
-        array         $rules = null,
-        array         $defaults = null,
-        Closure|array $middlewares = null,
-        string        $path = null,
-        string        $name = null,
+        array                        $rules = null,
+        array                        $defaults = null,
+        Closure|array                $middlewares = null,
+        string                       $path = null,
+        string                       $name = null,
         RequestMethodInterface|array $methods = null
     ): void;
 }

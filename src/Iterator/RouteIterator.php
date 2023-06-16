@@ -7,6 +7,7 @@ namespace Hotaruma\HttpRouter\Iterator;
 use Hotaruma\HttpRouter\Exception\RouteIteratorInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
+use Iterator;
 
 class RouteIterator implements RouteIteratorInterface
 {
@@ -23,14 +24,15 @@ class RouteIterator implements RouteIteratorInterface
     /**
      * @inheritDoc
      */
-    public function routes(array $routes): void
+    public function routes(Iterator $routes): void
     {
+        $routes->rewind();
         foreach ($routes as $route) {
             if (!$route instanceof RouteInterface) {
                 throw new RouteIteratorInvalidArgumentException('Invalid routes. All routes must implement the RouteInterface.');
             }
+            $this->routes[] = $route;
         }
-        $this->routes = array_values($routes);
     }
 
     /**

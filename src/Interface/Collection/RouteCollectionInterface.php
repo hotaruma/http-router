@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interface\Collection;
 
+use Countable;
 use Hotaruma\HttpRouter\Exception\RouteCollectionInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use IteratorAggregate;
 
-interface RouteCollectionInterface extends IteratorAggregate
+interface RouteCollectionInterface extends IteratorAggregate, Countable
 {
     /**
      * Add route.
@@ -20,12 +21,12 @@ interface RouteCollectionInterface extends IteratorAggregate
     public function add(RouteInterface $route): void;
 
     /**
-     * Get route.
+     * Remove route.
      *
-     * @param int|string $index
-     * @return RouteInterface|null
+     * @param RouteInterface $route
+     * @return void
      */
-    public function get(int|string $index): ?RouteInterface;
+    public function unset(RouteInterface $route): void;
 
     /**
      * Set routes iterator.

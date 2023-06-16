@@ -18,7 +18,6 @@ class RouteGroupConfigFactory implements RouteConfigFactoryInterface
     {
         $config = new RouteConfig();
         $config->validator(new RouteGroupConfigValidator());
-        $config->methods([]);
 
         return $config;
     }

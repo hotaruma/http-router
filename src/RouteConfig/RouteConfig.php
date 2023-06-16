@@ -11,7 +11,6 @@ use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
     RouteConfig\RouteConfigToolsInterface,
     Validator\RouteConfigValidatorInterface
 };
-use Hotaruma\HttpRouter\Enum\AdditionalMethod;
 use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 use Hotaruma\HttpRouter\Validator\RouteConfigValidator;
@@ -43,7 +42,7 @@ class RouteConfig implements RouteConfigInterface
         protected Closure|array                 $middlewares = [],
         protected string                        $path = '/',
         protected string                        $name = '',
-        protected RequestMethodInterface|array  $methods = [AdditionalMethod::ANY],
+        protected RequestMethodInterface|array  $methods = [],
         protected RouteConfigValidatorInterface $configValidator = new RouteConfigValidator()
     )
     {
@@ -166,6 +165,26 @@ class RouteConfig implements RouteConfigInterface
     public function getMethods(): array
     {
         return $this->methods;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function config(
+        array                        $rules = null,
+        array                        $defaults = null,
+        array|Closure                $middlewares = null,
+        string                       $path = null,
+        string                       $name = null,
+        array|RequestMethodInterface $methods = null
+    ): void
+    {
+        isset($rules) and $this->rules($rules);
+        isset($defaults) and $this->defaults($defaults);
+        isset($middlewares) and $this->middlewares($middlewares);
+        isset($path) and $this->path($path);
+        isset($name) and $this->name($name);
+        isset($methods) and $this->methods($methods);
     }
 
     /**
