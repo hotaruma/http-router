@@ -7,9 +7,12 @@ namespace Hotaruma\HttpRouter\RouteUrlBuilder;
 use Hotaruma\HttpRouter\Exception\RouteUrlBuilderWrongValuesException;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Interface\RouteUrlBuilder\RouteUrlBuilderInterface;
+use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
 class RouteUrlBuilder implements RouteUrlBuilderInterface
 {
+    use ConfigNormalizeUtils;
+
     /**
      * @var RouteInterface
      */
@@ -20,16 +23,18 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
      */
     public function build(RouteInterface $route): RouteInterface
     {
+        $this->route($route);
+
         $url = preg_replace_callback(
             '/{(?P<placeholderName>[^}]+)}/',
             function (array $subject) {
-                $this->replacePathPlaceholders($subject['placeholderName']);
+                return $this->replacePathPlaceholders($subject['placeholderName']);
             },
             $route->getRouteConfig()->getPath()
         );
 
-        $route->url($url);
-        return $route;
+        $this->getRoute()->url($url);
+        return $this->getRoute();
     }
 
     /**
@@ -44,10 +49,10 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
             throw new RouteUrlBuilderWrongValuesException('Placeholder has no name');
         }
 
-        $placeholderRules = $this->route->getRouteConfig()->getRules()[$placeholderName] ?? null;
+        $placeholderRules = $this->getRoute()->getRouteConfig()->getRules()[$placeholderName] ?? null;
         $placeholderValue =
-            $this->route->getAttributes()[$placeholderName] ??
-            $this->route->getRouteConfig()->getDefaults()[$placeholderName] ??
+            $this->getRoute()->getAttributes()[$placeholderName] ??
+            $this->getRoute()->getRouteConfig()->getDefaults()[$placeholderName] ??
             throw new RouteUrlBuilderWrongValuesException(
                 sprintf('Route has no value for attribute %s', $placeholderName)
             );
@@ -59,5 +64,22 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
         }
 
         return $placeholderValue;
+    }
+
+    /**
+     * @param RouteInterface $route
+     * @return void
+     */
+    protected function route(RouteInterface $route): void
+    {
+        $this->route = $route;
+    }
+
+    /**
+     * @return RouteInterface
+     */
+    protected function getRoute(): RouteInterface
+    {
+        return $this->route;
     }
 }

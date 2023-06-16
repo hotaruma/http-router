@@ -29,4 +29,18 @@ trait ConfigNormalizeUtils
         $name = trim($name, '.');
         return preg_replace('/(\.{2,})/', '.', $name);
     }
+
+    /**
+     * Prepares a given path string for regular expression matching.
+     * Replacing escaped opening and closing curly braces ("{" and "}")
+     * with unescaped counterparts ("{" and "}").
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function preparePathForRegExp(string $path): string
+    {
+        $routePath = preg_quote($path, '/');
+        return str_replace(['\{', '\}'], ['{', '}'], $routePath);
+    }
 }

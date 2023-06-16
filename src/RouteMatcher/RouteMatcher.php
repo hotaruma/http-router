@@ -41,8 +41,7 @@ class RouteMatcher implements RouteMatcherInterface
      */
     protected function generatePattern(RouteInterface $route): string
     {
-        $routePath = preg_quote($route->getRouteConfig()->getPath(), '/');
-        $routePath = str_replace(['\{', '\}'], ['{', '}'], $routePath);
+        $routePath = $this->preparePathForRegExp($route->getRouteConfig()->getPath());
 
         $pattern = preg_replace_callback(
             '#{([^{}]+)}#',

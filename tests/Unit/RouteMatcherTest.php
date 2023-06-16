@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 class RouteMatcherTest extends TestCase
 {
     /**
-     * @dataProvider \Tests\DataProvider\RouteMatcherTestDataProvider::matchRouteByHttpMethodDataProvider
+     * @dataProvider \Tests\DataProvider\RouteMatcherDataProvider::matchRouteByHttpMethodDataProvider
      * @throws Exception
      */
     public function testMatchRouteByHttpMethod(
@@ -29,7 +29,7 @@ class RouteMatcherTest extends TestCase
     }
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteMatcherTestDataProvider::matchRouteByRegexDataProvider
+     * @dataProvider \Tests\DataProvider\RouteMatcherDataProvider::matchRouteByRegexDataProvider
      * @throws Exception
      */
     public function testMatchRouteByRegex(

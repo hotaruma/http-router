@@ -6,7 +6,7 @@ namespace Tests\DataProvider;
 
 use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
 
-class RouteMatcherTestDataProvider
+class RouteMatcherDataProvider
 {
     public static function matchRouteByHttpMethodDataProvider(): array
     {
