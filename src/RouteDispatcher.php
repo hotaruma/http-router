@@ -14,9 +14,12 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     RouteMatcher\RouteMatcherInterface
 };
 use Hotaruma\HttpRouter\RouteMatcher\RouteMatcher;
+use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
 class RouteDispatcher implements RouteDispatcherInterface
 {
+    use ConfigNormalizeUtils;
+
     /**
      * @var RequestMethodInterface Http method
      */
@@ -47,8 +50,8 @@ class RouteDispatcher implements RouteDispatcherInterface
         RouteCollectionInterface $routes = null
     ): void
     {
-        isset($method) and $this->requestHttpMethod($requestHttpMethod);
-        isset($path) and $this->requestPath($requestPath);
+        isset($requestHttpMethod) and $this->requestHttpMethod($requestHttpMethod);
+        isset($requestPath) and $this->requestPath($requestPath);
         isset($routes) and $this->routesCollection($routes);
     }
 
@@ -101,7 +104,7 @@ class RouteDispatcher implements RouteDispatcherInterface
      */
     protected function requestPath(string $path): void
     {
-        $this->requestPath = $path;
+        $this->requestPath = $this->normalizePath($path);
     }
 
     /**

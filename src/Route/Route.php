@@ -26,7 +26,7 @@ class Route implements RouteInterface
     /**
      * @var array<string, string>
      */
-    protected array $attributes;
+    protected array $attributes = [];
 
     /**
      * @var string

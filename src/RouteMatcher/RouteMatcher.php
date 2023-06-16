@@ -20,7 +20,8 @@ class RouteMatcher implements RouteMatcherInterface
     public function matchRouteByHttpMethod(RouteInterface $route, RequestMethodInterface $requestMethod): bool
     {
         $routeHttpMethods = $route->getRouteConfig()->getMethods();
-        return in_array($requestMethod, $routeHttpMethods) || in_array(AdditionalMethod::ANY, $routeHttpMethods);
+        return in_array($requestMethod, [...$routeHttpMethods, AdditionalMethod::ANY]) ||
+            in_array(AdditionalMethod::ANY, $routeHttpMethods);
     }
 
     /**
