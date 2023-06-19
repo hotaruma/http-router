@@ -5,8 +5,15 @@
         "router",
         "php"
     ],
+    "homepage": "https://github.com/hotaruma/http-router",
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Max Denusenko",
+            "email": "maxdenusenko@gmail.com"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Hotaruma\\HttpRouter\\": "src/"
@@ -17,22 +24,23 @@
             "Tests\\": "tests/"
         }
     },
-    "authors": [
-        {
-            "name": "Max Denusenko",
-            "email": "maxdenusenko@gmail.com"
-        }
-    ],
     "minimum-stability": "stable",
     "require": {
         "php": ">=8.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10"
+        "phpunit/phpunit": "^10",
+        "squizlabs/php_codesniffer": "^3.7"
     },
     "scripts": {
         "test": [
             "phpunit tests"
+        ],
+        "codestyle": [
+            "phpcs"
+        ],
+        "codestyle-fix": [
+            "phpcbf"
         ]
     }
 }

@@ -37,8 +37,7 @@ class RouteDispatcher implements RouteDispatcherInterface
 
     public function __construct(
         protected RouteMatcherInterface $routeMatcher = new RouteMatcher()
-    )
-    {
+    ) {
     }
 
     /**
@@ -48,8 +47,7 @@ class RouteDispatcher implements RouteDispatcherInterface
         RequestMethodInterface   $requestHttpMethod = null,
         string                   $requestPath = null,
         RouteCollectionInterface $routes = null
-    ): void
-    {
+    ): void {
         isset($requestHttpMethod) and $this->requestHttpMethod($requestHttpMethod);
         isset($requestPath) and $this->requestPath($requestPath);
         isset($routes) and $this->routesCollection($routes);

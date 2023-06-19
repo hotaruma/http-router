@@ -44,8 +44,7 @@ class RouteMap implements RouteMapInterface
         protected RouteFactoryInterface       $routeFactory = new RouteFactory(),
         protected RouteConfigFactoryInterface $routeGroupConfigFactory = new RouteGroupConfigFactory(),
         protected RouteCollectionInterface    $routesCollection = new RouteCollection()
-    )
-    {
+    ) {
     }
 
     /**
@@ -85,8 +84,7 @@ class RouteMap implements RouteMapInterface
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null,
         bool                         $mergeWithPreviousConfig = false
-    ): void
-    {
+    ): void {
         $groupConfig = $this->getRouteGroupConfigFactory()::createRouteConfig();
         $groupConfig->config(
             rules: $rules,
@@ -119,8 +117,7 @@ class RouteMap implements RouteMapInterface
         string                       $pathPrefix = null,
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
-    ): void
-    {
+    ): void {
         $this->mergedGroupConfig($this->getGroupConfig());
         $this->groupConfig($this->getRouteGroupConfigFactory()::createRouteConfig());
 

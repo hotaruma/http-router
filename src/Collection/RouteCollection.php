@@ -20,8 +20,7 @@ class RouteCollection implements RouteCollectionInterface
 
     public function __construct(
         protected SplObjectStorage $routes = new SplObjectStorage()
-    )
-    {
+    ) {
     }
 
     /**
@@ -81,7 +80,7 @@ class RouteCollection implements RouteCollectionInterface
      */
     protected function createIterator(): RouteIteratorInterface
     {
-        return new $this->iterator;
+        return new $this->iterator();
     }
 
     /**

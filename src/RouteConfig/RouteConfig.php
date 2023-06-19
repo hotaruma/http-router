@@ -44,8 +44,7 @@ class RouteConfig implements RouteConfigInterface
         protected string                        $name = '',
         protected RequestMethodInterface|array  $methods = [],
         protected RouteConfigValidatorInterface $configValidator = new RouteConfigValidator()
-    )
-    {
+    ) {
     }
 
     /**
@@ -177,8 +176,7 @@ class RouteConfig implements RouteConfigInterface
         string                       $path = null,
         string                       $name = null,
         array|RequestMethodInterface $methods = null
-    ): void
-    {
+    ): void {
         isset($rules) and $this->rules($rules);
         isset($defaults) and $this->defaults($defaults);
         isset($middlewares) and $this->middlewares($middlewares);

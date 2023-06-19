@@ -48,8 +48,7 @@ class Route implements RouteInterface
      */
     public function __construct(
         protected RouteConfigFactoryInterface $routeConfigFactory = new RouteConfigFactory()
-    )
-    {
+    ) {
     }
 
     /**
@@ -129,8 +128,7 @@ class Route implements RouteInterface
         string                       $path = null,
         string                       $name = null,
         RequestMethodInterface|array $methods = null,
-    ): void
-    {
+    ): void {
         $routeConfig = $this->getRouteConfigFactory()::createRouteConfig();
         $routeConfig->config(
             rules: $rules,

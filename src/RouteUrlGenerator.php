@@ -27,8 +27,7 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
      */
     public function __construct(
         protected RouteUrlBuilderInterface $routeUrlBuilder = new RouteUrlBuilder()
-    )
-    {
+    ) {
         $this->routesCollection(new RouteCollection());
     }
 
@@ -37,8 +36,7 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
      */
     public function config(
         RouteCollectionInterface $routes = null
-    ): void
-    {
+    ): void {
         isset($routes) and $this->routesCollection($routes);
     }
 
