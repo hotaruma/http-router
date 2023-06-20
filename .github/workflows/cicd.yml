@@ -53,3 +53,4 @@ jobs:
         with:
           username: $PACKAGIST_USERNAME
           api_token: $PACKAGIST_TOKEN
+          package_name: hotaruma/http-router
