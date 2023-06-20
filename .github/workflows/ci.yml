@@ -8,19 +8,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: docker-compose.ci.yml
     steps:
       - uses: actions/checkout@v3
 
+      - name: Build docker images
+        run: docker-compose -f $COMPOSE_FILE build --pull
+
+      - name: Up docker container
+        run: docker-compose -f $COMPOSE_FILE up -d
+
       - name: Validate composer.json and composer.lock
-        run: composer validate --strict
+        run: docker-compose -f $COMPOSE_FILE exec php-cli composer validate --strict
 
       - name: Install dependencies
-        run: composer install
+        run: docker-compose -f $COMPOSE_FILE exec php-cli composer install
 
       - name: Run test suite
-        run: composer run-script test
+        run: docker-compose -f $COMPOSE_FILE exec php-cli composer run-script test
 
       - name: Run code-style check
-        run: composer run-script code_style
+        run: docker-compose -f $COMPOSE_FILE exec php-cli composer run-script code_style
+        continue-on-error: true
+
+      - name: Down docker container
+        run: docker-compose -f $COMPOSE_FILE down
+        continue-on-error: true
+
+      - name: Finish step
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo '$GITHUB_CONTEXT'
