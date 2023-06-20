@@ -36,10 +36,10 @@
         "test": [
             "phpunit tests"
         ],
-        "codestyle": [
+        "code_style": [
             "phpcs"
         ],
-        "codestyle-fix": [
+        "code_style_fix": [
             "phpcbf"
         ]
     }
