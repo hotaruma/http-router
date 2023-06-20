@@ -1,4 +1,4 @@
-name: CI
+name: CI&CD
 
 on:
   push:
@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+
+env:
+  PACKAGIST_TOKEN: ${{ secrets.packagist_token }}
+  PACKAGIST_USERNAME: ${{ vars.packagist_username }}
 
 jobs:
   test:
@@ -38,3 +42,13 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo '$GITHUB_CONTEXT'
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: mnavarrocarter/packagist-update@v1.0
+        with:
+          username: $PACKAGIST_USERNAME
+          api_token: $PACKAGIST_TOKEN
