@@ -78,7 +78,9 @@ class Route implements RouteInterface
     {
         foreach ($attributes as $name => $attribute) {
             if (!is_string($name) || !is_string($attribute)) {
-                throw new RouteInvalidArgumentException('Invalid format for route attribute. Attributes must be specified as strings.');
+                throw new RouteInvalidArgumentException(
+                    'Invalid format for route attribute. Attributes must be specified as strings.'
+                );
             }
         }
         $this->attributes = $attributes;

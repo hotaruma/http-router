@@ -29,7 +29,9 @@ class RouteCollection implements RouteCollectionInterface
     public function iterator(string $class): void
     {
         if (!is_subclass_of($class, RouteIteratorInterface::class)) {
-            throw new RouteCollectionInvalidArgumentException(sprintf('Invalid iterator type. %s must be a subclass of RouteIteratorInterface.', $class));
+            throw new RouteCollectionInvalidArgumentException(
+                sprintf('Invalid iterator type. %s must be a subclass of RouteIteratorInterface.', $class)
+            );
         }
 
         $this->iterator = $class;

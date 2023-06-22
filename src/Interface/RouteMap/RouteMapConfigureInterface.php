@@ -27,11 +27,11 @@ interface RouteMapConfigureInterface
      * @throws RouteConfigInvalidArgumentException
      */
     public function changeGroupConfig(
-        array         $rules = null,
-        array         $defaults = null,
-        Closure|array $middlewares = null,
-        string        $pathPrefix = null,
-        string        $namePrefix = null,
+        array                        $rules = null,
+        array                        $defaults = null,
+        Closure|array                $middlewares = null,
+        string                       $pathPrefix = null,
+        string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
     ): void;
 
@@ -50,12 +50,12 @@ interface RouteMapConfigureInterface
      * @throws RouteConfigInvalidArgumentException
      */
     public function group(
-        callable      $group,
-        array         $rules = null,
-        array         $defaults = null,
-        Closure|array $middlewares = null,
-        string        $pathPrefix = null,
-        string        $namePrefix = null,
+        callable                     $group,
+        array                        $rules = null,
+        array                        $defaults = null,
+        Closure|array                $middlewares = null,
+        string                       $pathPrefix = null,
+        string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
     ): void;
 
@@ -73,7 +73,9 @@ interface RouteMapConfigureInterface
      * @param RouteConfigFactoryInterface $routeGroupConfigFactory
      * @return RouteMapConfigureInterface
      */
-    public function routeGroupConfigFactory(RouteConfigFactoryInterface $routeGroupConfigFactory): RouteMapConfigureInterface;
+    public function routeGroupConfigFactory(
+        RouteConfigFactoryInterface $routeGroupConfigFactory
+    ): RouteMapConfigureInterface;
 
     /**
      * @return RouteConfigInterface

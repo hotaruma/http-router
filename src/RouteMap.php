@@ -59,8 +59,9 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function routeGroupConfigFactory(RouteConfigFactoryInterface $routeGroupConfigFactory): RouteMapConfigureInterface
-    {
+    public function routeGroupConfigFactory(
+        RouteConfigFactoryInterface $routeGroupConfigFactory
+    ): RouteMapConfigureInterface {
         $this->routeGroupConfigFactory = $routeGroupConfigFactory;
         return $this;
     }

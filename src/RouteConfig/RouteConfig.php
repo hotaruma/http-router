@@ -190,12 +190,32 @@ class RouteConfig implements RouteConfigInterface
      */
     public function mergeConfig(RouteConfigInterface $routeConfig): void
     {
-        $this->path($this->reduceConfig([$routeConfig->getPath(), $this->getPath()], self::CONCATENATE_REDUCE, self::PATH_SEPARATOR));
-        $this->methods($this->reduceConfig([$routeConfig->getMethods(), $this->getMethods()], self::ENUM_MERGE_REDUCE));
-        $this->name($this->reduceConfig([$routeConfig->getName(), $this->getName()], self::CONCATENATE_REDUCE, self::NAME_SEPARATOR));
-        $this->rules($this->reduceConfig([$routeConfig->getRules(), $this->getRules()], self::KEY_REDUCE));
-        $this->defaults($this->reduceConfig([$routeConfig->getDefaults(), $this->getDefaults()], self::KEY_REDUCE));
-        $this->middlewares($this->reduceConfig([$routeConfig->getMiddlewares(), $this->getMiddlewares()], self::MERGE_REDUCE));
+        $this->path($this->reduceConfig(
+            [$routeConfig->getPath(), $this->getPath()],
+            self::CONCATENATE_REDUCE,
+            self::PATH_SEPARATOR
+        ));
+        $this->methods($this->reduceConfig(
+            [$routeConfig->getMethods(), $this->getMethods()],
+            self::ENUM_MERGE_REDUCE
+        ));
+        $this->name($this->reduceConfig(
+            [$routeConfig->getName(), $this->getName()],
+            self::CONCATENATE_REDUCE,
+            self::NAME_SEPARATOR
+        ));
+        $this->rules($this->reduceConfig(
+            [$routeConfig->getRules(), $this->getRules()],
+            self::KEY_REDUCE
+        ));
+        $this->defaults($this->reduceConfig(
+            [$routeConfig->getDefaults(), $this->getDefaults()],
+            self::KEY_REDUCE
+        ));
+        $this->middlewares($this->reduceConfig(
+            [$routeConfig->getMiddlewares(), $this->getMiddlewares()],
+            self::MERGE_REDUCE
+        ));
     }
 
     /**
@@ -220,19 +240,24 @@ class RouteConfig implements RouteConfigInterface
         };
 
         return match ($reduceType) {
-            self::KEY_REDUCE => $reduceConfig($items, function (array $carry, array $item): array {
+            self::KEY_REDUCE =>
+            $reduceConfig($items, function (array $carry, array $item): array {
                 return $item + $carry;
             }, $separator),
-            self::MERGE_REDUCE => array_unique($reduceConfig($items, function (array $carry, array $item): array {
+            self::MERGE_REDUCE =>
+            array_unique($reduceConfig($items, function (array $carry, array $item): array {
                 return array_merge($carry, $item);
             }, $separator)),
-            self::ENUM_MERGE_REDUCE => $reduceConfig($items, function (array $carry, array $item): array {
+            self::ENUM_MERGE_REDUCE =>
+            $reduceConfig($items, function (array $carry, array $item): array {
                 return array_merge($carry, $item);
             }, $separator),
-            self::CONCATENATE_REDUCE => $reduceConfig($items, function (string $carry, string $item, string $separator): string {
+            self::CONCATENATE_REDUCE =>
+            $reduceConfig($items, function (string $carry, string $item, string $separator): string {
                 return $carry . $separator . $item;
             }, $separator),
-            default => throw new RouteConfigInvalidArgumentException(sprintf('Unsupported reduce type: %s', $reduceType)),
+            default =>
+            throw new RouteConfigInvalidArgumentException(sprintf('Unsupported reduce type: %s', $reduceType)),
         };
     }
 

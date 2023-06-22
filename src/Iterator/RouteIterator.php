@@ -29,7 +29,9 @@ class RouteIterator implements RouteIteratorInterface
         $routes->rewind();
         foreach ($routes as $route) {
             if (!$route instanceof RouteInterface) {
-                throw new RouteIteratorInvalidArgumentException('Invalid routes. All routes must implement the RouteInterface.');
+                throw new RouteIteratorInvalidArgumentException(
+                    'Invalid routes. All routes must implement the RouteInterface.'
+                );
             }
             $this->routes[] = $route;
         }

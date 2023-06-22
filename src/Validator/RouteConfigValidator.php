@@ -16,7 +16,9 @@ class RouteConfigValidator implements RouteConfigValidatorInterface
     {
         foreach ($rules as $name => $rule) {
             if (!is_string($name) || !is_string($rule)) {
-                throw new RouteConfigInvalidArgumentException('Invalid format for route rule. Rules must be specified as strings.');
+                throw new RouteConfigInvalidArgumentException(
+                    'Invalid format for route rule. Rules must be specified as strings.'
+                );
             }
         }
     }
@@ -28,7 +30,9 @@ class RouteConfigValidator implements RouteConfigValidatorInterface
     {
         foreach ($defaults as $name => $value) {
             if (!is_string($name) || !is_string($value)) {
-                throw new RouteConfigInvalidArgumentException('Invalid format for route defaults. Defaults must be specified as strings.');
+                throw new RouteConfigInvalidArgumentException(
+                    'Invalid format for route defaults. Defaults must be specified as strings.'
+                );
             }
         }
     }
@@ -63,7 +67,9 @@ class RouteConfigValidator implements RouteConfigValidatorInterface
     public function validateMethods(array $methods): void
     {
         if (empty($methods)) {
-            throw new RouteConfigInvalidArgumentException('Empty array provided for route methods. At least one method must be specified.');
+            throw new RouteConfigInvalidArgumentException(
+                'Empty array provided for route methods. At least one method must be specified.'
+            );
         }
 
         foreach ($methods as $method) {
