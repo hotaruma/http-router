@@ -48,9 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Packagist Update
-        uses: mnavarrocarter/packagist-update@v1.0.0
+      - name: Packagist Sync
+        uses: hotaruma/packagist-sync@v1.0.0
         with:
-          username: ${{ vars.packagist_username }}
           api_token: ${{ secrets.packagist_token }}
-          package_name: hotaruma/http-router
