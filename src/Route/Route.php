@@ -178,9 +178,9 @@ class Route implements RouteInterface
     }
 
     /**
-     * @return RouteConfigFactory
+     * @return RouteConfigFactoryInterface
      */
-    protected function getRouteConfigFactory(): RouteConfigFactory
+    protected function getRouteConfigFactory(): RouteConfigFactoryInterface
     {
         return $this->routeConfigFactory;
     }

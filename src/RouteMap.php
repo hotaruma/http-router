@@ -19,21 +19,20 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     RouteMap\RouteMapConfigureInterface,
     RouteMap\RouteMapInterface
 };
-use Hotaruma\HttpRouter\RouteConfig\{RouteConfig};
 
 class RouteMap implements RouteMapInterface
 {
     /**
-     * @var RouteConfig
+     * @var RouteConfigInterface
      */
-    protected RouteConfig $groupConfig;
+    protected RouteConfigInterface $groupConfig;
 
     /**
      * All previous groups config.
      *
-     * @var RouteConfig
+     * @var RouteConfigInterface
      */
-    protected RouteConfig $mergedGroupConfig;
+    protected RouteConfigInterface $mergedGroupConfig;
 
     /**
      * @param RouteFactoryInterface $routeFactory Route factory
@@ -226,10 +225,10 @@ class RouteMap implements RouteMapInterface
     /**
      * Set current group config.
      *
-     * @param RouteConfig $groupConfig
+     * @param RouteConfigInterface $groupConfig
      * @return void
      */
-    protected function groupConfig(RouteConfig $groupConfig): void
+    protected function groupConfig(RouteConfigInterface $groupConfig): void
     {
         $this->groupConfig = $groupConfig;
     }
@@ -237,9 +236,9 @@ class RouteMap implements RouteMapInterface
     /**
      * Get current group config.
      *
-     * @return RouteConfig
+     * @return RouteConfigInterface
      */
-    protected function getGroupConfig(): RouteConfig
+    protected function getGroupConfig(): RouteConfigInterface
     {
         return $this->groupConfig ??= $this->getRouteGroupConfigFactory()::createRouteConfig();
     }
@@ -247,10 +246,10 @@ class RouteMap implements RouteMapInterface
     /**
      * Set merged config.
      *
-     * @param RouteConfig $mergedGroupConfig
+     * @param RouteConfigInterface $mergedGroupConfig
      * @return void
      */
-    protected function mergedGroupConfig(RouteConfig $mergedGroupConfig): void
+    protected function mergedGroupConfig(RouteConfigInterface $mergedGroupConfig): void
     {
         $this->mergedGroupConfig = $mergedGroupConfig;
     }
@@ -258,9 +257,9 @@ class RouteMap implements RouteMapInterface
     /**
      * Get merged config.
      *
-     * @return RouteConfig
+     * @return RouteConfigInterface
      */
-    protected function getMergedGroupConfig(): RouteConfig
+    protected function getMergedGroupConfig(): RouteConfigInterface
     {
         return $this->mergedGroupConfig ??= $this->getRouteGroupConfigFactory()::createRouteConfig();
     }
