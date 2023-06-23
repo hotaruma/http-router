@@ -19,7 +19,7 @@ class RouteMatcher implements RouteMatcherInterface
      */
     public function matchRouteByHttpMethod(RouteInterface $route, RequestMethodInterface $requestMethod): bool
     {
-        $routeHttpMethods = $route->getRouteConfig()->getMethods();
+        $routeHttpMethods = $route->getConfigStore()->getMethods();
         return in_array($requestMethod, [...$routeHttpMethods, AdditionalMethod::ANY]) ||
             in_array(AdditionalMethod::ANY, $routeHttpMethods);
     }
@@ -41,7 +41,7 @@ class RouteMatcher implements RouteMatcherInterface
      */
     protected function generatePattern(RouteInterface $route): string
     {
-        $routePath = $this->preparePathForRegExp($route->getRouteConfig()->getPath());
+        $routePath = $this->preparePathForRegExp($route->getConfigStore()->getPath());
 
         $pattern = preg_replace_callback(
             '#{([^{}]+)}#',
@@ -50,7 +50,7 @@ class RouteMatcher implements RouteMatcherInterface
                 return sprintf(
                     '(?P<%s>%s)',
                     $attributeName,
-                    ($route->getRouteConfig()->getRules()[$attributeName] ?? '[^}/]+')
+                    ($route->getConfigStore()->getRules()[$attributeName] ?? '[^}/]+')
                 );
             },
             $routePath

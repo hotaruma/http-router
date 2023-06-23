@@ -45,7 +45,7 @@ class RouteMapTest extends TestCase
             }
         );
 
-        $groupConfig = $routeMap->getRouteGroupConfig();
+        $groupConfig = $routeMap->getConfigStore();
 
         $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $groupConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_t' => '\d+'], $groupConfig->getRules());
@@ -82,7 +82,7 @@ class RouteMapTest extends TestCase
             }
         );
 
-        $groupConfig = $routeMap->getRouteGroupConfig();
+        $groupConfig = $routeMap->getConfigStore();
 
         $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $groupConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_c' => '\d+'], $groupConfig->getRules());
@@ -120,7 +120,7 @@ class RouteMapTest extends TestCase
 
         $this->assertCount(2, $routesCollection);
 
-        $routeConfig = $routeIterator->current()->getRouteConfig();
+        $routeConfig = $routeIterator->current()->getConfigStore();
         $this->assertEquals(['page_f' => '1', 'page_c' => '1'], $routeConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_c' => '\d+'], $routeConfig->getRules());
         $this->assertEquals(['Middleware1_f', 'Middleware1_c'], $routeConfig->getMiddlewares());
@@ -130,7 +130,7 @@ class RouteMapTest extends TestCase
 
         $routeIterator->next();
 
-        $routeConfig = $routeIterator->current()->getRouteConfig();
+        $routeConfig = $routeIterator->current()->getConfigStore();
         $this->assertEquals(['page_f' => '1'], $routeConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+'], $routeConfig->getRules());
         $this->assertEquals(['Middleware1_f'], $routeConfig->getMiddlewares());

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Interface\Route;
 
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
-use Hotaruma\HttpRouter\Interface\Factory\RouteConfigFactoryInterface;
-use Hotaruma\HttpRouter\Interface\RouteConfig\RouteConfigInterface;
+use Hotaruma\HttpRouter\Interface\Factory\ConfigStoreFactoryInterface;
+use Hotaruma\HttpRouter\Interface\ConfigStore\ConfigStoreInterface;
 
 interface RouteToolsInterface
 {
@@ -46,23 +46,23 @@ interface RouteToolsInterface
     public function getUrl(): string;
 
     /**
-     * Set route config implementation.
+     * Set route config type.
      *
-     * @param RouteConfigFactoryInterface $routeConfigFactory
+     * @param ConfigStoreFactoryInterface $configStoreFactory
      * @return void
      */
-    public function routeConfigFactory(RouteConfigFactoryInterface $routeConfigFactory): void;
+    public function configStoreFactory(ConfigStoreFactoryInterface $configStoreFactory): void;
 
     /**
-     * @return RouteConfigInterface
+     * @return ConfigStoreInterface
      */
-    public function getRouteConfig(): RouteConfigInterface;
+    public function getConfigStore(): ConfigStoreInterface;
 
     /**
-     * Set route map group config.
+     * Set route map config.
      *
-     * @param RouteConfigInterface $routeMapGroupConfig
+     * @param ConfigStoreInterface $routeMapConfigStore
      * @return void
      */
-    public function routeMapGroupConfig(RouteConfigInterface $routeMapGroupConfig): void;
+    public function routeMapConfigStore(ConfigStoreInterface $routeMapConfigStore): void;
 }

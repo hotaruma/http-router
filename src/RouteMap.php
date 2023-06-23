@@ -8,14 +8,14 @@ use Closure;
 use Hotaruma\HttpRouter\Collection\RouteCollection;
 use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
 use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgumentException, RouteInvalidArgumentException};
-use Hotaruma\HttpRouter\Factory\{RouteFactory, RouteGroupConfigFactory};
+use Hotaruma\HttpRouter\Factory\{RouteFactory, GroupConfigStoreFactory};
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     Enum\RequestMethodInterface,
-    Factory\RouteConfigFactoryInterface,
+    Factory\ConfigStoreFactoryInterface,
     Factory\RouteFactoryInterface,
     Route\RouteConfigureInterface,
     Route\RouteInterface,
-    RouteConfig\RouteConfigInterface,
+    ConfigStore\ConfigStoreInterface,
     RouteMap\RouteMapConfigureInterface,
     RouteMap\RouteMapInterface
 };
@@ -23,25 +23,25 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
 class RouteMap implements RouteMapInterface
 {
     /**
-     * @var RouteConfigInterface
+     * @var ConfigStoreInterface
      */
-    protected RouteConfigInterface $groupConfig;
+    protected ConfigStoreInterface $configStore;
 
     /**
      * All previous groups config.
      *
-     * @var RouteConfigInterface
+     * @var ConfigStoreInterface
      */
-    protected RouteConfigInterface $mergedGroupConfig;
+    protected ConfigStoreInterface $mergedConfigStore;
 
     /**
      * @param RouteFactoryInterface $routeFactory Route factory
-     * @param RouteConfigFactoryInterface $routeGroupConfigFactory Routes config factory
+     * @param ConfigStoreFactoryInterface $groupConfigStoreFactory Group config factory
      * @param RouteCollectionInterface $routesCollection Routes collection
      */
     public function __construct(
         protected RouteFactoryInterface       $routeFactory = new RouteFactory(),
-        protected RouteConfigFactoryInterface $routeGroupConfigFactory = new RouteGroupConfigFactory(),
+        protected ConfigStoreFactoryInterface $groupConfigStoreFactory = new GroupConfigStoreFactory(),
         protected RouteCollectionInterface    $routesCollection = new RouteCollection()
     ) {
     }
@@ -58,19 +58,11 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function routeGroupConfigFactory(
-        RouteConfigFactoryInterface $routeGroupConfigFactory
+    public function groupConfigStoreFactory(
+        ConfigStoreFactoryInterface $groupConfigStoreFactory
     ): RouteMapConfigureInterface {
-        $this->routeGroupConfigFactory = $routeGroupConfigFactory;
+        $this->groupConfigStoreFactory = $groupConfigStoreFactory;
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getRouteGroupConfig(): RouteConfigInterface
-    {
-        return $this->getGroupConfig();
     }
 
     /**
@@ -85,25 +77,23 @@ class RouteMap implements RouteMapInterface
         RequestMethodInterface|array $methods = null,
         bool                         $mergeWithPreviousConfig = false
     ): void {
-        $groupConfig = $this->getRouteGroupConfigFactory()::createRouteConfig();
-        $groupConfig->config(
-            rules: $rules,
-            defaults: $defaults,
-            middlewares: $middlewares,
-            path: $pathPrefix,
-            name: $namePrefix,
-            methods: $methods,
-        );
-        $groupConfig->mergeConfig($this->getMergedGroupConfig());
+        $groupConfig = $this->getGroupConfigStoreFactory()::create();
 
-        $this->getGroupConfig()->config(
-            rules: isset($rules) ? $groupConfig->getRules() : null,
-            defaults: isset($defaults) ? $groupConfig->getDefaults() : null,
-            middlewares: isset($middlewares) ? $groupConfig->getMiddlewares() : null,
-            path: isset($pathPrefix) ? $groupConfig->getPath() : null,
-            name: isset($namePrefix) ? $groupConfig->getName() : null,
-            methods: isset($methods) ? $groupConfig->getMethods() : null,
-        );
+        isset($rules) and $groupConfig->rules($rules);
+        isset($defaults) and $groupConfig->defaults($defaults);
+        isset($middlewares) and $groupConfig->middlewares($middlewares);
+        isset($pathPrefix) and $groupConfig->path($pathPrefix);
+        isset($namePrefix) and $groupConfig->name($namePrefix);
+        isset($methods) and $groupConfig->methods($methods);
+
+        $groupConfig->mergeConfig($this->getMergedConfigStore());
+
+        isset($rules) and $this->getConfigStore()->rules($groupConfig->getRules());
+        isset($defaults) and $this->getConfigStore()->defaults($groupConfig->getDefaults());
+        isset($middlewares) and $this->getConfigStore()->middlewares($groupConfig->getMiddlewares());
+        isset($pathPrefix) and $this->getConfigStore()->path($groupConfig->getPath());
+        isset($namePrefix) and $this->getConfigStore()->name($groupConfig->getName());
+        isset($methods) and $this->getConfigStore()->methods($groupConfig->getMethods());
     }
 
     /**
@@ -118,8 +108,8 @@ class RouteMap implements RouteMapInterface
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
     ): void {
-        $this->mergedGroupConfig($this->getGroupConfig());
-        $this->groupConfig($this->getRouteGroupConfigFactory()::createRouteConfig());
+        $this->mergedConfigStore($this->getConfigStore());
+        $this->configStore($this->getGroupConfigStoreFactory()::create());
 
         $this->changeGroupConfig(
             rules: $rules,
@@ -223,45 +213,43 @@ class RouteMap implements RouteMapInterface
     }
 
     /**
-     * Set current group config.
-     *
-     * @param RouteConfigInterface $groupConfig
-     * @return void
+     * @inheritDoc
      */
-    protected function groupConfig(RouteConfigInterface $groupConfig): void
+    public function getConfigStore(): ConfigStoreInterface
     {
-        $this->groupConfig = $groupConfig;
+        return $this->configStore ??= $this->getGroupConfigStoreFactory()::create();
     }
 
     /**
-     * Get current group config.
+     * Set current group config.
      *
-     * @return RouteConfigInterface
+     * @param ConfigStoreInterface $configStore
+     * @return void
      */
-    protected function getGroupConfig(): RouteConfigInterface
+    protected function configStore(ConfigStoreInterface $configStore): void
     {
-        return $this->groupConfig ??= $this->getRouteGroupConfigFactory()::createRouteConfig();
+        $this->configStore = $configStore;
     }
 
     /**
      * Set merged config.
      *
-     * @param RouteConfigInterface $mergedGroupConfig
+     * @param ConfigStoreInterface $mergedConfigStore
      * @return void
      */
-    protected function mergedGroupConfig(RouteConfigInterface $mergedGroupConfig): void
+    protected function mergedConfigStore(ConfigStoreInterface $mergedConfigStore): void
     {
-        $this->mergedGroupConfig = $mergedGroupConfig;
+        $this->mergedConfigStore = $mergedConfigStore;
     }
 
     /**
      * Get merged config.
      *
-     * @return RouteConfigInterface
+     * @return ConfigStoreInterface
      */
-    protected function getMergedGroupConfig(): RouteConfigInterface
+    protected function getMergedConfigStore(): ConfigStoreInterface
     {
-        return $this->mergedGroupConfig ??= $this->getRouteGroupConfigFactory()::createRouteConfig();
+        return $this->mergedConfigStore ??= $this->getGroupConfigStoreFactory()::create();
     }
 
     /**
@@ -280,9 +268,9 @@ class RouteMap implements RouteMapInterface
         $route = $this->getRouteFactory()::createRoute();
 
         $route->action($action);
-        $route->routeMapGroupConfig($this->getGroupConfig());
+        $route->routeMapConfigStore($this->getConfigStore());
 
-        $route->getRouteConfig()->mergeConfig($this->getGroupConfig());
+        $route->getConfigStore()->mergeConfig($this->getConfigStore());
         $route->config(path: $path, methods: $methods, name: $name);
 
         $this->getRoutes()->add($route);
@@ -298,10 +286,10 @@ class RouteMap implements RouteMapInterface
     }
 
     /**
-     * @return RouteConfigFactoryInterface
+     * @return ConfigStoreFactoryInterface
      */
-    protected function getRouteGroupConfigFactory(): RouteConfigFactoryInterface
+    protected function getGroupConfigStoreFactory(): ConfigStoreFactoryInterface
     {
-        return $this->routeGroupConfigFactory;
+        return $this->groupConfigStoreFactory;
     }
 }

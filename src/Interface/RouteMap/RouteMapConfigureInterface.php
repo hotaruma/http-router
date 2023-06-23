@@ -7,9 +7,9 @@ namespace Hotaruma\HttpRouter\Interface\RouteMap;
 use Closure;
 use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
-use Hotaruma\HttpRouter\Interface\Factory\RouteConfigFactoryInterface;
+use Hotaruma\HttpRouter\Interface\Factory\ConfigStoreFactoryInterface;
 use Hotaruma\HttpRouter\Interface\Factory\RouteFactoryInterface;
-use Hotaruma\HttpRouter\Interface\RouteConfig\RouteConfigInterface;
+use Hotaruma\HttpRouter\Interface\ConfigStore\ConfigStoreInterface;
 
 interface RouteMapConfigureInterface
 {
@@ -38,7 +38,7 @@ interface RouteMapConfigureInterface
     /**
      * Create group routes by config.
      *
-     * @param callable $group function (RouteMapInterface $routeMap) {}
+     * @param callable(RouteMapInterface $routeMap): void $group
      * @param array<string,string>|null $rules Regex rules for attributes in path
      * @param array<string,string>|null $defaults Default values for attributes in path
      * @param Closure|array|null $middlewares Middlewares list
@@ -68,17 +68,19 @@ interface RouteMapConfigureInterface
     public function routeFactory(RouteFactoryInterface $routeFactory): RouteMapConfigureInterface;
 
     /**
-     * Set route group config factory.
+     * Set group config factory.
      *
-     * @param RouteConfigFactoryInterface $routeGroupConfigFactory
+     * @param ConfigStoreFactoryInterface $groupConfigStoreFactory
      * @return RouteMapConfigureInterface
      */
-    public function routeGroupConfigFactory(
-        RouteConfigFactoryInterface $routeGroupConfigFactory
+    public function groupConfigStoreFactory(
+        ConfigStoreFactoryInterface $groupConfigStoreFactory
     ): RouteMapConfigureInterface;
 
     /**
-     * @return RouteConfigInterface
+     * Get current group config.
+     *
+     * @return ConfigStoreInterface
      */
-    public function getRouteGroupConfig(): RouteConfigInterface;
+    public function getConfigStore(): ConfigStoreInterface;
 }

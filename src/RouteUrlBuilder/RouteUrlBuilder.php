@@ -30,7 +30,7 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
             function (array $subject) {
                 return $this->replacePathPlaceholders($subject['placeholderName']);
             },
-            $route->getRouteConfig()->getPath()
+            $route->getConfigStore()->getPath()
         );
 
         $this->getRoute()->url($url);
@@ -49,10 +49,10 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
             throw new RouteUrlBuilderWrongValuesException('Placeholder has no name');
         }
 
-        $placeholderRules = $this->getRoute()->getRouteConfig()->getRules()[$placeholderName] ?? null;
+        $placeholderRules = $this->getRoute()->getConfigStore()->getRules()[$placeholderName] ?? null;
         $placeholderValue =
             $this->getRoute()->getAttributes()[$placeholderName] ??
-            $this->getRoute()->getRouteConfig()->getDefaults()[$placeholderName] ??
+            $this->getRoute()->getConfigStore()->getDefaults()[$placeholderName] ??
             throw new RouteUrlBuilderWrongValuesException(
                 sprintf('Route has no value for attribute %s', $placeholderName)
             );

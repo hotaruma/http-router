@@ -50,7 +50,7 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
         }
 
         foreach ($this->getRoutesCollection() as $route) {
-            if ($route->getRouteConfig()->getName() === $routeName) {
+            if ($route->getConfigStore()->getName() === $routeName) {
                 return $this->getRouteUrlBuilder()->build($route);
             }
         }
