@@ -12,11 +12,12 @@ use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
     ConfigStore\ConfigStoreInterface
 };
 use Hotaruma\HttpRouter\Factory\ConfigStoreFactory;
-use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
+use Hotaruma\HttpRouter\Utils\{ConfigNormalizeUtils, ConfigValidateUtils};
 
 class Route implements RouteInterface
 {
     use ConfigNormalizeUtils;
+    use ConfigValidateUtils;
 
     /**
      * @var mixed
@@ -76,13 +77,12 @@ class Route implements RouteInterface
      */
     public function attributes(array $attributes): RouteInterface
     {
-        foreach ($attributes as $name => $attribute) {
-            if (!is_string($name) || !is_string($attribute)) {
-                throw new RouteInvalidArgumentException(
-                    'Invalid format for route attribute. Attributes must be specified as strings.'
-                );
-            }
-        }
+        $this->stringStructure(
+            $attributes,
+            'Invalid format for route attribute. Attributes must be specified as strings.',
+            RouteInvalidArgumentException::class
+        );
+
         $this->attributes = $attributes;
         return $this;
     }

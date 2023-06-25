@@ -13,12 +13,12 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     Enum\RequestMethodInterface,
     Factory\ConfigStoreFactoryInterface,
     Factory\RouteFactoryInterface,
+    Iterator\RouteIteratorInterface,
     Route\RouteConfigureInterface,
     Route\RouteInterface,
     ConfigStore\ConfigStoreInterface,
     RouteMap\RouteMapConfigureInterface,
-    RouteMap\RouteMapInterface
-};
+    RouteMap\RouteMapInterface};
 
 class RouteMap implements RouteMapInterface
 {
@@ -37,7 +37,8 @@ class RouteMap implements RouteMapInterface
     /**
      * @param RouteFactoryInterface $routeFactory Route factory
      * @param ConfigStoreFactoryInterface $groupConfigStoreFactory Group config factory
-     * @param RouteCollectionInterface $routesCollection Routes collection
+     * @param RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>> $routesCollection
+     * Routes collection
      */
     public function __construct(
         protected RouteFactoryInterface       $routeFactory = new RouteFactory(),

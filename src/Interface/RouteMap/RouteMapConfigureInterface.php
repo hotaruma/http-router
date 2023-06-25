@@ -18,7 +18,7 @@ interface RouteMapConfigureInterface
      *
      * @param array<string,string>|null $rules Regex rules for attributes in path
      * @param array<string,string>|null $defaults Default values for attributes in path
-     * @param Closure|array|null $middlewares Middlewares list
+     * @param Closure|array<mixed>|null $middlewares Middlewares list
      * @param string|null $pathPrefix Url path prefix
      * @param string|null $namePrefix Route name prefix
      * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods
@@ -41,7 +41,7 @@ interface RouteMapConfigureInterface
      * @param callable(RouteMapInterface $routeMap): void $group
      * @param array<string,string>|null $rules Regex rules for attributes in path
      * @param array<string,string>|null $defaults Default values for attributes in path
-     * @param Closure|array|null $middlewares Middlewares list
+     * @param Closure|array<mixed>|null $middlewares Middlewares list
      * @param string|null $pathPrefix Url path prefix
      * @param string|null $namePrefix Routes name prefix
      * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods

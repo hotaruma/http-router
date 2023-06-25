@@ -20,10 +20,10 @@ class ConfigStore implements ConfigStoreInterface
 {
     use ConfigNormalizeUtils;
 
-    protected const KEY_REDUCE = 1;
-    protected const MERGE_REDUCE = 2;
-    protected const CONCATENATE_REDUCE = 3;
-    protected const ENUM_MERGE_REDUCE = 4;
+    protected const REDUCE_KEY = 1;
+    protected const REDUCE_MERGE = 2;
+    protected const REDUCE_CONCATENATE = 3;
+    protected const REDUCE_ENUM_MERGE = 4;
 
     protected const PATH_SEPARATOR = '/';
     protected const NAME_SEPARATOR = '.';
@@ -60,29 +60,29 @@ class ConfigStore implements ConfigStoreInterface
     {
         $this->path($this->reduceConfig(
             [$routeConfig->getPath(), $this->getPath()],
-            self::CONCATENATE_REDUCE,
+            self::REDUCE_CONCATENATE,
             self::PATH_SEPARATOR
         ));
         $this->methods($this->reduceConfig(
             [$routeConfig->getMethods(), $this->getMethods()],
-            self::ENUM_MERGE_REDUCE
+            self::REDUCE_ENUM_MERGE
         ));
         $this->name($this->reduceConfig(
             [$routeConfig->getName(), $this->getName()],
-            self::CONCATENATE_REDUCE,
+            self::REDUCE_CONCATENATE,
             self::NAME_SEPARATOR
         ));
         $this->rules($this->reduceConfig(
             [$routeConfig->getRules(), $this->getRules()],
-            self::KEY_REDUCE
+            self::REDUCE_KEY
         ));
         $this->defaults($this->reduceConfig(
             [$routeConfig->getDefaults(), $this->getDefaults()],
-            self::KEY_REDUCE
+            self::REDUCE_KEY
         ));
         $this->middlewares($this->reduceConfig(
             [$routeConfig->getMiddlewares(), $this->getMiddlewares()],
-            self::MERGE_REDUCE
+            self::REDUCE_MERGE
         ));
     }
 
@@ -103,16 +103,20 @@ class ConfigStore implements ConfigStoreInterface
     /**
      * Reduce config by type.
      *
-     * @param array $items
+     * @template T of array|string
+     * @param array<T> $items
      * @param int $reduceType
      * @param string $separator
-     * @return array|string
+     * @return T
      *
      * @throws RouteConfigInvalidArgumentException
+     *
+     * @phpstan-param int-mask-of<static::REDUCE_*> $reduceType
+     *
      */
     protected function reduceConfig(array $items, int $reduceType, string $separator = ''): array|string
     {
-        $reduceConfig = static function (array $config, callable $fn, string $separator = ''): array|string {
+        $reduceConfig = static function (array $config, callable $fn, string $separator = '') {
             return array_reduce($config, function (array|string|null $carry, array|string $item) use ($fn, $separator) {
                 if ($carry === null) {
                     return $item;
@@ -122,19 +126,19 @@ class ConfigStore implements ConfigStoreInterface
         };
 
         return match ($reduceType) {
-            self::KEY_REDUCE =>
+            self::REDUCE_KEY =>
             $reduceConfig($items, function (array $carry, array $item): array {
                 return $item + $carry;
             }, $separator),
-            self::MERGE_REDUCE =>
+            self::REDUCE_MERGE =>
             array_unique($reduceConfig($items, function (array $carry, array $item): array {
                 return array_merge($carry, $item);
             }, $separator)),
-            self::ENUM_MERGE_REDUCE =>
+            self::REDUCE_ENUM_MERGE =>
             $reduceConfig($items, function (array $carry, array $item): array {
                 return array_merge($carry, $item);
             }, $separator),
-            self::CONCATENATE_REDUCE =>
+            self::REDUCE_CONCATENATE =>
             $reduceConfig($items, function (string $carry, string $item, string $separator): string {
                 return $carry . $separator . $item;
             }, $separator),

@@ -5,32 +5,43 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Utils;
 
 use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
+use Throwable;
 
 trait ConfigValidateUtils
 {
     /**
-     * @param array $data
+     * @template T of Throwable
+     * @param array<mixed> $data
      * @param string $message
+     * @param class-string<T> $exceptionClass
      * @return void
      *
-     * @throws ConfigInvalidArgumentException
+     * @throws ConfigInvalidArgumentException|Throwable
+     *
+     * @phpstan-assert array<string, string> $data
      */
-    public function stringStructure(array $data, string $message): void
-    {
+    public function stringStructure(
+        array  $data,
+        string $message,
+        string $exceptionClass = ConfigInvalidArgumentException::class
+    ): void {
         foreach ($data as $name => $value) {
             if (!is_string($name) || !is_string($value)) {
-                throw new ConfigInvalidArgumentException($message);
+                throw new $exceptionClass($message);
             }
         }
     }
 
     /**
-     * @param array $data
-     * @param string $className
+     * @template T
+     * @param array<mixed, object> $data
+     * @param class-string<T> $className
      * @param string $message
      * @return void
      *
      * @throws ConfigInvalidArgumentException
+     *
+     * @phpstan-assert array<mixed, T> $data
      */
     public function itemsImplement(array $data, string $className, string $message): void
     {

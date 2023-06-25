@@ -7,10 +7,16 @@ namespace Hotaruma\HttpRouter\Interface\Iterator;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Iterator;
 
+/**
+ * @template-covariant TKey
+ * @template-covariant TItem of RouteInterface
+ *
+ * @extends Iterator<TKey, TItem>
+ */
 interface RouteIteratorInterface extends Iterator
 {
     /**
-     * @param Iterator<RouteInterface> $routes
+     * @param Iterator<mixed, RouteInterface> $routes
      * @return void
      */
     public function routes(Iterator $routes): void;

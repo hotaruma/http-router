@@ -30,6 +30,9 @@ jobs:
       - name: Run test suite
         run: docker-compose -f $COMPOSE_FILE exec -T php-cli composer run-script test
 
+      - name: Run php-stan check
+        run: docker-compose -f $COMPOSE_FILE exec -T php-cli composer run-script phpstan
+
       - name: Run code-style check
         run: docker-compose -f $COMPOSE_FILE exec -T php-cli composer run-script code_style
 

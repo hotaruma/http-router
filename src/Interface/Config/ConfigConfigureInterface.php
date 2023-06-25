@@ -76,7 +76,7 @@ interface ConfigConfigureInterface
     public function getDefaults(): array;
 
     /**
-     * @param Closure|array $middlewares Middlewares list
+     * @param Closure|array<mixed> $middlewares Middlewares list
      * @return ConfigConfigureInterface
      *
      * @throws ConfigInvalidArgumentException
@@ -84,7 +84,7 @@ interface ConfigConfigureInterface
     public function middlewares(Closure|array $middlewares): ConfigConfigureInterface;
 
     /**
-     * @return array Current middlewares
+     * @return array<mixed> Current middlewares
      */
     public function getMiddlewares(): array;
 }

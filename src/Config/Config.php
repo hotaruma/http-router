@@ -14,12 +14,12 @@ abstract class Config implements ConfigInterface
     use ConfigNormalizeUtils;
 
     /**
-     * @param array $rules
-     * @param array $defaults
-     * @param array $middlewares
+     * @param array<string,string> $rules
+     * @param array<string,string> $defaults
+     * @param array<mixed> $middlewares
      * @param string $path
      * @param string $name
-     * @param array $methods
+     * @param array<RequestMethodInterface> $methods
      */
     public function __construct(
         protected array  $rules = [],

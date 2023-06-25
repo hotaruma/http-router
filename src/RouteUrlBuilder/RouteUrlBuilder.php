@@ -25,7 +25,7 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
     {
         $this->route($route);
 
-        $url = preg_replace_callback(
+        $url = (string)preg_replace_callback(
             '/{(?P<placeholderName>[^}]+)}/',
             function (array $subject) {
                 return $this->replacePathPlaceholders($subject['placeholderName']);

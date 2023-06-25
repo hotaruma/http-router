@@ -15,7 +15,7 @@ interface RouteConfigureInterface
      *
      * @param array<string,string>|null $rules Regex rules for attributes in path
      * @param array<string,string>|null $defaults Default values for attributes in path
-     * @param Closure|array|null $middlewares Middlewares list
+     * @param Closure|array<mixed>|null $middlewares Middlewares list
      * @param string|null $path Url path
      * @param string|null $name Route name
      * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods

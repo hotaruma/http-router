@@ -9,10 +9,10 @@ use Hotaruma\HttpRouter\Enum\AdditionalMethod;
 use Hotaruma\HttpRouter\Exception\RouteDispatcherNotFoundException;
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     Enum\RequestMethodInterface,
+    Iterator\RouteIteratorInterface,
     Route\RouteInterface,
     RouteDispatcher\RouteDispatcherInterface,
-    RouteMatcher\RouteMatcherInterface
-};
+    RouteMatcher\RouteMatcherInterface};
 use Hotaruma\HttpRouter\RouteMatcher\RouteMatcher;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
@@ -31,7 +31,8 @@ class RouteDispatcher implements RouteDispatcherInterface
     protected string $requestPath = '';
 
     /**
-     * @var RouteCollectionInterface Route collection for matching
+     * @var RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>>
+     * Route collection for matching
      */
     protected RouteCollectionInterface $routesCollection;
 
@@ -114,7 +115,7 @@ class RouteDispatcher implements RouteDispatcherInterface
     }
 
     /**
-     * @param RouteCollectionInterface $routeCollection
+     * @param RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>> $routeCollection
      * @return void
      */
     protected function routesCollection(RouteCollectionInterface $routeCollection): void
@@ -123,7 +124,7 @@ class RouteDispatcher implements RouteDispatcherInterface
     }
 
     /**
-     * @return RouteCollectionInterface
+     * @return RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>>
      */
     protected function getRoutesCollection(): RouteCollectionInterface
     {

@@ -26,6 +26,8 @@ interface RouteToolsInterface
     /**
      * @param array<string, string> $attributes
      * @return RouteInterface
+     *
+     * @throws RouteInvalidArgumentException
      */
     public function attributes(array $attributes): RouteInterface;
 
