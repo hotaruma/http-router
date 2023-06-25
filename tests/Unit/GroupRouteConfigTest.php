@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use Hotaruma\HttpRouter\Factory\RouteGroupConfigFactory;
+use Hotaruma\HttpRouter\Factory\GroupConfigStoreFactory;
 use PHPUnit\Framework\TestCase;
 
 class GroupRouteConfigTest extends TestCase
@@ -14,10 +14,10 @@ class GroupRouteConfigTest extends TestCase
      */
     public function testMergePath(string $groupPath, string $routePath, string $expectedPath): void
     {
-        $groupConfig = RouteGroupConfigFactory::createRouteConfig();
+        $groupConfig = GroupConfigStoreFactory::create();
         $groupConfig->path($groupPath);
 
-        $routeConfig = RouteGroupConfigFactory::createRouteConfig();
+        $routeConfig = GroupConfigStoreFactory::create();
         $routeConfig->path($routePath);
 
         $routeConfig->mergeConfig($groupConfig);
@@ -31,10 +31,10 @@ class GroupRouteConfigTest extends TestCase
      */
     public function testMergeMethods(array $groupMethods, array $routeMethods, array $expectedMethods): void
     {
-        $groupConfig = RouteGroupConfigFactory::createRouteConfig();
+        $groupConfig = GroupConfigStoreFactory::create();
         $groupConfig->methods($groupMethods);
 
-        $routeConfig = RouteGroupConfigFactory::createRouteConfig();
+        $routeConfig = GroupConfigStoreFactory::create();
         $routeConfig->methods($routeMethods);
 
         $routeConfig->mergeConfig($groupConfig);
@@ -48,10 +48,10 @@ class GroupRouteConfigTest extends TestCase
      */
     public function testMergeName(string $groupName, string $routeName, string $expectedName): void
     {
-        $groupConfig = RouteGroupConfigFactory::createRouteConfig();
+        $groupConfig = GroupConfigStoreFactory::create();
         $groupConfig->name($groupName);
 
-        $routeConfig = RouteGroupConfigFactory::createRouteConfig();
+        $routeConfig = GroupConfigStoreFactory::create();
         $routeConfig->name($routeName);
 
         $routeConfig->mergeConfig($groupConfig);
@@ -65,10 +65,10 @@ class GroupRouteConfigTest extends TestCase
      */
     public function testMergeRules(array $groupRules, array $routeRules, array $expectedRules): void
     {
-        $groupConfig = RouteGroupConfigFactory::createRouteConfig();
+        $groupConfig = GroupConfigStoreFactory::create();
         $groupConfig->rules($groupRules);
 
-        $routeConfig = RouteGroupConfigFactory::createRouteConfig();
+        $routeConfig = GroupConfigStoreFactory::create();
         $routeConfig->rules($routeRules);
 
         $routeConfig->mergeConfig($groupConfig);
@@ -82,10 +82,10 @@ class GroupRouteConfigTest extends TestCase
      */
     public function testMergeDefaults(array $groupDefaults, array $routeDefaults, array $expectedDefaults): void
     {
-        $groupConfig = RouteGroupConfigFactory::createRouteConfig();
+        $groupConfig = GroupConfigStoreFactory::create();
         $groupConfig->defaults($groupDefaults);
 
-        $routeConfig = RouteGroupConfigFactory::createRouteConfig();
+        $routeConfig = GroupConfigStoreFactory::create();
         $routeConfig->defaults($routeDefaults);
 
         $routeConfig->mergeConfig($groupConfig);
@@ -99,10 +99,10 @@ class GroupRouteConfigTest extends TestCase
      */
     public function testMergeMiddlewares(array $groupMiddlewares, array $routeMiddlewares, array $expectedMiddlewares): void
     {
-        $groupConfig = RouteGroupConfigFactory::createRouteConfig();
+        $groupConfig = GroupConfigStoreFactory::create();
         $groupConfig->middlewares($groupMiddlewares);
 
-        $routeConfig = RouteGroupConfigFactory::createRouteConfig();
+        $routeConfig = GroupConfigStoreFactory::create();
         $routeConfig->middlewares($routeMiddlewares);
 
         $routeConfig->mergeConfig($groupConfig);

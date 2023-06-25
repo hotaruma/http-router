@@ -7,16 +7,17 @@ namespace Hotaruma\HttpRouter\Route;
 use Closure;
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
-    Factory\RouteConfigFactoryInterface,
+    Factory\ConfigStoreFactoryInterface,
     Route\RouteInterface,
-    RouteConfig\RouteConfigInterface
+    ConfigStore\ConfigStoreInterface
 };
-use Hotaruma\HttpRouter\Factory\RouteConfigFactory;
-use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
+use Hotaruma\HttpRouter\Factory\ConfigStoreFactory;
+use Hotaruma\HttpRouter\Utils\{ConfigNormalizeUtils, ConfigValidateUtils};
 
 class Route implements RouteInterface
 {
     use ConfigNormalizeUtils;
+    use ConfigValidateUtils;
 
     /**
      * @var mixed
@@ -34,20 +35,20 @@ class Route implements RouteInterface
     protected string $url = '';
 
     /**
-     * @var null|RouteConfigInterface
+     * @var null|ConfigStoreInterface
      */
-    protected ?RouteConfigInterface $routeMapGroupConfig = null;
+    protected ?ConfigStoreInterface $routeMapConfigStore = null;
 
     /**
-     * @var RouteConfigInterface
+     * @var ConfigStoreInterface
      */
-    protected RouteConfigInterface $routeConfig;
+    protected ConfigStoreInterface $configStore;
 
     /**
-     * @param RouteConfigFactoryInterface $routeConfigFactory
+     * @param ConfigStoreFactoryInterface $configStoreFactory
      */
     public function __construct(
-        protected RouteConfigFactoryInterface $routeConfigFactory = new RouteConfigFactory()
+        protected ConfigStoreFactoryInterface $configStoreFactory = new ConfigStoreFactory()
     ) {
     }
 
@@ -76,13 +77,12 @@ class Route implements RouteInterface
      */
     public function attributes(array $attributes): RouteInterface
     {
-        foreach ($attributes as $name => $attribute) {
-            if (!is_string($name) || !is_string($attribute)) {
-                throw new RouteInvalidArgumentException(
-                    'Invalid format for route attribute. Attributes must be specified as strings.'
-                );
-            }
-        }
+        $this->stringStructure(
+            $attributes,
+            'Invalid format for route attribute. Attributes must be specified as strings.',
+            RouteInvalidArgumentException::class
+        );
+
         $this->attributes = $attributes;
         return $this;
     }
@@ -115,9 +115,9 @@ class Route implements RouteInterface
     /**
      * @inheritDoc
      */
-    public function routeConfigFactory(RouteConfigFactoryInterface $routeConfigFactory): void
+    public function configStoreFactory(ConfigStoreFactoryInterface $configStoreFactory): void
     {
-        $this->routeConfigFactory = $routeConfigFactory;
+        $this->configStoreFactory = $configStoreFactory;
     }
 
     /**
@@ -131,57 +131,56 @@ class Route implements RouteInterface
         string                       $name = null,
         RequestMethodInterface|array $methods = null,
     ): void {
-        $routeConfig = $this->getRouteConfigFactory()::createRouteConfig();
-        $routeConfig->config(
-            rules: $rules,
-            defaults: $defaults,
-            middlewares: $middlewares,
-            path: $path,
-            name: $name,
-            methods: $methods,
-        );
-        if ($routeMapGroupConfig = $this->getRouteMapGroupConfig()) {
-            $routeConfig->mergeConfig($routeMapGroupConfig);
+        $configStore = $this->getConfigStoreFactory()::create();
+
+        isset($rules) and $configStore->rules($rules);
+        isset($defaults) and $configStore->defaults($defaults);
+        isset($middlewares) and $configStore->middlewares($middlewares);
+        isset($path) and $configStore->path($path);
+        isset($name) and $configStore->name($name);
+        isset($methods) and $configStore->methods($methods);
+
+        if ($routeMapConfigStore = $this->getRouteMapConfigStore()) {
+            $configStore->mergeConfig($routeMapConfigStore);
         }
-        $this->getRouteConfig()->config(
-            rules: isset($rules) ? $routeConfig->getRules() : null,
-            defaults: isset($defaults) ? $routeConfig->getDefaults() : null,
-            middlewares: isset($middlewares) ? $routeConfig->getMiddlewares() : null,
-            path: isset($path) ? $routeConfig->getPath() : null,
-            name: isset($name) ? $routeConfig->getName() : null,
-            methods: isset($methods) ? $routeConfig->getMethods() : null,
-        );
+
+        isset($rules) and $this->getConfigStore()->rules($configStore->getRules());
+        isset($defaults) and $this->getConfigStore()->defaults($configStore->getDefaults());
+        isset($middlewares) and $this->getConfigStore()->middlewares($configStore->getMiddlewares());
+        isset($path) and $this->getConfigStore()->path($configStore->getPath());
+        isset($name) and $this->getConfigStore()->name($configStore->getName());
+        isset($methods) and $this->getConfigStore()->methods($configStore->getMethods());
     }
 
     /**
-     * @return RouteConfigInterface
+     * @return ConfigStoreInterface
      */
-    public function getRouteConfig(): RouteConfigInterface
+    public function getConfigStore(): ConfigStoreInterface
     {
-        return $this->routeConfig ??= $this->getRouteConfigFactory()::createRouteConfig();
+        return $this->configStore ??= $this->getConfigStoreFactory()::create();
     }
 
     /**
      * @inheritDoc
      */
-    public function routeMapGroupConfig(RouteConfigInterface $routeMapGroupConfig): void
+    public function routeMapConfigStore(ConfigStoreInterface $routeMapConfigStore): void
     {
-        $this->routeMapGroupConfig = $routeMapGroupConfig;
+        $this->routeMapConfigStore = $routeMapConfigStore;
     }
 
     /**
-     * @return RouteConfigInterface|null
+     * @return ConfigStoreInterface|null
      */
-    protected function getRouteMapGroupConfig(): ?RouteConfigInterface
+    protected function getRouteMapConfigStore(): ?ConfigStoreInterface
     {
-        return $this->routeMapGroupConfig;
+        return $this->routeMapConfigStore;
     }
 
     /**
-     * @return RouteConfigFactory
+     * @return ConfigStoreFactoryInterface
      */
-    protected function getRouteConfigFactory(): RouteConfigFactory
+    protected function getConfigStoreFactory(): ConfigStoreFactoryInterface
     {
-        return $this->routeConfigFactory;
+        return $this->configStoreFactory;
     }
 }

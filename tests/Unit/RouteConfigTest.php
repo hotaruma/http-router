@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Closure;
-use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
-use Hotaruma\HttpRouter\Factory\RouteConfigFactory;
+use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
+use Hotaruma\HttpRouter\Factory\ConfigStoreFactory;
 use PHPUnit\Framework\TestCase;
 
 class RouteConfigTest extends TestCase
@@ -16,7 +16,7 @@ class RouteConfigTest extends TestCase
      */
     public function testRules(array $rules): void
     {
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->rules($rules);
         $this->assertEquals($rules, $config->getRules());
     }
@@ -26,9 +26,9 @@ class RouteConfigTest extends TestCase
      */
     public function testInvalidRules(array $rules): void
     {
-        $this->expectException(RouteConfigInvalidArgumentException::class);
+        $this->expectException(ConfigInvalidArgumentException::class);
 
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->rules($rules);
     }
 
@@ -38,7 +38,7 @@ class RouteConfigTest extends TestCase
      */
     public function testDefaults(array $defaults): void
     {
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->defaults($defaults);
         $this->assertEquals($defaults, $config->getDefaults());
     }
@@ -48,9 +48,9 @@ class RouteConfigTest extends TestCase
      */
     public function testInvalidDefaults(array $defaults): void
     {
-        $this->expectException(RouteConfigInvalidArgumentException::class);
+        $this->expectException(ConfigInvalidArgumentException::class);
 
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->defaults($defaults);
     }
 
@@ -60,7 +60,7 @@ class RouteConfigTest extends TestCase
      */
     public function testMiddlewares(array|Closure $middlewares, mixed $expected = null): void
     {
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->middlewares($middlewares);
         $this->assertEquals($expected ?? $middlewares, $config->getMiddlewares());
     }
@@ -71,7 +71,7 @@ class RouteConfigTest extends TestCase
      */
     public function testPath(string $path, string $expectedPath): void
     {
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->path($path);
         $this->assertEquals($expectedPath, $config->getPath());
     }
@@ -81,9 +81,9 @@ class RouteConfigTest extends TestCase
      */
     public function testInvalidPath(string $path): void
     {
-        $this->expectException(RouteConfigInvalidArgumentException::class);
+        $this->expectException(ConfigInvalidArgumentException::class);
 
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->path($path);
     }
 
@@ -93,7 +93,7 @@ class RouteConfigTest extends TestCase
      */
     public function testName(string $name, string $expectedName): void
     {
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->name($name);
         $this->assertEquals($expectedName, $config->getName());
     }
@@ -104,7 +104,7 @@ class RouteConfigTest extends TestCase
      */
     public function testMethods($methods, array $expectedMethods): void
     {
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->methods($methods);
         $this->assertEquals($expectedMethods, $config->getMethods());
     }
@@ -114,9 +114,9 @@ class RouteConfigTest extends TestCase
      */
     public function testInvalidMethods(array $methods): void
     {
-        $this->expectException(RouteConfigInvalidArgumentException::class);
+        $this->expectException(ConfigInvalidArgumentException::class);
 
-        $config = RouteConfigFactory::createRouteConfig();
+        $config = ConfigStoreFactory::create();
         $config->methods($methods);
     }
 
@@ -126,10 +126,10 @@ class RouteConfigTest extends TestCase
      */
     public function testMergePath(string $mergePath, string $initialPath, string $expectedPath): void
     {
-        $routeConfig = RouteConfigFactory::createRouteConfig();
+        $routeConfig = ConfigStoreFactory::create();
         $routeConfig->path($mergePath);
 
-        $baseConfig = RouteConfigFactory::createRouteConfig();
+        $baseConfig = ConfigStoreFactory::create();
         $baseConfig->path($initialPath);
 
         $baseConfig->mergeConfig($routeConfig);
@@ -143,10 +143,10 @@ class RouteConfigTest extends TestCase
      */
     public function testMergeMethods(array $mergeMethods, array $initialMethods, array $expectedMethods): void
     {
-        $routeConfig = RouteConfigFactory::createRouteConfig();
+        $routeConfig = ConfigStoreFactory::create();
         $routeConfig->methods($mergeMethods);
 
-        $baseConfig = RouteConfigFactory::createRouteConfig();
+        $baseConfig = ConfigStoreFactory::create();
         $baseConfig->methods($initialMethods);
 
         $baseConfig->mergeConfig($routeConfig);
@@ -160,10 +160,10 @@ class RouteConfigTest extends TestCase
      */
     public function testMergeName(string $mergeName, string $initialName, string $expectedName): void
     {
-        $routeConfig = RouteConfigFactory::createRouteConfig();
+        $routeConfig = ConfigStoreFactory::create();
         $routeConfig->name($mergeName);
 
-        $baseConfig = RouteConfigFactory::createRouteConfig();
+        $baseConfig = ConfigStoreFactory::create();
         $baseConfig->name($initialName);
 
         $baseConfig->mergeConfig($routeConfig);
@@ -177,10 +177,10 @@ class RouteConfigTest extends TestCase
      */
     public function testMergeRules(array $mergeRules, array $initialRules, array $expectedRules): void
     {
-        $routeConfig = RouteConfigFactory::createRouteConfig();
+        $routeConfig = ConfigStoreFactory::create();
         $routeConfig->rules($mergeRules);
 
-        $baseConfig = RouteConfigFactory::createRouteConfig();
+        $baseConfig = ConfigStoreFactory::create();
         $baseConfig->rules($initialRules);
 
         $baseConfig->mergeConfig($routeConfig);
@@ -194,10 +194,10 @@ class RouteConfigTest extends TestCase
      */
     public function testMergeDefaults(array $mergeDefaults, array $initialDefaults, array $expectedDefaults): void
     {
-        $routeConfig = RouteConfigFactory::createRouteConfig();
+        $routeConfig = ConfigStoreFactory::create();
         $routeConfig->defaults($mergeDefaults);
 
-        $baseConfig = RouteConfigFactory::createRouteConfig();
+        $baseConfig = ConfigStoreFactory::create();
         $baseConfig->defaults($initialDefaults);
 
         $baseConfig->mergeConfig($routeConfig);
@@ -211,10 +211,10 @@ class RouteConfigTest extends TestCase
      */
     public function testMergeMiddlewares(array $mergeMiddlewares, array $initialMiddlewares, array $expectedMiddlewares): void
     {
-        $routeConfig = RouteConfigFactory::createRouteConfig();
+        $routeConfig = ConfigStoreFactory::create();
         $routeConfig->middlewares($mergeMiddlewares);
 
-        $baseConfig = RouteConfigFactory::createRouteConfig();
+        $baseConfig = ConfigStoreFactory::create();
         $baseConfig->middlewares($initialMiddlewares);
 
         $baseConfig->mergeConfig($routeConfig);

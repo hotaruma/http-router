@@ -9,17 +9,25 @@ use Hotaruma\HttpRouter\Interface\Collection\RouteCollectionInterface;
 use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Iterator\RouteIterator;
-use SplObjectStorage;
 
+/**
+ * @template-covariant TItems of RouteInterface
+ * @template-covariant TIterator of RouteIteratorInterface<int, TItems>
+ *
+ * @implements RouteCollectionInterface<TItems, TIterator>
+ */
 class RouteCollection implements RouteCollectionInterface
 {
     /**
-     * @var string Iterator class
+     * @var class-string<TIterator<int, RouteInterface>> Iterator class
      */
     protected string $iterator = RouteIterator::class;
 
+    /**
+     * @param RouteSplObjectStorage<TItems, null> $routes
+     */
     public function __construct(
-        protected SplObjectStorage $routes = new SplObjectStorage()
+        protected RouteSplObjectStorage $routes = new RouteSplObjectStorage()
     ) {
     }
 
@@ -79,6 +87,8 @@ class RouteCollection implements RouteCollectionInterface
      * Create new iterator.
      *
      * @return RouteIteratorInterface
+     *
+     * @phpstan-return TIterator<int, RouteInterface>
      */
     protected function createIterator(): RouteIteratorInterface
     {
@@ -86,9 +96,9 @@ class RouteCollection implements RouteCollectionInterface
     }
 
     /**
-     * @return SplObjectStorage
+     * @return RouteSplObjectStorage<TItems, null>
      */
-    protected function getRoutes(): SplObjectStorage
+    protected function getRoutes(): RouteSplObjectStorage
     {
         return $this->routes;
     }

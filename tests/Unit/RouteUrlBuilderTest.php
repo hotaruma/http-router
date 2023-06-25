@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Hotaruma\HttpRouter\ConfigStore\ConfigStore;
 use Hotaruma\HttpRouter\Exception\RouteUrlBuilderWrongValuesException;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
-use Hotaruma\HttpRouter\Interface\RouteConfig\RouteConfigInterface;
 use Hotaruma\HttpRouter\RouteUrlBuilder\RouteUrlBuilder;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -20,9 +20,9 @@ class RouteUrlBuilderTest extends TestCase
      */
     public function testBuild(
         string $path,
-        array $rules,
-        array $defaults,
-        array $attributes,
+        array  $rules,
+        array  $defaults,
+        array  $attributes,
         string $expectedUrl
     ): void {
         $routeUrlBuilder = new RouteUrlBuilder();
@@ -43,9 +43,9 @@ class RouteUrlBuilderTest extends TestCase
      */
     public function testInvalidBuild(
         string $path,
-        array $rules,
-        array $defaults,
-        array $attributes,
+        array  $rules,
+        array  $defaults,
+        array  $attributes,
     ): void {
         $routeUrlBuilder = new RouteUrlBuilder();
 
@@ -64,17 +64,20 @@ class RouteUrlBuilderTest extends TestCase
      */
     protected function getMockRoute(
         string $path = '',
-        array $rules = [],
-        array $defaults = [],
-        array $attributes = [],
+        array  $rules = [],
+        array  $defaults = [],
+        array  $attributes = [],
     ): RouteInterface|MockObject {
-        $routeConfig = $this->createMock(RouteConfigInterface::class);
+        $routeConfig = $this->getMockBuilder( ConfigStore::class)
+            ->addMethods(['getPath', 'getRules', 'getDefaults'])
+            ->getMock();
+
         $routeConfig->method('getPath')->willReturn($path);
         $routeConfig->method('getRules')->willReturn($rules);
         $routeConfig->method('getDefaults')->willReturn($defaults);
 
         $route = $this->createMock(RouteInterface::class);
-        $route->method('getRouteConfig')->willReturn($routeConfig);
+        $route->method('getConfigStore')->willReturn($routeConfig);
         $route->method('getAttributes')->willReturn($attributes);
 
         return $route;

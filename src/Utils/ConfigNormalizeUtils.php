@@ -15,7 +15,7 @@ trait ConfigNormalizeUtils
     protected function normalizePath(string $path): string
     {
         $path = "/" . $path . "/";
-        return preg_replace('/(\/{2,})/', '/', $path);
+        return (string)preg_replace('/(\/{2,})/', '/', $path);
     }
 
     /**
@@ -27,7 +27,7 @@ trait ConfigNormalizeUtils
     protected function normalizeName(string $name): string
     {
         $name = trim($name, '.');
-        return preg_replace('/(\.{2,})/', '.', $name);
+        return (string)preg_replace('/(\.{2,})/', '.', $name);
     }
 
     /**

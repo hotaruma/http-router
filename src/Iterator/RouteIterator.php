@@ -9,15 +9,22 @@ use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Iterator;
 
+/**
+ * @template TKey of int
+ * @template-covariant TItem of RouteInterface
+ *
+ * @implements RouteIteratorInterface<TKey, TItem>
+ */
 class RouteIterator implements RouteIteratorInterface
 {
     /**
      * @var int
+     * @phpstan-var TKey
      */
     protected int $position = 0;
 
     /**
-     * @var array<RouteInterface>
+     * @var array<TKey, RouteInterface>
      */
     protected array $routes = [];
 
@@ -71,9 +78,11 @@ class RouteIterator implements RouteIteratorInterface
 
     /**
      * @inheritDoc
+     * @param int $rewindPosition
+     * @phpstan-param TKey $rewindPosition
      */
-    public function rewind(): void
+    public function rewind(int $rewindPosition = 0): void
     {
-        $this->position = 0;
+        $this->position = $rewindPosition;
     }
 }

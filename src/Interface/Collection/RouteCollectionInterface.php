@@ -10,6 +10,12 @@ use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use IteratorAggregate;
 
+/**
+ * @template-covariant TItems of RouteInterface
+ * @template-covariant TIterator of RouteIteratorInterface<int, TItems>
+ *
+ * @extends IteratorAggregate<int, TItems>
+ */
 interface RouteCollectionInterface extends IteratorAggregate, Countable
 {
     /**
@@ -31,7 +37,7 @@ interface RouteCollectionInterface extends IteratorAggregate, Countable
     /**
      * Set routes iterator.
      *
-     * @param string $class
+     * @param class-string<TIterator<int, RouteInterface>> $class
      * @return void
      *
      * @throws RouteCollectionInvalidArgumentException
@@ -40,6 +46,8 @@ interface RouteCollectionInterface extends IteratorAggregate, Countable
 
     /**
      * @return RouteIteratorInterface
+     *
+     * @phpstan-return TIterator<int, RouteInterface>
      */
     public function getIterator(): RouteIteratorInterface;
 }

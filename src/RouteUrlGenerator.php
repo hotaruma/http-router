@@ -10,15 +10,15 @@ use Hotaruma\HttpRouter\Exception\{RouteUrlGeneratorInvalidArgumentException,
     RouteUrlGeneratorNotFoundException,
 };
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
+    Iterator\RouteIteratorInterface,
     Route\RouteInterface,
     RouteUrlBuilder\RouteUrlBuilderInterface,
-    RouteUrlGenerator\RouteUrlGeneratorInterface
-};
+    RouteUrlGenerator\RouteUrlGeneratorInterface};
 
 class RouteUrlGenerator implements RouteUrlGeneratorInterface
 {
     /**
-     * @var RouteCollectionInterface Route collection
+     * @var RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>> Route collection
      */
     protected RouteCollectionInterface $routesCollection;
 
@@ -34,9 +34,8 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
     /**
      * @inheritDoc
      */
-    public function config(
-        RouteCollectionInterface $routes = null
-    ): void {
+    public function config(RouteCollectionInterface $routes = null): void
+    {
         isset($routes) and $this->routesCollection($routes);
     }
 
@@ -50,7 +49,7 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
         }
 
         foreach ($this->getRoutesCollection() as $route) {
-            if ($route->getRouteConfig()->getName() === $routeName) {
+            if ($route->getConfigStore()->getName() === $routeName) {
                 return $this->getRouteUrlBuilder()->build($route);
             }
         }
@@ -67,7 +66,7 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
     }
 
     /**
-     * @param RouteCollectionInterface $routeCollection
+     * @param RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>> $routeCollection
      * @return void
      */
     protected function routesCollection(RouteCollectionInterface $routeCollection): void
@@ -76,7 +75,7 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
     }
 
     /**
-     * @return RouteCollectionInterface
+     * @return RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>>
      */
     protected function getRoutesCollection(): RouteCollectionInterface
     {
