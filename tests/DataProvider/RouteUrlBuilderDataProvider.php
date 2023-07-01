@@ -6,6 +6,9 @@ namespace Tests\DataProvider;
 
 class RouteUrlBuilderDataProvider
 {
+    /**
+     * @return array<mixed>
+     */
     public static function buildDataProvider(): array
     {
         return [
@@ -38,6 +41,9 @@ class RouteUrlBuilderDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function invalidBuildDataProvider(): array
     {
         return [

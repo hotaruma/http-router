@@ -10,7 +10,6 @@ use Hotaruma\HttpRouter\Exception\{RouteUrlGeneratorInvalidArgumentException,
     RouteUrlGeneratorNotFoundException,
 };
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
-    Iterator\RouteIteratorInterface,
     Route\RouteInterface,
     RouteUrlBuilder\RouteUrlBuilderInterface,
     RouteUrlGenerator\RouteUrlGeneratorInterface};
@@ -18,18 +17,16 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
 class RouteUrlGenerator implements RouteUrlGeneratorInterface
 {
     /**
-     * @var RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>> Route collection
+     * @var RouteCollectionInterface Route collection
+     *
+     * @phpstan-var TA_RouteCollection
      */
     protected RouteCollectionInterface $routesCollection;
 
     /**
-     * @param RouteUrlBuilderInterface $routeUrlBuilder
+     * @var RouteUrlBuilderInterface
      */
-    public function __construct(
-        protected RouteUrlBuilderInterface $routeUrlBuilder = new RouteUrlBuilder()
-    ) {
-        $this->routesCollection(new RouteCollection());
-    }
+    protected RouteUrlBuilderInterface $routeUrlBuilder;
 
     /**
      * @inheritDoc
@@ -66,8 +63,10 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
     }
 
     /**
-     * @param RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>> $routeCollection
+     * @param RouteCollectionInterface $routeCollection
      * @return void
+     *
+     * @phpstan-param TA_RouteCollection $routeCollection
      */
     protected function routesCollection(RouteCollectionInterface $routeCollection): void
     {
@@ -75,11 +74,13 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
     }
 
     /**
-     * @return RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>>
+     * @return RouteCollectionInterface
+     *
+     * @phpstan-return TA_RouteCollection
      */
     protected function getRoutesCollection(): RouteCollectionInterface
     {
-        return $this->routesCollection;
+        return $this->routesCollection ??= new RouteCollection();
     }
 
     /**
@@ -87,6 +88,6 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
      */
     protected function getRouteUrlBuilder(): RouteUrlBuilderInterface
     {
-        return $this->routeUrlBuilder;
+        return $this->routeUrlBuilder ??= new RouteUrlBuilder();
     }
 }

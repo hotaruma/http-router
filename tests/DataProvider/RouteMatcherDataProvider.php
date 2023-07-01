@@ -8,6 +8,9 @@ use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
 
 class RouteMatcherDataProvider
 {
+    /**
+     * @return array<mixed>
+     */
     public static function matchRouteByHttpMethodDataProvider(): array
     {
         return [
@@ -17,6 +20,9 @@ class RouteMatcherDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function matchRouteByRegexDataProvider(): array
     {
         return [

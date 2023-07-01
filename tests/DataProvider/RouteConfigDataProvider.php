@@ -9,6 +9,9 @@ use stdClass;
 
 class RouteConfigDataProvider
 {
+    /**
+     * @return array<mixed>
+     */
     public static function rulesDataProvider(): array
     {
         return [
@@ -18,6 +21,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function invalidRulesDataProvider(): array
     {
         return [
@@ -25,6 +31,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function defaultsDataProvider(): array
     {
         return [
@@ -34,6 +43,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function invalidDefaultsDataProvider(): array
     {
         return [
@@ -41,6 +53,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function middlewaresDataProvider(): array
     {
         $fn = (fn($a) => $a)(...);
@@ -51,6 +66,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function pathDataProvider(): array
     {
         return [
@@ -61,6 +79,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function invalidPathDataProvider(): array
     {
         return [
@@ -68,6 +89,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function nameDataProvider(): array
     {
         return [
@@ -78,6 +102,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function methodsDataProvider(): array
     {
         return [
@@ -86,6 +113,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function invalidMethodsDataProvider(): array
     {
         return [
@@ -94,6 +124,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function pathMergeDataProvider(): array
     {
         return [
@@ -101,6 +134,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function methodsMergeDataProvider(): array
     {
         return [
@@ -109,6 +145,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function nameMergeDataProvider(): array
     {
         return [
@@ -116,6 +155,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function rulesMergeDataProvider(): array
     {
         return [
@@ -127,6 +169,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function defaultsMergeDataProvider(): array
     {
         return [
@@ -138,6 +183,9 @@ class RouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function middlewaresMergeDataProvider(): array
     {
         return [

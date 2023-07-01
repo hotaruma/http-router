@@ -52,7 +52,7 @@ class RouteMatcherTest extends TestCase
         array  $methods = [],
         array  $rules = [],
     ): RouteInterface {
-        $routeConfig = $this->getMockBuilder( ConfigStore::class)
+        $routeConfig = $this->getMockBuilder(ConfigStore::class)
             ->addMethods(['getPath', 'getMethods', 'getRules'])
             ->getMock();
 

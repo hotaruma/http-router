@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Route;
 
 use Closure;
+use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
     Factory\ConfigStoreFactoryInterface,
@@ -77,11 +78,14 @@ class Route implements RouteInterface
      */
     public function attributes(array $attributes): RouteInterface
     {
-        $this->stringStructure(
-            $attributes,
-            'Invalid format for route attribute. Attributes must be specified as strings.',
-            RouteInvalidArgumentException::class
-        );
+        try {
+            $this->stringStructure(
+                $attributes,
+                'Invalid format for route attribute. Attributes must be specified as strings.',
+            );
+        } catch (ConfigInvalidArgumentException $exception) {
+            throw new RouteInvalidArgumentException($exception->getMessage(), $exception->getCode(), $exception);
+        }
 
         $this->attributes = $attributes;
         return $this;

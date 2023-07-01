@@ -9,10 +9,10 @@ use Hotaruma\HttpRouter\Enum\AdditionalMethod;
 use Hotaruma\HttpRouter\Exception\RouteDispatcherNotFoundException;
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     Enum\RequestMethodInterface,
-    Iterator\RouteIteratorInterface,
     Route\RouteInterface,
     RouteDispatcher\RouteDispatcherInterface,
-    RouteMatcher\RouteMatcherInterface};
+    RouteMatcher\RouteMatcherInterface
+};
 use Hotaruma\HttpRouter\RouteMatcher\RouteMatcher;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
@@ -31,15 +31,16 @@ class RouteDispatcher implements RouteDispatcherInterface
     protected string $requestPath = '';
 
     /**
-     * @var RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>>
-     * Route collection for matching
+     * @var RouteCollectionInterface Route collection for matching
+     *
+     * @phpstan-var TA_RouteCollection
      */
     protected RouteCollectionInterface $routesCollection;
 
-    public function __construct(
-        protected RouteMatcherInterface $routeMatcher = new RouteMatcher()
-    ) {
-    }
+    /**
+     * @var RouteMatcherInterface
+     */
+    protected RouteMatcherInterface $routeMatcher;
 
     /**
      * @inheritDoc
@@ -115,8 +116,10 @@ class RouteDispatcher implements RouteDispatcherInterface
     }
 
     /**
-     * @param RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>> $routeCollection
+     * @param RouteCollectionInterface $routeCollection
      * @return void
+     *
+     * @phpstan-param TA_RouteCollection $routeCollection
      */
     protected function routesCollection(RouteCollectionInterface $routeCollection): void
     {
@@ -124,7 +127,9 @@ class RouteDispatcher implements RouteDispatcherInterface
     }
 
     /**
-     * @return RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>>
+     * @return RouteCollectionInterface
+     *
+     * @phpstan-return TA_RouteCollection
      */
     protected function getRoutesCollection(): RouteCollectionInterface
     {
@@ -136,6 +141,6 @@ class RouteDispatcher implements RouteDispatcherInterface
      */
     protected function getRouteMatcher(): RouteMatcherInterface
     {
-        return $this->routeMatcher;
+        return $this->routeMatcher ??= new RouteMatcher();
     }
 }
