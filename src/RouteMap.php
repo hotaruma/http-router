@@ -13,7 +13,6 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     Enum\RequestMethodInterface,
     Factory\ConfigStoreFactoryInterface,
     Factory\RouteFactoryInterface,
-    Iterator\RouteIteratorInterface,
     Route\RouteConfigureInterface,
     Route\RouteInterface,
     ConfigStore\ConfigStoreInterface,
@@ -35,17 +34,21 @@ class RouteMap implements RouteMapInterface
     protected ConfigStoreInterface $mergedConfigStore;
 
     /**
-     * @param RouteFactoryInterface $routeFactory Route factory
-     * @param ConfigStoreFactoryInterface $groupConfigStoreFactory Group config factory
-     * @param RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>> $routesCollection
-     * Routes collection
+     * @var RouteFactoryInterface Route factory
      */
-    public function __construct(
-        protected RouteFactoryInterface       $routeFactory = new RouteFactory(),
-        protected ConfigStoreFactoryInterface $groupConfigStoreFactory = new GroupConfigStoreFactory(),
-        protected RouteCollectionInterface    $routesCollection = new RouteCollection()
-    ) {
-    }
+    protected RouteFactoryInterface $routeFactory;
+
+    /**
+     * @var ConfigStoreFactoryInterface Group config factory
+     */
+    protected ConfigStoreFactoryInterface $groupConfigStoreFactory;
+
+    /**
+     * @var RouteCollectionInterface Routes collection
+     *
+     * @phpstan-var TA_RouteCollection
+     */
+    protected RouteCollectionInterface $routesCollection;
 
     /**
      * @inheritDoc
@@ -210,7 +213,7 @@ class RouteMap implements RouteMapInterface
      */
     public function getRoutes(): RouteCollectionInterface
     {
-        return $this->routesCollection;
+        return $this->routesCollection ??= new RouteCollection();
     }
 
     /**
@@ -283,7 +286,7 @@ class RouteMap implements RouteMapInterface
      */
     protected function getRouteFactory(): RouteFactoryInterface
     {
-        return $this->routeFactory;
+        return $this->routeFactory ??= new RouteFactory();
     }
 
     /**
@@ -291,6 +294,6 @@ class RouteMap implements RouteMapInterface
      */
     protected function getGroupConfigStoreFactory(): ConfigStoreFactoryInterface
     {
-        return $this->groupConfigStoreFactory;
+        return $this->groupConfigStoreFactory ??= new GroupConfigStoreFactory();
     }
 }

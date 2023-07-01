@@ -7,7 +7,6 @@ namespace Hotaruma\HttpRouter\Interface\RouteDispatcher;
 use Hotaruma\HttpRouter\Exception\RouteDispatcherNotFoundException;
 use Hotaruma\HttpRouter\Interface\Collection\RouteCollectionInterface;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
-use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Interface\RouteMatcher\RouteMatcherInterface;
 
@@ -16,8 +15,9 @@ interface RouteDispatcherInterface
     /**
      * @param RequestMethodInterface|null $requestHttpMethod Http method
      * @param string|null $requestPath Uri path
-     * @param RouteCollectionInterface<RouteInterface, RouteIteratorInterface<int, RouteInterface>>|null $routes
-     * Route collection for matching
+     * @param RouteCollectionInterface|null $routes Route collection for matching
+     *
+     * @phpstan-param TA_RouteCollection|null $routes
      */
     public function config(
         RequestMethodInterface   $requestHttpMethod = null,

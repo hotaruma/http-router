@@ -68,7 +68,7 @@ class RouteUrlBuilderTest extends TestCase
         array  $defaults = [],
         array  $attributes = [],
     ): RouteInterface|MockObject {
-        $routeConfig = $this->getMockBuilder( ConfigStore::class)
+        $routeConfig = $this->getMockBuilder(ConfigStore::class)
             ->addMethods(['getPath', 'getRules', 'getDefaults'])
             ->getMock();
 

@@ -8,6 +8,9 @@ use stdClass;
 
 class RouteDataProvider
 {
+    /**
+     * @return array<mixed>
+     */
     public static function actionDataProvider(): array
     {
         return [
@@ -15,6 +18,9 @@ class RouteDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function invalidActionDataProvider(): array
     {
         return [
@@ -22,6 +28,9 @@ class RouteDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function attributesDataProvider(): array
     {
         return [
@@ -31,6 +40,9 @@ class RouteDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function invalidAttributesDataProvider(): array
     {
         return [
@@ -38,6 +50,9 @@ class RouteDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function urlDataProvider(): array
     {
         return [

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Iterator;
 
 use Hotaruma\HttpRouter\Exception\RouteIteratorInvalidArgumentException;
+use Hotaruma\HttpRouter\Exception\RouteIteratorOutOfRangeException;
 use Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Iterator;
 
 /**
- * @template TKey of int
- * @template-covariant TItem of RouteInterface
+ * @template TKey
+ * @template TItem of RouteInterface
  *
  * @implements RouteIteratorInterface<TKey, TItem>
  */
@@ -19,12 +20,11 @@ class RouteIterator implements RouteIteratorInterface
 {
     /**
      * @var int
-     * @phpstan-var TKey
      */
     protected int $position = 0;
 
     /**
-     * @var array<TKey, RouteInterface>
+     * @var array<int, TItem>
      */
     protected array $routes = [];
 
@@ -47,9 +47,9 @@ class RouteIterator implements RouteIteratorInterface
     /**
      * @inheritDoc
      */
-    public function current(): ?RouteInterface
+    public function current(): RouteInterface
     {
-        return $this->routes[$this->position] ?? null;
+        return $this->routes[$this->position] ?? throw new RouteIteratorOutOfRangeException('The current route is out of range.');
     }
 
     /**
@@ -78,11 +78,9 @@ class RouteIterator implements RouteIteratorInterface
 
     /**
      * @inheritDoc
-     * @param int $rewindPosition
-     * @phpstan-param TKey $rewindPosition
      */
-    public function rewind(int $rewindPosition = 0): void
+    public function rewind(): void
     {
-        $this->position = $rewindPosition;
+        $this->position = 0;
     }
 }

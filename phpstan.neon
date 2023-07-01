@@ -1,5 +1,18 @@
 parameters:
+    excludePaths:
+        - 'tests/Unit'
     treatPhpDocTypesAsCertain: false
     level: max
     paths:
         - src
+        - tests
+    typeAliases:
+        	TA_C_RouteIteratorInterface: 'Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface'
+        	TA_C_RouteInterface: 'Hotaruma\HttpRouter\Interface\Route\RouteInterface'
+        	TA_C_RouteCollectionInterface: 'Hotaruma\HttpRouter\Interface\Collection\RouteCollectionInterface'
+
+        	TA_C_RouteSplObjectStorage: 'Hotaruma\HttpRouter\Collection\RouteSplObjectStorage'
+
+        	TA_RouteIterator: 'TA_C_RouteIteratorInterface<mixed, TA_C_RouteInterface>'
+        	TA_RouteCollection: 'TA_C_RouteCollectionInterface<TA_C_RouteInterface, TA_RouteIterator>'
+        	TA_RouteSplObjectStorage: 'TA_C_RouteSplObjectStorage<TA_C_RouteInterface, mixed>'

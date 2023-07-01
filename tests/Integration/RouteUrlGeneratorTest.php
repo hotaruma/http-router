@@ -18,7 +18,8 @@ class RouteUrlGeneratorTest extends TestCase
         $routeMap = new RouteMap();
 
         $routeMap->get('/get/{id}/', stdClass::class)->config(
-            name: 'get', defaults: ['id' => '1']
+            name: 'get',
+            defaults: ['id' => '1']
         );
 
         $routeUrlGenerator->config(

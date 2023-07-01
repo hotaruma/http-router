@@ -8,6 +8,9 @@ use Hotaruma\HttpRouter\Enum\HttpMethod;
 
 class GroupRouteConfigDataProvider
 {
+    /**
+     * @return array<mixed>
+     */
     public static function pathMergeDataProvider(): array
     {
         return [
@@ -16,6 +19,9 @@ class GroupRouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function methodsMergeDataProvider(): array
     {
         return [
@@ -25,6 +31,9 @@ class GroupRouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function nameMergeDataProvider(): array
     {
         return [
@@ -33,6 +42,9 @@ class GroupRouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function rulesMergeDataProvider(): array
     {
         return [
@@ -44,6 +56,9 @@ class GroupRouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function defaultsMergeDataProvider(): array
     {
         return [
@@ -55,6 +70,9 @@ class GroupRouteConfigDataProvider
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     public static function middlewaresMergeDataProvider(): array
     {
         return [

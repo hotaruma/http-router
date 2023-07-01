@@ -8,10 +8,10 @@ use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use SplObjectStorage;
 
 /**
- * @template-covariant TItems of RouteInterface
+ * @template TItems of RouteInterface
  * @template TValue
  *
- * @extends SplObjectStorage<RouteInterface, TValue>
+ * @extends SplObjectStorage<TItems, TValue>
  */
 class RouteSplObjectStorage extends SplObjectStorage
 {
