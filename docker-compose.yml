@@ -3,7 +3,7 @@ version: "3"
 services:
     php-cli:
       user: $UID:$GID
-      image: http_router_php_cli:1.0
+      image: ${PROJECT_NAME}_php_cli:1.0
       build:
         context: ./
         dockerfile: ./docker/dev/php-cli/Dockerfile
