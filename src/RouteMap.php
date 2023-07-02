@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter;
 
-use Closure;
 use Hotaruma\HttpRouter\Collection\RouteCollection;
 use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
 use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgumentException, RouteInvalidArgumentException};
@@ -75,7 +74,7 @@ class RouteMap implements RouteMapInterface
     public function changeGroupConfig(
         array                        $rules = null,
         array                        $defaults = null,
-        Closure|array                $middlewares = null,
+        mixed                        $middlewares = null,
         string                       $pathPrefix = null,
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null,
@@ -107,7 +106,7 @@ class RouteMap implements RouteMapInterface
         callable                     $group,
         array                        $rules = null,
         array                        $defaults = null,
-        Closure|array                $middlewares = null,
+        mixed                        $middlewares = null,
         string                       $pathPrefix = null,
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
@@ -126,6 +125,14 @@ class RouteMap implements RouteMapInterface
         );
 
         $group($this);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function add(string $path, mixed $action): RouteConfigureInterface
+    {
+        return $this->addRoute($path, $action, [AdditionalMethod::NULL]);
     }
 
     /**

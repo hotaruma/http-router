@@ -11,6 +11,17 @@ use Hotaruma\HttpRouter\Interface\Route\RouteConfigureInterface;
 interface RouteMapMethodsInterface
 {
     /**
+     * Add route with no http methods.
+     *
+     * @param string $path
+     * @param mixed $action
+     * @return RouteConfigureInterface
+     *
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
+     */
+    public function add(string $path, mixed $action): RouteConfigureInterface;
+
+    /**
      * Route will be accessed for any http method.
      *
      * @param string $path Route path

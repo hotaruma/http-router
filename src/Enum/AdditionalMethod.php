@@ -9,4 +9,5 @@ use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 enum AdditionalMethod: string implements RequestMethodInterface
 {
     case ANY = 'ANY';
+    case NULL = 'NULL';
 }
