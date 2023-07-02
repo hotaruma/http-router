@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Config;
 
-use Closure;
 use Hotaruma\HttpRouter\Interface\Config\{ConfigConfigureInterface, ConfigInterface};
+use Hotaruma\HttpRouter\Enum\AdditionalMethod;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
@@ -70,7 +70,7 @@ abstract class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function middlewares(array|Closure $middlewares): ConfigConfigureInterface
+    public function middlewares(mixed $middlewares): ConfigConfigureInterface
     {
         $this->middlewares = is_array($middlewares) ? $middlewares : [$middlewares];
 
@@ -126,7 +126,8 @@ abstract class Config implements ConfigInterface
      */
     public function methods(RequestMethodInterface|array $methods): ConfigConfigureInterface
     {
-        $this->methods = is_array($methods) ? $methods : [$methods];
+        $methods = is_array($methods) ? $methods : [$methods];
+        $this->methods = array_filter($methods, fn($method) => $method !== AdditionalMethod::NULL);
 
         return $this;
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Closure;
 use Hotaruma\HttpRouter\Factory\GroupConfigStoreFactory;
 use PHPUnit\Framework\TestCase;
 
@@ -97,7 +98,7 @@ class GroupRouteConfigTest extends TestCase
     /**
      * @dataProvider \Tests\DataProvider\GroupRouteConfigDataProvider::middlewaresMergeDataProvider
      */
-    public function testMergeMiddlewares(array $groupMiddlewares, array $routeMiddlewares, array $expectedMiddlewares): void
+    public function testMergeMiddlewares(mixed $groupMiddlewares, mixed $routeMiddlewares, array $expectedMiddlewares): void
     {
         $groupConfig = GroupConfigStoreFactory::create();
         $groupConfig->middlewares($groupMiddlewares);

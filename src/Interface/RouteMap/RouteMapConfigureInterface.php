@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interface\RouteMap;
 
-use Closure;
 use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Factory\ConfigStoreFactoryInterface;
@@ -18,7 +17,7 @@ interface RouteMapConfigureInterface
      *
      * @param array<string,string>|null $rules Regex rules for attributes in path
      * @param array<string,string>|null $defaults Default values for attributes in path
-     * @param Closure|array<mixed>|null $middlewares Middlewares list
+     * @param mixed $middlewares Middlewares list
      * @param string|null $pathPrefix Url path prefix
      * @param string|null $namePrefix Route name prefix
      * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods
@@ -29,7 +28,7 @@ interface RouteMapConfigureInterface
     public function changeGroupConfig(
         array                        $rules = null,
         array                        $defaults = null,
-        Closure|array                $middlewares = null,
+        mixed                        $middlewares = null,
         string                       $pathPrefix = null,
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
@@ -41,7 +40,7 @@ interface RouteMapConfigureInterface
      * @param callable(RouteMapInterface $routeMap): void $group
      * @param array<string,string>|null $rules Regex rules for attributes in path
      * @param array<string,string>|null $defaults Default values for attributes in path
-     * @param Closure|array<mixed>|null $middlewares Middlewares list
+     * @param mixed $middlewares Middlewares list
      * @param string|null $pathPrefix Url path prefix
      * @param string|null $namePrefix Routes name prefix
      * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods
@@ -53,7 +52,7 @@ interface RouteMapConfigureInterface
         callable                     $group,
         array                        $rules = null,
         array                        $defaults = null,
-        Closure|array                $middlewares = null,
+        mixed                        $middlewares = null,
         string                       $pathPrefix = null,
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
