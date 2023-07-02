@@ -140,7 +140,7 @@ class RouteConfigDataProvider
     public static function methodsMergeDataProvider(): array
     {
         return [
-            [[HttpMethod::GET], [HttpMethod::POST], [HttpMethod::GET, HttpMethod::POST]],
+            [[HttpMethod::GET], [HttpMethod::POST, HttpMethod::GET], [HttpMethod::GET, HttpMethod::POST]],
             [[HttpMethod::GET, HttpMethod::DELETE], [HttpMethod::POST], [HttpMethod::GET, HttpMethod::DELETE, HttpMethod::POST]],
         ];
     }
@@ -190,7 +190,7 @@ class RouteConfigDataProvider
     {
         return [
             [['Middleware1'], ['Middleware2'], ['Middleware1', 'Middleware2']],
-            [['Middleware1', 'Middleware2'], ['Middleware2'], ['Middleware1', 'Middleware2']],
+            [['Middleware1', 'Middleware2'], ['Middleware2'], ['Middleware1', 'Middleware2', 'Middleware2']],
             [['Middleware1'], [], ['Middleware1']],
             [[], ['Middleware2'], ['Middleware2']],
             [[], [], []],
