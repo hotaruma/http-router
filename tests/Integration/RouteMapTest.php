@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use Hotaruma\HttpRouter\Enum\HttpMethod;
+use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\RouteMap\RouteMapInterface;
 use Hotaruma\HttpRouter\RouteMap;
 use PHPUnit\Framework\TestCase;
@@ -137,5 +138,39 @@ class RouteMapTest extends TestCase
         $this->assertEquals('/group_f/path_f/route_t/path_t/', $routeConfig->getPath());
         $this->assertEquals('group', $routeConfig->getName());
         $this->assertEquals([HttpMethod::GET, HttpMethod::CONNECT], $routeConfig->getMethods());
+    }
+
+    public function testAddSimpleRoute(): void
+    {
+        $routeMap = new RouteMap();
+
+        $routeMap->changeGroupConfig(
+            methods: [HttpMethod::GET],
+        );
+
+        $routeMap->add('route/path', StdClass::class);
+
+        $routeMap->group(
+            methods: [HttpMethod::POST],
+            group: function (RouteMapInterface $routeMap) {
+                $routeMap->add('route/path', StdClass::class);
+            }
+        );
+
+        $routesCollection = $routeMap->getRoutes();
+        $this->assertCount(2, $routesCollection);
+
+        $iterator = $routesCollection->getIterator();
+        $this->assertEquals([HttpMethod::GET], $iterator->current()->getConfigStore()->getMethods());
+        $iterator->next();
+        $this->assertEquals([HttpMethod::GET, HttpMethod::POST], $iterator->current()->getConfigStore()->getMethods());
+    }
+
+    public function testInvalidSimpleRoute(): void
+    {
+        $routeMap = new RouteMap();
+
+        $this->expectException(ConfigInvalidArgumentException::class);
+        $routeMap->add('route/path', StdClass::class);
     }
 }

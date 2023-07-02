@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\DataProvider;
 
 use Hotaruma\HttpRouter\Enum\HttpMethod;
+use stdClass;
 
 class GroupRouteConfigDataProvider
 {
@@ -26,7 +27,7 @@ class GroupRouteConfigDataProvider
     {
         return [
             [[], [HttpMethod::POST], [HttpMethod::POST]],
-            [[HttpMethod::GET], [HttpMethod::POST], [HttpMethod::GET, HttpMethod::POST]],
+            [[HttpMethod::GET], [HttpMethod::POST, HttpMethod::POST], [HttpMethod::GET, HttpMethod::POST]],
             [[HttpMethod::GET, HttpMethod::DELETE], [HttpMethod::POST], [HttpMethod::GET, HttpMethod::DELETE, HttpMethod::POST]],
         ];
     }
@@ -75,12 +76,21 @@ class GroupRouteConfigDataProvider
      */
     public static function middlewaresMergeDataProvider(): array
     {
+        $fn = (fn($a) => $a);
+        $fn2 = (fn($a) => $a);
+        $obj = new stdClass();
+        $obj2 = new stdClass();
         return [
             [['Middleware1'], ['Middleware2'], ['Middleware1', 'Middleware2']],
-            [['Middleware1', 'Middleware2'], ['Middleware2'], ['Middleware1', 'Middleware2']],
+            [['Middleware1', 'Middleware2'], ['Middleware2'], ['Middleware1', 'Middleware2', 'Middleware2']],
             [['Middleware1'], [], ['Middleware1']],
             [[], ['Middleware2'], ['Middleware2']],
             [[], [], []],
+            [[$fn], [$fn, $fn], [$fn, $fn, $fn]],
+            [$fn, $fn, [$fn, $fn]],
+            [$fn, $fn2, [$fn, $fn2]],
+            [[$fn, $fn2], [$fn2], [$fn, $fn2, $fn2]],
+            [[$obj, $obj2], [$obj2], [$obj, $obj2, $obj2]],
         ];
     }
 }

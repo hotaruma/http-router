@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Route;
 
-use Closure;
 use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
@@ -130,7 +129,7 @@ class Route implements RouteInterface
     public function config(
         array                        $rules = null,
         array                        $defaults = null,
-        Closure|array                $middlewares = null,
+        mixed                        $middlewares = null,
         string                       $path = null,
         string                       $name = null,
         RequestMethodInterface|array $methods = null,

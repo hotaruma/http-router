@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interface\Config;
 
-use Closure;
 use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 
@@ -76,12 +75,12 @@ interface ConfigConfigureInterface
     public function getDefaults(): array;
 
     /**
-     * @param Closure|array<mixed> $middlewares Middlewares list
+     * @param mixed $middlewares Middlewares list
      * @return ConfigConfigureInterface
      *
      * @throws ConfigInvalidArgumentException
      */
-    public function middlewares(Closure|array $middlewares): ConfigConfigureInterface;
+    public function middlewares(mixed $middlewares): ConfigConfigureInterface;
 
     /**
      * @return array<mixed> Current middlewares

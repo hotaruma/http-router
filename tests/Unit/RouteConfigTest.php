@@ -58,7 +58,7 @@ class RouteConfigTest extends TestCase
     /**
      * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::middlewaresDataProvider
      */
-    public function testMiddlewares(array|Closure $middlewares, mixed $expected = null): void
+    public function testMiddlewares(mixed $middlewares, mixed $expected = null): void
     {
         $config = ConfigStoreFactory::create();
         $config->middlewares($middlewares);
