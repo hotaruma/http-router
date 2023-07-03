@@ -6,6 +6,7 @@ namespace Hotaruma\HttpRouter;
 
 use Hotaruma\HttpRouter\Collection\RouteCollection;
 use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
+use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
 use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgumentException, RouteInvalidArgumentException};
 use Hotaruma\HttpRouter\Factory\{RouteFactory, GroupConfigStoreFactory};
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
@@ -16,7 +17,8 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     Route\RouteInterface,
     ConfigStore\ConfigStoreInterface,
     RouteMap\RouteMapConfigureInterface,
-    RouteMap\RouteMapInterface};
+    RouteMap\RouteMapInterface,
+    RouteScanner\RouteScannerInterface};
 
 class RouteMap implements RouteMapInterface
 {
@@ -50,6 +52,11 @@ class RouteMap implements RouteMapInterface
     protected RouteCollectionInterface $routesCollection;
 
     /**
+     * @var RouteScannerInterface
+     */
+    protected RouteScannerInterface $routeScanner;
+
+    /**
      * @inheritDoc
      */
     public function routeFactory(RouteFactoryInterface $routeFactory): RouteMapConfigureInterface
@@ -71,6 +78,15 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
+    public function routeScanner(RouteScannerInterface $routeScanner): RouteMapConfigureInterface
+    {
+        $this->routeScanner = $routeScanner;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function changeGroupConfig(
         array                        $rules = null,
         array                        $defaults = null,
@@ -78,7 +94,6 @@ class RouteMap implements RouteMapInterface
         string                       $pathPrefix = null,
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null,
-        bool                         $mergeWithPreviousConfig = false
     ): void {
         $groupConfig = $this->getGroupConfigStoreFactory()::create();
 
@@ -121,7 +136,6 @@ class RouteMap implements RouteMapInterface
             pathPrefix: $pathPrefix,
             namePrefix: $namePrefix,
             methods: $methods,
-            mergeWithPreviousConfig: true
         );
 
         $group($this);
@@ -130,9 +144,18 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function add(string $path, mixed $action): RouteConfigureInterface
+    public function scanRoutes(...$classes): void
     {
-        return $this->addRoute($path, $action, [AdditionalMethod::NULL]);
+        $this->getRouteScanner()->routeMap($this);
+        $this->getRouteScanner()->scanRoutes(...$classes);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function add(string $path, mixed $action, ...$methods): RouteConfigureInterface
+    {
+        return $this->addRoute($path, $action, $methods ?: [AdditionalMethod::NULL]);
     }
 
     /**
@@ -232,6 +255,22 @@ class RouteMap implements RouteMapInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getRouteFactory(): RouteFactoryInterface
+    {
+        return $this->routeFactory ??= new RouteFactory();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getGroupConfigStoreFactory(): ConfigStoreFactoryInterface
+    {
+        return $this->groupConfigStoreFactory ??= new GroupConfigStoreFactory();
+    }
+
+    /**
      * Set current group config.
      *
      * @param ConfigStoreInterface $configStore
@@ -289,18 +328,10 @@ class RouteMap implements RouteMapInterface
     }
 
     /**
-     * @return RouteFactoryInterface
+     * @return RouteScannerInterface
      */
-    protected function getRouteFactory(): RouteFactoryInterface
+    protected function getRouteScanner(): RouteScannerInterface
     {
-        return $this->routeFactory ??= new RouteFactory();
-    }
-
-    /**
-     * @return ConfigStoreFactoryInterface
-     */
-    protected function getGroupConfigStoreFactory(): ConfigStoreFactoryInterface
-    {
-        return $this->groupConfigStoreFactory ??= new GroupConfigStoreFactory();
+        return $this->routeScanner ??= new RouteScanner();
     }
 }

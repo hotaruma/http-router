@@ -61,7 +61,7 @@ interface RouteToolsInterface
     public function getConfigStore(): ConfigStoreInterface;
 
     /**
-     * Set route map config.
+     * Set route-map config.
      *
      * @param ConfigStoreInterface $routeMapConfigStore
      * @return void

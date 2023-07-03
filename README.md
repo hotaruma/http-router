@@ -45,9 +45,11 @@ $routeMap->get('/shop/{category}', CategoryController::class);
 
 Routes can be configured by defining its defaults, rules, and more.
 
-- **Defaults**: This sets the placeholder's value when generating a route by name, as long as there is no attribute with the same name in the route.
+- **Defaults**: This sets the placeholder's value when generating a route by name, as long as there is no attribute with
+  the same name in the route.
   In that case, the attribute's value takes precedence.
-- **Rules**: These play a role in pattern validation within {} placeholders. They determine if a parameter matches a specific type based on regular
+- **Rules**: These play a role in pattern validation within `{}` placeholders. They determine if a parameter matches a
+  specific type based on regular
   expressions. Rules are also used to validate parameters during route generation.
 - **Middlewares**: Middleware functions can be grouped and returned in their original form.
 - **Name**: This is used to generate a route later on.
@@ -64,7 +66,8 @@ $routeMap->add('/news/{id}', NewsController::class)->config(
 ```
 
 It is preferable to use named attributes for configuration.
-By using named attributes, you can explicitly specify the purpose of each configuration option, improving the readability of your code.
+By using named attributes, you can explicitly specify the purpose of each configuration option, improving the
+readability of your code.
 
 ### Grouping Routes
 
@@ -95,11 +98,15 @@ $routeMap->group(
 );
 ```
 
-When grouping routes and nesting one group within another, you have the ability to merge configurations. This means that each route inside a group
-merges its configuration with the group's configuration, and each nested group merges its configuration with its parent group.
+When grouping routes and nesting one group within another, you have the ability to merge configurations. This means that
+each route inside a group
+merges its configuration with the group's configuration, and each nested group merges its configuration with its parent
+group.
 
-By organizing routes into groups, you can apply specific configurations to multiple routes at once. The configurations cascade down the nested groups,
-allowing you to inherit and override settings as needed. This provides a powerful and flexible way to manage and organize your routes.
+By organizing routes into groups, you can apply specific configurations to multiple routes at once. The configurations
+cascade down the nested groups,
+allowing you to inherit and override settings as needed. This provides a powerful and flexible way to manage and
+organize your routes.
 
 ```php
 $routeMap->group(
@@ -112,7 +119,7 @@ $routeMap->group(
 
         $routeMap->changeGroupConfig(
             middlewares: [AdminAccessMiddleware::class],
-            methods: [HttpMethod::DELETE, HttpMethod::POST],
+            methods: [HttpMethod::GET, HttpMethod::DELETE, HttpMethod::POST],
         );
         
         $routeMap->add('/users/{id}', [AdminController::class, 'users']);
@@ -121,11 +128,88 @@ $routeMap->group(
 );
 ```
 
+### Route Scanner
+
+By using PHP 8's attribute syntax, you can easily annotate your classes and methods with route attributes, simplifying
+the process of defining routes in your application.
+
+```php
+use Hotaruma\HttpRouter\Attribute\{Route, RouteGroup};
+use Hotaruma\HttpRouter\Enum\HttpMethod;
+
+#[RouteGroup(pathPrefix: '/users', methods: [HttpMethod::GET])]
+class ApiUserController
+{
+    #[Route('/')]
+    public function getUsers()
+    {
+        // Handle getting users
+    }
+
+    #[Route('/{id}', rules: ['id' => '\d+'])]
+    public function getUserById(int $id)
+    {
+        // Handle getting a user by ID
+    }
+}
+```
+
+The Route Scanner scans the provided classes for attributes that extend the `RouteInterface` and `RouteGroupInterface`.
+It
+extracts the route configuration from these attributes and registers the routes in the RouteMap, a data structure that
+holds all the defined routes.
+
+By calling the `scanRoutes` method of the `RouteScanner` class and passing the `ApiController` class as an argument, the
+routes defined in the class will be scanned and registered in the RouteMap.
+
+```php
+use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
+
+$routeScanner = new RouteScanner();
+
+$routeMap = $routeScanner->scanRoutes(ApiController::class);
+$routes = $routeMap->getRoutes();
+// ...
+```
+
+The Route Scanner can be used within the `RouteMap` and its groups.
+
+```php
+use Hotaruma\HttpRouter\RouteMap;
+
+$routeMap = new RouteMap();
+
+$routeMap->scanRoutes(UserController::class, PostController::class);
+
+$routeMap->group(
+    pathPrefix: 'admin',
+    middlewares: [AdminAccessMiddleware::class],
+    group: function (RouteMapInterface $routeMap) {
+    
+        $routeMap->scanRoutes(AdminController::class);
+    }
+);
+```
+
+When scanning routes using `$routeMap->scanRoutes()` and encountering the `RouteGroup` attribute, the configuration
+defined
+within the attribute will take precedence over the current group configuration set by `$routeMap->group()`. This means
+that the configuration specified in `RouteGroup` will be used for the routes within that specific class.
+
+The `routeActionBuilder` method allows you to customize how the action for a created route will look like, based on the
+class name and method name. This can be useful if you want to modify the default behavior of action generation for the
+routes.
+
+```php
+$routeScanner->routeActionBuilder(function (string $className, string $methodName): array {
+    return "$className@$methodName";
+});
+```
+
 ## Route Dispatcher
 
-Once the routes are defined, you can use the RouteDispatcher class to match the incoming request to the appropriate route and extract the associated
-attributes.
-You can configure the RouteDispatcher and match the routes:
+Once the routes are defined, you can use the `RouteDispatcher` class to match the incoming request to the appropriate
+route and extract the associated attributes. You can configure the `RouteDispatcher` and match the routes:
 
 ```php
 use Hotaruma\HttpRouter\{RouteMap,RouteDispatcher};
@@ -152,17 +236,32 @@ $attributes = $route->getAttributes();
 $action = $route->getAction();
 ```
 
-You can customize the route dispatching process by providing your own implementation of the `RouteMatcherInterface` interface.
+You can customize the route dispatching process by providing your own implementation of the `RouteMatcherInterface`
+interface.
+
 ```php
 $routeDispatcher->routeMatcher(new RouteMatcher());
 ```
 
-## URL Generator
-
-To use the RouteUrlGenerator, you need to create a RouteMap instance with defined routes.
+The `scanRoutesFromDirectory` function allows you to scan all PHP files in a specified directory and its subdirectories to
+automatically discover classes and their attributes marked with the `Route` and `RouteGroup` attributes.
 
 ```php
-use Hotaruma\HttpRouter\{RouteMap,RouteUrlGenerator};
+use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
+
+$routeScanner = new RouteScanner();
+$directoryPath = __DIR__ . '/Controllers';
+
+$routeMap = $routeScanner->scanRoutesFromDirectory($directoryPath);
+$routes = $routeMap->getRoutes();
+```
+
+## URL Generator
+
+To use the `RouteUrlGenerator`, you need to create a `RouteMap` instance with defined routes.
+
+```php
+use Hotaruma\HttpRouter\{RouteMap, RouteUrlGenerator};
 
 $routeUrlGenerator = new RouteUrlGenerator();
 $routeMap = new RouteMap();
@@ -180,10 +279,13 @@ $route = $routeUrlGenerator->generateByName('profile');
 $url = $route->getUrl(); //profile/projects/
 ```
 
-You can customize the route url generation by providing your own implementation of the `RouteUrlBuilderInterface` interface.
+You can customize the route url generation by providing your own implementation of the `RouteUrlBuilderInterface`
+interface.
+
 ```php
 $routeUrlGenerator->routeUrlBuilder(new RouteUrlBuilder());
 ```
+
 ## Contributing
 
 Contributions are welcome! If you find a bug or have an idea for a new feature, please open an issue or submit a pull

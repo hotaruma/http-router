@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use Hotaruma\HttpRouter\Exception\RouteUrlGeneratorInvalidArgumentException;
 use Hotaruma\HttpRouter\Exception\RouteUrlGeneratorNotFoundException;
 use Hotaruma\HttpRouter\RouteMap;
 use Hotaruma\HttpRouter\RouteUrlGenerator;
@@ -41,8 +42,20 @@ class RouteUrlGeneratorTest extends TestCase
         );
         $this->expectException(RouteUrlGeneratorNotFoundException::class);
         $routeUrlGenerator->generateByName('get');
+    }
 
-        $this->expectException(RouteUrlGeneratorNotFoundException::class);
+    public function testInvalidGenerateByEmptyName(): void
+    {
+        $routeUrlGenerator = new RouteUrlGenerator();
+        $routeMap = new RouteMap();
+
+        $routeMap->get('/get/', stdClass::class);
+
+        $routeUrlGenerator->config(
+            routes: $routeMap->getRoutes(),
+        );
+
+        $this->expectException(RouteUrlGeneratorInvalidArgumentException::class);
         $routeUrlGenerator->generateByName('');
     }
 }

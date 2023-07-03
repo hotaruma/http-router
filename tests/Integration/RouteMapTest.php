@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use Hotaruma\HttpRouter\Attribute\Route;
+use Hotaruma\HttpRouter\Attribute\RouteGroup;
 use Hotaruma\HttpRouter\Enum\HttpMethod;
 use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\RouteMap\RouteMapInterface;
@@ -172,5 +174,102 @@ class RouteMapTest extends TestCase
 
         $this->expectException(ConfigInvalidArgumentException::class);
         $routeMap->add('route/path', StdClass::class);
+    }
+
+    public function testGroupWithRouteScanner(): void
+    {
+        $routeMap = new RouteMap();
+
+        $routeMap->changeGroupConfig(
+            defaults: ['page_f' => '1'],
+            rules: ['page_f' => '\d+'],
+            middlewares: ['Middleware1_f'],
+            pathPrefix: 'group_f/path_f',
+            namePrefix: 'group_f',
+        );
+        $baseRouteMapGroupConfigStore = $routeMap->getGroupConfigStoreFactory()::create();
+        $baseRouteMapGroupConfigStore->mergeConfig($routeMap->getConfigStore());
+
+        $class = new class () {
+            #[Route(
+                path: '/route1',
+                methods: HttpMethod::GET,
+                rules: ['rule1' => '\d+'],
+                defaults: ['default1' => '1'],
+                name: 'route1',
+                middlewares: ['middleware1'],
+            )]
+            public function route1(): void
+            {
+            }
+        };
+
+        $class2 = new #[RouteGroup(
+            middlewares: ['group_middleware2'],
+            pathPrefix: 'group_route2',
+            namePrefix: 'group_route2',
+            methods: HttpMethod::OPTIONS,
+        )] class () {
+            #[Route(
+                path: '/route2',
+                methods: HttpMethod::DELETE,
+                rules: ['rule2' => '\d+'],
+                defaults: ['default2' => '1'],
+                name: 'route2',
+                middlewares: ['middleware2'],
+            )]
+            public function route1(): void
+            {
+            }
+        };
+
+        $routeMap->scanRoutes($class::class, $class2::class);
+        $routes = $routeMap->getRoutes();
+
+        $iterator = $routes->getIterator();
+
+        $routeConfig = $iterator->current()->getConfigStore()->getConfig();
+        $this->assertSame(
+            [
+                '/group_f/path_f/route1/',
+                [HttpMethod::GET],
+                ['rule1' => '\d+', 'page_f' => '\d+'],
+                ['default1' => '1', 'page_f' => '1'],
+                'group_f.route1',
+                ['Middleware1_f', 'middleware1'],
+            ],
+            [
+                $routeConfig->getPath(),
+                $routeConfig->getMethods(),
+                $routeConfig->getRules(),
+                $routeConfig->getDefaults(),
+                $routeConfig->getName(),
+                $routeConfig->getMiddlewares()
+            ]
+        );
+
+        $iterator->next();
+
+        $routeConfig = $iterator->current()->getConfigStore()->getConfig();
+        $this->assertSame(
+            [
+                '/group_route2/route2/',
+                [HttpMethod::OPTIONS, HttpMethod::DELETE],
+                ['rule2' => '\d+'],
+                ['default2' => '1'],
+                'group_route2.route2',
+                ['group_middleware2', 'middleware2'],
+            ],
+            [
+                $routeConfig->getPath(),
+                $routeConfig->getMethods(),
+                $routeConfig->getRules(),
+                $routeConfig->getDefaults(),
+                $routeConfig->getName(),
+                $routeConfig->getMiddlewares()
+            ]
+        );
+
+        $this->assertEquals($baseRouteMapGroupConfigStore->getConfig(), $routeMap->getConfigStore()->getConfig());
     }
 }

@@ -11,10 +11,9 @@ use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Iterator;
 
 /**
- * @template TKey
  * @template TItem of RouteInterface
  *
- * @implements RouteIteratorInterface<TKey, TItem>
+ * @implements RouteIteratorInterface<int, TItem>
  */
 class RouteIterator implements RouteIteratorInterface
 {
