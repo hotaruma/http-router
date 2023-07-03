@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\Interface\RouteMap;
 
-use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
-use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
+use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgumentException, RouteInvalidArgumentException};
+use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteConfigureInterface;
 
 interface RouteMapMethodsInterface
@@ -15,11 +15,12 @@ interface RouteMapMethodsInterface
      *
      * @param string $path
      * @param mixed $action
+     * @param RequestMethodInterface $methods
      * @return RouteConfigureInterface
      *
      * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
      */
-    public function add(string $path, mixed $action): RouteConfigureInterface;
+    public function add(string $path, mixed $action, ...$methods): RouteConfigureInterface;
 
     /**
      * Route will be accessed for any http method.

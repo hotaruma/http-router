@@ -45,12 +45,9 @@ class Route implements RouteInterface
     protected ConfigStoreInterface $configStore;
 
     /**
-     * @param ConfigStoreFactoryInterface $configStoreFactory
+     * @var ConfigStoreFactoryInterface
      */
-    public function __construct(
-        protected ConfigStoreFactoryInterface $configStoreFactory = new ConfigStoreFactory()
-    ) {
-    }
+    protected ConfigStoreFactoryInterface $configStoreFactory;
 
     /**
      * @inheritDoc
@@ -184,6 +181,6 @@ class Route implements RouteInterface
      */
     protected function getConfigStoreFactory(): ConfigStoreFactoryInterface
     {
-        return $this->configStoreFactory;
+        return $this->configStoreFactory ??= new ConfigStoreFactory();
     }
 }

@@ -28,12 +28,9 @@ class ConfigStore implements ConfigStoreInterface
     protected const NAME_SEPARATOR = '.';
 
     /**
-     * @param ConfigInterface $config
+     * @var ConfigInterface
      */
-    public function __construct(
-        protected ConfigInterface $config = new RouteConfig()
-    ) {
-    }
+    protected ConfigInterface $config;
 
     /**
      * @inheritDoc
@@ -49,13 +46,13 @@ class ConfigStore implements ConfigStoreInterface
      */
     public function getConfig(): ConfigInterface
     {
-        return $this->config;
+        return $this->config ??= new RouteConfig();
     }
 
     /**
      * @inheritDoc
      */
-    public function mergeConfig(ConfigStoreInterface $routeConfig): void
+    public function mergeConfig(ConfigStoreInterface|ConfigInterface $routeConfig): void
     {
         $this->path($this->reduceConfig(
             [$routeConfig->getPath(), $this->getPath()],

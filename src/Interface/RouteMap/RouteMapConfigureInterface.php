@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Interface\RouteMap;
 
 use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
+use Hotaruma\HttpRouter\Exception\RouteScannerReflectionException;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Factory\ConfigStoreFactoryInterface;
 use Hotaruma\HttpRouter\Interface\Factory\RouteFactoryInterface;
 use Hotaruma\HttpRouter\Interface\ConfigStore\ConfigStoreInterface;
+use Hotaruma\HttpRouter\Interface\RouteScanner\RouteScannerInterface;
 
 interface RouteMapConfigureInterface
 {
@@ -59,6 +61,16 @@ interface RouteMapConfigureInterface
     ): void;
 
     /**
+     * Scan route/group attributes and add to current level.
+     *
+     * @param class-string ...$classes
+     * @return void
+     *
+     * @throws RouteScannerReflectionException
+     */
+    public function scanRoutes(...$classes): void;
+
+    /**
      * Set base route factory.
      *
      * @param RouteFactoryInterface $routeFactory
@@ -77,9 +89,27 @@ interface RouteMapConfigureInterface
     ): RouteMapConfigureInterface;
 
     /**
+     * Set route scanner.
+     *
+     * @param RouteScannerInterface $routeScanner
+     * @return RouteMapConfigureInterface
+     */
+    public function routeScanner(RouteScannerInterface $routeScanner): RouteMapConfigureInterface;
+
+    /**
      * Get current group config.
      *
      * @return ConfigStoreInterface
      */
     public function getConfigStore(): ConfigStoreInterface;
+
+    /**
+     * @return RouteFactoryInterface
+     */
+    public function getRouteFactory(): RouteFactoryInterface;
+
+    /**
+     * @return ConfigStoreFactoryInterface
+     */
+    public function getGroupConfigStoreFactory(): ConfigStoreFactoryInterface;
 }
