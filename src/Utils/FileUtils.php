@@ -17,7 +17,7 @@ trait FileUtils
         }
         $sourceCode = file_get_contents($filename);
 
-        $tokens = token_get_all($sourceCode);
+        $tokens = token_get_all((string)$sourceCode);
         $tokens = array_filter($tokens, fn($token) => is_array($token));
 
         $namespaceFound = $classFound = false;
@@ -32,6 +32,9 @@ trait FileUtils
                 default => false
             };
             if (!empty($class)) {
+                /**
+                 * @var class-string
+                 */
                 return ($namespace ?? '') . $class;
             }
         }
