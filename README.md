@@ -206,6 +206,19 @@ $routeScanner->routeActionBuilder(function (string $className, string $methodNam
 });
 ```
 
+The `scanRoutesFromDirectory` function allows you to scan all PHP files in a specified directory and its subdirectories to
+automatically discover classes and their attributes marked with the `Route` and `RouteGroup` attributes.
+
+```php
+use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
+
+$routeScanner = new RouteScanner();
+$directoryPath = __DIR__ . '/Controllers';
+
+$routeMap = $routeScanner->scanRoutesFromDirectory($directoryPath);
+$routes = $routeMap->getRoutes();
+```
+
 ## Route Dispatcher
 
 Once the routes are defined, you can use the `RouteDispatcher` class to match the incoming request to the appropriate
@@ -241,19 +254,6 @@ interface.
 
 ```php
 $routeDispatcher->routeMatcher(new RouteMatcher());
-```
-
-The `scanRoutesFromDirectory` function allows you to scan all PHP files in a specified directory and its subdirectories to
-automatically discover classes and their attributes marked with the `Route` and `RouteGroup` attributes.
-
-```php
-use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
-
-$routeScanner = new RouteScanner();
-$directoryPath = __DIR__ . '/Controllers';
-
-$routeMap = $routeScanner->scanRoutesFromDirectory($directoryPath);
-$routes = $routeMap->getRoutes();
 ```
 
 ## URL Generator
