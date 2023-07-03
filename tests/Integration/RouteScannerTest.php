@@ -224,4 +224,14 @@ class RouteScannerTest extends TestCase
 
         $this->assertSame(['route1', $class::class], $iterator->current()->getAction());
     }
+
+    public function testScanRoutesFromDirectory(): void
+    {
+        $routeScanner = new RouteScanner();
+
+        $roteMap = $routeScanner->scanRoutesFromDirectory(__DIR__);
+
+        $routes = $roteMap->getRoutes();
+        $this->assertCount(4, $routes);
+    }
 }

@@ -4,19 +4,25 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\RouteScanner;
 
-use Closure;
 use Hotaruma\HttpRouter\Exception\RouteScannerReflectionException;
 use Hotaruma\HttpRouter\Interface\Config\ConfigInterface;
 use Hotaruma\HttpRouter\Interface\RouteScanner\RouteScannerInterface;
+use Hotaruma\HttpRouter\Utils\FileUtils;
 use Hotaruma\HttpRouter\Interface\Attribute\{RouteGroupInterface, RouteInterface};
 use Hotaruma\HttpRouter\Interface\RouteMap\RouteMapInterface;
 use Hotaruma\HttpRouter\RouteMap;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
+use Closure;
+use SplFileInfo;
 
 class RouteScanner implements RouteScannerInterface
 {
+    use FileUtils;
+
     /**
      * @var RouteMapInterface
      */
@@ -32,6 +38,10 @@ class RouteScanner implements RouteScannerInterface
      */
     public function scanRoutes(...$classes): RouteMapInterface
     {
+        if (empty($classes)) {
+            return $this->getRouteMap();
+        }
+
         $baseRouteMapGroupConfigStore = $this->getRouteMap()->getGroupConfigStoreFactory()::create();
         $baseRouteMapGroupConfigStore->mergeConfig($this->getRouteMap()->getConfigStore());
 
@@ -70,6 +80,33 @@ class RouteScanner implements RouteScannerInterface
         }
 
         return $this->getRouteMap();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function scanRoutesFromDirectory(string ...$directories): RouteMapInterface
+    {
+        if (empty($directories)) {
+            return $this->getRouteMap();
+        }
+
+        $classes = [];
+        foreach ($directories as $directory) {
+            /**
+             * @var SplFileInfo[] $iterator
+             */
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+            foreach ($iterator as $file) {
+                if (
+                    $file->isFile() &&
+                    $file->getExtension() === 'php'
+                ) {
+                    $classes[] = $this->getClassNameFromFile($file->getPathname());
+                }
+            }
+        }
+        return $this->scanRoutes(...array_filter($classes));
     }
 
     /**

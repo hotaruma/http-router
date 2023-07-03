@@ -48,7 +48,7 @@ Routes can be configured by defining its defaults, rules, and more.
 - **Defaults**: This sets the placeholder's value when generating a route by name, as long as there is no attribute with
   the same name in the route.
   In that case, the attribute's value takes precedence.
-- **Rules**: These play a role in pattern validation within {} placeholders. They determine if a parameter matches a
+- **Rules**: These play a role in pattern validation within `{}` placeholders. They determine if a parameter matches a
   specific type based on regular
   expressions. Rules are also used to validate parameters during route generation.
 - **Middlewares**: Middleware functions can be grouped and returned in their original form.
@@ -154,11 +154,12 @@ class ApiUserController
 }
 ```
 
-The Route Scanner scans the provided classes for attributes that extend the RouteInterface and RouteGroupInterface. It
+The Route Scanner scans the provided classes for attributes that extend the `RouteInterface` and `RouteGroupInterface`.
+It
 extracts the route configuration from these attributes and registers the routes in the RouteMap, a data structure that
 holds all the defined routes.
 
-By calling the scanRoutes method of the RouteScanner class and passing the ApiController class as an argument, the
+By calling the `scanRoutes` method of the `RouteScanner` class and passing the `ApiController` class as an argument, the
 routes defined in the class will be scanned and registered in the RouteMap.
 
 ```php
@@ -195,7 +196,7 @@ defined
 within the attribute will take precedence over the current group configuration set by `$routeMap->group()`. This means
 that the configuration specified in `RouteGroup` will be used for the routes within that specific class.
 
-The routeActionBuilder method allows you to customize how the action for a created route will look like, based on the
+The `routeActionBuilder` method allows you to customize how the action for a created route will look like, based on the
 class name and method name. This can be useful if you want to modify the default behavior of action generation for the
 routes.
 
@@ -207,10 +208,8 @@ $routeScanner->routeActionBuilder(function (string $className, string $methodNam
 
 ## Route Dispatcher
 
-Once the routes are defined, you can use the RouteDispatcher class to match the incoming request to the appropriate
-route and extract the associated
-attributes.
-You can configure the RouteDispatcher and match the routes:
+Once the routes are defined, you can use the `RouteDispatcher` class to match the incoming request to the appropriate
+route and extract the associated attributes. You can configure the `RouteDispatcher` and match the routes:
 
 ```php
 use Hotaruma\HttpRouter\{RouteMap,RouteDispatcher};
@@ -244,9 +243,22 @@ interface.
 $routeDispatcher->routeMatcher(new RouteMatcher());
 ```
 
+The `scanRoutesFromDirectory` function allows you to scan all PHP files in a specified directory and its subdirectories to
+automatically discover classes and their attributes marked with the `Route` and `RouteGroup` attributes.
+
+```php
+use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
+
+$routeScanner = new RouteScanner();
+$directoryPath = __DIR__ . '/Controllers';
+
+$routeMap = $routeScanner->scanRoutesFromDirectory($directoryPath);
+$routes = $routeMap->getRoutes();
+```
+
 ## URL Generator
 
-To use the RouteUrlGenerator, you need to create a RouteMap instance with defined routes.
+To use the `RouteUrlGenerator`, you need to create a `RouteMap` instance with defined routes.
 
 ```php
 use Hotaruma\HttpRouter\{RouteMap, RouteUrlGenerator};
