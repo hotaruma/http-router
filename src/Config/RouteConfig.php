@@ -9,7 +9,7 @@ use Hotaruma\HttpRouter\Interface\Config\ConfigConfigureInterface;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Utils\ConfigValidateUtils;
 
-class RouteConfig extends Config
+class RouteConfig extends AbstractConfig
 {
     use ConfigValidateUtils;
 
