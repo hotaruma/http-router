@@ -7,10 +7,10 @@ namespace Hotaruma\HttpRouter\Interface\RouteUrlGenerator;
 use Hotaruma\HttpRouter\Interface\Collection\RouteCollectionInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Interface\RouteUrlBuilder\RouteUrlBuilderInterface;
-use Hotaruma\HttpRouter\Exception\{RouteUrlGeneratorInvalidArgumentException,
+use Hotaruma\HttpRouter\Exception\{PatternRegistryPatternNotFoundException,
+    RouteUrlGeneratorInvalidArgumentException,
     RouteUrlGeneratorNotFoundException,
-    RouteUrlBuilderWrongValuesException
-};
+    RouteUrlBuilderWrongValuesException};
 
 interface RouteUrlGeneratorInterface
 {
@@ -27,7 +27,7 @@ interface RouteUrlGeneratorInterface
      * @param string $routeName
      * @return RouteInterface
      *
-     * @throws RouteUrlGeneratorInvalidArgumentException|RouteUrlGeneratorNotFoundException|RouteUrlBuilderWrongValuesException
+     * @throws RouteUrlGeneratorInvalidArgumentException|RouteUrlGeneratorNotFoundException|RouteUrlBuilderWrongValuesException|PatternRegistryPatternNotFoundException
      */
     public function generateByName(string $routeName): RouteInterface;
 

@@ -69,6 +69,67 @@ It is preferable to use named attributes for configuration.
 By using named attributes, you can explicitly specify the purpose of each configuration option, improving the
 readability of your code.
 
+### Pattern Registry
+
+The patterns are enclosed in curly braces `{}` and follow the format `{placeholder:rule}`. Here's an example:
+
+```php
+$routeMap->get('/users/{id:int}', UserController::class . '@show');
+$routeMap->get('/post/{slug:slug}', PostController::class . '@show');
+```
+
+In this example, the `{id:int}` placeholder specifies that the id parameter in the URL should be an integer.
+By default, we have the following rules:
+
+```php
+$patterns = [
+    'int' => '\d+',
+    'alpha' => '[A-Za-z]+',
+    'alnum' => '[A-Za-z0-9]+',
+    'slug' => '[A-Za-z0-9-_]+',
+    'uuid' => '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}',
+    'date' => '\d{4}-\d{2}-\d{2}',
+    'time' => '\d{2}:\d{2}:\d{2}',
+    'datetime' => '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}',
+]
+```
+
+You can also define your own patterns and register them in the pattern registry. The patterns in the registry can be
+either regular expression strings or `Closures` that perform custom validation. Here's an example:
+
+```php
+use \Hotaruma\HttpRouter\PatternRegistry\PatternRegistry;
+use \Hotaruma\HttpRouter\RouteDispatcher;
+
+$routeDispatcher = new RouteDispatcher();
+$patternRegistry = new PatternRegistry();
+$routeMap = new RouteMap();
+
+$routeMap->get('/category/{tag:custom}/', stdClass::class);
+
+$patternRegistry->addPattern('custom', '\w{3}');
+
+$routeDispatcher->config(
+    requestHttpMethod: HttpMethod::tryFrom($serverRequest->getMethod()),
+    requestPath: $serverRequest->getUri()->getPath(),
+    routes: $routeMap->getRoutes(),
+    patternRegistry: $patternRegistry
+);
+
+$route = $routeDispatcher->match();
+```
+
+In this example, we register a custom pattern named 'custom' using a `Closure` that performs the validation.
+
+```php
+$patternRegistry->addPattern('custom', static function (string $value, PatternRegistryInterface $patternRegistry): bool {
+      return is_numeric($value);
+  });
+```
+
+If a route specifies both a rule in the route path and a rule in the route configuration, the rule in configuration
+takes precedence.
+
 ### Grouping Routes
 
 You can group routes with a common prefix and apply shared middleware or other configurations:
@@ -206,7 +267,8 @@ $routeScanner->routeActionBuilder(function (string $className, string $methodNam
 });
 ```
 
-The `scanRoutesFromDirectory` function allows you to scan all PHP files in a specified directory and its subdirectories to
+The `scanRoutesFromDirectory` function allows you to scan all PHP files in a specified directory and its subdirectories
+to
 automatically discover classes and their attributes marked with the `Route` and `RouteGroup` attributes.
 
 ```php
