@@ -19,9 +19,6 @@ class PatternRegistry implements PatternRegistryInterface
         'alnum' => '[A-Za-z0-9]+',
         'slug' => '[A-Za-z0-9-_]+',
         'uuid' => '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}',
-        'date' => '\d{4}-\d{2}-\d{2}',
-        'time' => '\d{2}:\d{2}:\d{2}',
-        'datetime' => '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}',
     ];
 
     /**
