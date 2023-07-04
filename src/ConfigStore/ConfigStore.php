@@ -87,6 +87,8 @@ class ConfigStore implements ConfigStoreInterface
      * @param string $name
      * @param array<mixed> $arguments
      * @return mixed
+     *
+     * @throws RouteConfigInvalidArgumentException
      */
     public function __call(string $name, array $arguments): mixed
     {

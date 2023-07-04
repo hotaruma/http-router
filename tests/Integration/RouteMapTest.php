@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use Hotaruma\HttpRouter\Attribute\Route;
-use Hotaruma\HttpRouter\Attribute\RouteGroup;
+use Hotaruma\HttpRouter\Attribute\{Route, RouteGroup};
 use Hotaruma\HttpRouter\Enum\HttpMethod;
 use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
 use Hotaruma\HttpRouter\Interface\RouteMap\RouteMapInterface;
