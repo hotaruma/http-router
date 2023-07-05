@@ -9,7 +9,7 @@ use Hotaruma\HttpRouter\Enum\AdditionalMethod;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
-abstract class Config implements ConfigInterface
+abstract class AbstractConfig implements ConfigInterface
 {
     use ConfigNormalizeUtils;
 

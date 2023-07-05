@@ -41,6 +41,6 @@ trait ConfigNormalizeUtils
     protected function preparePathForRegExp(string $path): string
     {
         $routePath = preg_quote($path, '/');
-        return str_replace(['\{', '\}'], ['{', '}'], $routePath);
+        return str_replace(['\{', '\}', '\:'], ['{', '}', ':'], $routePath);
     }
 }

@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\RouteMatcher;
 
+use Closure;
 use Hotaruma\HttpRouter\Enum\AdditionalMethod;
+use Hotaruma\HttpRouter\Exception\RouteMatcherInvalidArgumentException;
+use Hotaruma\HttpRouter\Exception\RouteMatcherRuntimeException;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Interface\RouteMatcher\RouteMatcherInterface;
+use Hotaruma\HttpRouter\PatternRegistry\PatternRegistryCase;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
 class RouteMatcher implements RouteMatcherInterface
 {
     use ConfigNormalizeUtils;
+    use PatternRegistryCase;
 
     /**
      * @inheritDoc
@@ -29,32 +34,66 @@ class RouteMatcher implements RouteMatcherInterface
      */
     public function matchRouteByRegex(RouteInterface $route, string $requestPath): ?array
     {
-        if (preg_match($this->generatePattern($route), $this->normalizePath($requestPath), $matches)) {
-            return array_filter($matches, '\is_string', ARRAY_FILTER_USE_KEY);
+        [$pattern, $attributesValidators] = $this->generatePattern($route);
+
+        if (!preg_match($pattern, $this->normalizePath($requestPath), $matches)) {
+            return null;
         }
-        return null;
+        $attributes = array_filter($matches, '\is_string', ARRAY_FILTER_USE_KEY);
+
+        foreach ($attributesValidators as $placeholderName => $attributesValidator) {
+            if (!isset($attributes[$placeholderName])) {
+                throw new RouteMatcherRuntimeException(
+                    sprintf('Attribute %s not found', $placeholderName)
+                );
+            }
+            if ($attributesValidator($attributes[$placeholderName], $this->getPatternRegistry()) !== true) {
+                return null;
+            }
+        }
+        return $attributes;
     }
 
     /**
      * @param RouteInterface $route
-     * @return string Regex pattern for route matching
+     * @return array{string, array<string, Closure>} Regex pattern for route matching and attributes validators.
+     *
+     * @throws RouteMatcherInvalidArgumentException
+     *
+     * @phpstan-return array{0: string, 1: array<string, TA_PatternRegistryClosure>}
      */
-    protected function generatePattern(RouteInterface $route): string
+    protected function generatePattern(RouteInterface $route): array
     {
         $routePath = $this->preparePathForRegExp($route->getConfigStore()->getPath());
+        $attributesValidators = [];
 
         $pattern = preg_replace_callback(
-            '#{([^{}]+)}#',
-            function ($attributeName) use ($route) {
-                $attributeName = $attributeName[1];
+            '#{(?P<placeholderName>[^}]+)}#',
+            function ($subject) use ($route, &$attributesValidators) {
+                $placeholderName = $subject['placeholderName'];
+
+                if (empty($placeholderName)) {
+                    throw new RouteMatcherInvalidArgumentException('Placeholder has no name');
+                }
+                [$placeholderName, $placeholderPattern] = explode(string: $placeholderName, separator: ':');
+
+                $placeholderRules = $route->getConfigStore()->getRules()[$placeholderName] ?? null;
+                if (!isset($placeholderRules) && !empty($placeholderPattern)) {
+                    $placeholderRules = $this->getPatternRegistry()->getPattern($placeholderPattern);
+                }
+
+                if ($placeholderRules instanceof Closure) {
+                    $attributesValidators[$placeholderName] = $placeholderRules;
+                    unset($placeholderRules);
+                }
                 return sprintf(
                     '(?P<%s>%s)',
-                    $attributeName,
-                    ($route->getConfigStore()->getRules()[$attributeName] ?? '[^}/]+')
+                    $placeholderName,
+                    $placeholderRules ?? '[^}/]+'
                 );
             },
             $routePath
         );
-        return sprintf("#^%s$#", $pattern);
+        return [sprintf("#^%s$#", $pattern), $attributesValidators];
     }
 }

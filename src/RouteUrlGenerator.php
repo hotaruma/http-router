@@ -5,17 +5,22 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter;
 
 use Hotaruma\HttpRouter\Collection\RouteCollection;
+use Hotaruma\HttpRouter\PatternRegistry\PatternRegistryCase;
 use Hotaruma\HttpRouter\RouteUrlBuilder\RouteUrlBuilder;
 use Hotaruma\HttpRouter\Exception\{RouteUrlGeneratorInvalidArgumentException,
     RouteUrlGeneratorNotFoundException,
 };
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
+    PatternRegistry\PatternRegistryInterface,
     Route\RouteInterface,
     RouteUrlBuilder\RouteUrlBuilderInterface,
-    RouteUrlGenerator\RouteUrlGeneratorInterface};
+    RouteUrlGenerator\RouteUrlGeneratorInterface
+};
 
 class RouteUrlGenerator implements RouteUrlGeneratorInterface
 {
+    use PatternRegistryCase;
+
     /**
      * @var RouteCollectionInterface Route collection
      *
@@ -31,9 +36,12 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
     /**
      * @inheritDoc
      */
-    public function config(RouteCollectionInterface $routes = null): void
-    {
+    public function config(
+        RouteCollectionInterface $routes = null,
+        PatternRegistryInterface $patternRegistry = null
+    ): void {
         isset($routes) and $this->routesCollection($routes);
+        isset($patternRegistry) and $this->patternRegistry($patternRegistry);
     }
 
     /**
@@ -47,6 +55,7 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
 
         foreach ($this->getRoutesCollection() as $route) {
             if ($route->getConfigStore()->getName() === $routeName) {
+                $this->getRouteUrlBuilder()->patternRegistry($this->getPatternRegistry());
                 return $this->getRouteUrlBuilder()->build($route);
             }
         }

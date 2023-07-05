@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Interface\RouteDispatcher;
 
 use Hotaruma\HttpRouter\Exception\RouteDispatcherNotFoundException;
+use Hotaruma\HttpRouter\Exception\RouteMatcherInvalidArgumentException;
+use Hotaruma\HttpRouter\Exception\RouteMatcherRuntimeException;
 use Hotaruma\HttpRouter\Interface\Collection\RouteCollectionInterface;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
@@ -38,7 +40,7 @@ interface RouteDispatcherInterface
      *
      * @return RouteInterface
      *
-     * @throws RouteDispatcherNotFoundException
+     * @throws RouteDispatcherNotFoundException|RouteMatcherRuntimeException|RouteMatcherInvalidArgumentException
      */
     public function match(): RouteInterface;
 }

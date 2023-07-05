@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Hotaruma\HttpRouter\Interface\RouteMap;
 
 use Hotaruma\HttpRouter\Exception\RouteConfigInvalidArgumentException;
-use Hotaruma\HttpRouter\Exception\RouteScannerReflectionException;
-use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
-use Hotaruma\HttpRouter\Interface\Factory\ConfigStoreFactoryInterface;
-use Hotaruma\HttpRouter\Interface\Factory\RouteFactoryInterface;
-use Hotaruma\HttpRouter\Interface\ConfigStore\ConfigStoreInterface;
-use Hotaruma\HttpRouter\Interface\RouteScanner\RouteScannerInterface;
+use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
+    Factory\ConfigStoreFactoryInterface,
+    Factory\RouteFactoryInterface,
+    ConfigStore\ConfigStoreInterface,
+    RouteScanner\RouteScannerInterface,
+    RouteScanner\RouteScannerToolsInterface};
 
+/**
+ * @mixin RouteScannerToolsInterface
+ */
 interface RouteMapConfigureInterface
 {
     /**
@@ -59,16 +62,6 @@ interface RouteMapConfigureInterface
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
     ): void;
-
-    /**
-     * Scan route/group attributes and add to current level.
-     *
-     * @param class-string ...$classes
-     * @return void
-     *
-     * @throws RouteScannerReflectionException
-     */
-    public function scanRoutes(...$classes): void;
 
     /**
      * Set base route factory.

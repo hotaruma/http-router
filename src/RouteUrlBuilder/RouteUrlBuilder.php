@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter\RouteUrlBuilder;
 
+use Closure;
+use Hotaruma\HttpRouter\Exception\PatternRegistryPatternNotFoundException;
 use Hotaruma\HttpRouter\Exception\RouteUrlBuilderWrongValuesException;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Interface\RouteUrlBuilder\RouteUrlBuilderInterface;
-use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
+use Hotaruma\HttpRouter\PatternRegistry\PatternRegistryCase;
 
 class RouteUrlBuilder implements RouteUrlBuilderInterface
 {
-    use ConfigNormalizeUtils;
+    use PatternRegistryCase;
 
     /**
      * @var RouteInterface
@@ -26,7 +28,7 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
         $this->route($route);
 
         $url = (string)preg_replace_callback(
-            '/{(?P<placeholderName>[^}]+)}/',
+            '#{(?P<placeholderName>[^}]+)}#',
             function (array $subject) {
                 return $this->replacePathPlaceholders($subject['placeholderName']);
             },
@@ -41,13 +43,14 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
      * @param string $placeholderName
      * @return string
      *
-     * @throws RouteUrlBuilderWrongValuesException
+     * @throws RouteUrlBuilderWrongValuesException|PatternRegistryPatternNotFoundException
      */
     protected function replacePathPlaceholders(string $placeholderName): string
     {
         if (empty($placeholderName)) {
             throw new RouteUrlBuilderWrongValuesException('Placeholder has no name');
         }
+        [$placeholderName, $placeholderPattern] = explode(string: $placeholderName, separator: ':');
 
         $placeholderRules = $this->getRoute()->getConfigStore()->getRules()[$placeholderName] ?? null;
         $placeholderValue =
@@ -57,7 +60,17 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
                 sprintf('Route has no value for attribute %s', $placeholderName)
             );
 
-        if (isset($placeholderRules) && !preg_match(sprintf("/^%s$/", $placeholderRules), $placeholderValue)) {
+        if (!isset($placeholderRules) && !empty($placeholderPattern)) {
+            $placeholderRules = $this->getPatternRegistry()->getPattern($placeholderPattern);
+        }
+
+        if (
+            isset($placeholderRules) &&
+            (
+                ($placeholderRules instanceof Closure && $placeholderRules($placeholderValue, $this->getPatternRegistry()) !== true) ||
+                (is_string($placeholderRules) && !preg_match(sprintf("/^%s$/", $placeholderRules), $placeholderValue))
+            )
+        ) {
             throw new RouteUrlBuilderWrongValuesException(
                 sprintf('Route has wrong value for attribute %s', $placeholderName)
             );

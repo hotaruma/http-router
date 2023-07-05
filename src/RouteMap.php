@@ -7,7 +7,9 @@ namespace Hotaruma\HttpRouter;
 use Hotaruma\HttpRouter\Collection\RouteCollection;
 use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
 use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
-use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgumentException, RouteInvalidArgumentException};
+use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgumentException,
+    RouteInvalidArgumentException,
+    RouteMapInvalidArgumentException};
 use Hotaruma\HttpRouter\Factory\{RouteFactory, GroupConfigStoreFactory};
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     Enum\RequestMethodInterface,
@@ -18,8 +20,12 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     ConfigStore\ConfigStoreInterface,
     RouteMap\RouteMapConfigureInterface,
     RouteMap\RouteMapInterface,
-    RouteScanner\RouteScannerInterface};
+    RouteScanner\RouteScannerInterface,
+    RouteScanner\RouteScannerToolsInterface};
 
+/**
+ * @mixin RouteScannerToolsInterface
+ */
 class RouteMap implements RouteMapInterface
 {
     /**
@@ -80,6 +86,7 @@ class RouteMap implements RouteMapInterface
      */
     public function routeScanner(RouteScannerInterface $routeScanner): RouteMapConfigureInterface
     {
+        $routeScanner->routeMap($this);
         $this->routeScanner = $routeScanner;
         return $this;
     }
@@ -142,12 +149,19 @@ class RouteMap implements RouteMapInterface
     }
 
     /**
-     * @inheritDoc
+     * @param string $name
+     * @param array<mixed> $arguments
+     * @return mixed
+     *
+     * @throws RouteMapInvalidArgumentException
      */
-    public function scanRoutes(...$classes): void
+    public function __call(string $name, array $arguments): mixed
     {
-        $this->getRouteScanner()->routeMap($this);
-        $this->getRouteScanner()->scanRoutes(...$classes);
+        if (!method_exists($this->getRouteScanner(), $name)) {
+            throw new RouteMapInvalidArgumentException(sprintf('Method %s does not exist', $name));
+        }
+
+        return $this->getRouteScanner()->$name(...$arguments);
     }
 
     /**
@@ -332,6 +346,7 @@ class RouteMap implements RouteMapInterface
      */
     protected function getRouteScanner(): RouteScannerInterface
     {
-        return $this->routeScanner ??= new RouteScanner();
+        $this->routeScanner ?? $this->routeScanner(new RouteScanner());
+        return $this->routeScanner;
     }
 }

@@ -9,16 +9,19 @@ use Hotaruma\HttpRouter\Enum\AdditionalMethod;
 use Hotaruma\HttpRouter\Exception\RouteDispatcherNotFoundException;
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     Enum\RequestMethodInterface,
+    PatternRegistry\PatternRegistryInterface,
     Route\RouteInterface,
     RouteDispatcher\RouteDispatcherInterface,
     RouteMatcher\RouteMatcherInterface
 };
+use Hotaruma\HttpRouter\PatternRegistry\PatternRegistryCase;
 use Hotaruma\HttpRouter\RouteMatcher\RouteMatcher;
 use Hotaruma\HttpRouter\Utils\ConfigNormalizeUtils;
 
 class RouteDispatcher implements RouteDispatcherInterface
 {
     use ConfigNormalizeUtils;
+    use PatternRegistryCase;
 
     /**
      * @var RequestMethodInterface Http method
@@ -48,11 +51,13 @@ class RouteDispatcher implements RouteDispatcherInterface
     public function config(
         RequestMethodInterface   $requestHttpMethod = null,
         string                   $requestPath = null,
-        RouteCollectionInterface $routes = null
+        RouteCollectionInterface $routes = null,
+        PatternRegistryInterface $patternRegistry = null
     ): void {
         isset($requestHttpMethod) and $this->requestHttpMethod($requestHttpMethod);
         isset($requestPath) and $this->requestPath($requestPath);
         isset($routes) and $this->routesCollection($routes);
+        isset($patternRegistry) and $this->patternRegistry($patternRegistry);
     }
 
     /**
@@ -68,6 +73,8 @@ class RouteDispatcher implements RouteDispatcherInterface
      */
     public function match(): RouteInterface
     {
+        $this->getRouteMatcher()->patternRegistry($this->getPatternRegistry());
+
         foreach ($this->getRoutesCollection() as $route) {
             if (
                 $this->getRouteMatcher()->matchRouteByHttpMethod($route, $this->getRequestHttpMethod()) &&
