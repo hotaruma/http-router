@@ -7,9 +7,6 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-env:
-  COVERALLS_REPO_TOKEN: ${{ secrets.coveralls_repo_token }}
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -34,7 +31,7 @@ jobs:
         run: docker-compose -f $COMPOSE_FILE exec -T php-cli composer run-script test
 
       - name: Upload coverage results to Coveralls
-        run: docker-compose -f $COMPOSE_FILE exec -T php-cli composer run-script php-coveralls
+        run: coverallsapp/github-action@v2
 
       - name: Run code analyse
         run: docker-compose -f $COMPOSE_FILE exec -T php-cli composer run-script analyse

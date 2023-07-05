@@ -5,10 +5,8 @@ services:
     stdin_open: true
     tty: true
     image: ci_php_cli:1.0
-    environment:
-      - COVERALLS_RUN_LOCALLY=1
-      - COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN}
     build:
-      context: ./
-      dockerfile: ./docker/.ci/php-cli/Dockerfile
+      context: ./docker/.ci/php-cli
     command: tail -f /dev/null
+    volumes:
+      - ./:/app
