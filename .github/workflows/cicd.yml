@@ -31,7 +31,7 @@ jobs:
         run: docker-compose -f $COMPOSE_FILE exec -T php-cli composer run-script test
 
       - name: Upload coverage results to Coveralls
-        run: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@v2
         with:
           file: tmp/clover.xml
 
