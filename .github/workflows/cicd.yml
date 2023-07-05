@@ -32,6 +32,8 @@ jobs:
 
       - name: Upload coverage results to Coveralls
         run: coverallsapp/github-action@v2
+        with:
+          file: tmp/clover.xml
 
       - name: Run code analyse
         run: docker-compose -f $COMPOSE_FILE exec -T php-cli composer run-script analyse
