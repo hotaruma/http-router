@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/hotaruma/http-router.svg)](https://github.com/hotaruma/http-router/blob/master/LICENSE)
 ![PHP from Packagist](https://img.shields.io/packagist/php-v/hotaruma/http-router)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/hotaruma/http-router.svg)](https://packagist.org/packages/hotaruma/http-router)
-[![Coverage Status](https://coveralls.io/repos/github/hotaruma/http-router/badge.svg?branch=main)](https://coveralls.io/github/hotaruma/http-router?branch=main)
+[![codecov](https://codecov.io/gh/hotaruma/http-router/branch/main/graph/badge.svg)](https://codecov.io/gh/hotaruma/http-router)
 
 Simple HTTP router.
 
