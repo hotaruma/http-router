@@ -1,11 +1,11 @@
 parameters:
-    excludePaths:
-        - 'tests/Unit'
     treatPhpDocTypesAsCertain: false
     level: max
     paths:
         - src
         - tests
+    excludePaths:
+            - 'tests/Unit'
     typeAliases:
         	TA_C_RouteIteratorInterface: 'Hotaruma\HttpRouter\Interface\Iterator\RouteIteratorInterface'
         	TA_C_RouteInterface: 'Hotaruma\HttpRouter\Interface\Route\RouteInterface'

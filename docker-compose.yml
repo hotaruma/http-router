@@ -1,11 +1,16 @@
 version: "3"
 
 services:
-    php-cli:
-      user: $UID:$GID
-      image: ${PROJECT_NAME}_php_cli:1.0
-      build:
-        context: ./
-        dockerfile: ./docker/dev/php-cli/Dockerfile
-      volumes:
-        - ./:/app
+  php-cli:
+    user: $UID:$GID
+    image: ${PROJECT_NAME}_php_cli:1.0
+    environment:
+      - PHP_IDE_CONFIG=serverName=${XDEBUG_STORM_SERVER_NAME}
+      - COVERALLS_RUN_LOCALLY=${COVERALLS_RUN_LOCALLY}
+      - COVERALLS_REPO_TOKEN=${COVERALLS_REPO_TOKEN}
+    build:
+      context: ./docker/dev/php-cli
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ./:/app

@@ -3,9 +3,24 @@
 [![Build and Test](https://github.com/hotaruma/http-router/actions/workflows/cicd.yml/badge.svg)](https://github.com/hotaruma/http-router/actions/workflows/cicd.yml)
 [![Latest Version](https://img.shields.io/github/release/hotaruma/http-router.svg)](https://github.com/hotaruma/http-router/releases)
 [![License](https://img.shields.io/github/license/hotaruma/http-router.svg)](https://github.com/hotaruma/http-router/blob/master/LICENSE)
+![PHP from Packagist](https://img.shields.io/packagist/php-v/hotaruma/http-router)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/hotaruma/http-router.svg)](https://packagist.org/packages/hotaruma/http-router)
+[![Coverage Status](https://coveralls.io/repos/github/hotaruma/http-router/badge.svg?branch=main)](https://coveralls.io/github/hotaruma/http-router?branch=main)
 
 Simple HTTP router.
+
+## Navigation
+
+* [Installation](#installation)
+* [RouteMap](#routemap)
+    * [Route Parameters](#route-parameters)
+    * [Route Config](#route-config)
+    * [Pattern Registry](#pattern-registry)
+    * [Grouping Routes](#grouping-routes)
+    * [Route Scanner](#route-scanner)
+* [Route Dispatcher](#route-dispatcher)
+* [URL Generator](#url-generator)
+* [Contributing](#contributing)
 
 ## Installation
 
@@ -120,8 +135,8 @@ In this example, we register a custom pattern named 'custom' using a `Closure` t
 
 ```php
 $patternRegistry->addPattern('custom', static function (string $value, PatternRegistryInterface $patternRegistry): bool {
-      return is_numeric($value);
-  });
+    return is_numeric($value);
+});
 ```
 
 If a route specifies both a rule in the route path and a rule in the route configuration, the rule in configuration
