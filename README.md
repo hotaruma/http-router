@@ -1,6 +1,6 @@
 # HTTP Router
 
-[![Build and Test](https://github.com/hotaruma/http-router/actions/workflows/cicd.yml/badge.svg)](https://github.com/hotaruma/http-router/actions/workflows/cicd.yml)
+[![Build and Test](https://github.com/hotaruma/http-router/actions/workflows/ci.yml/badge.svg)](https://github.com/hotaruma/http-router/actions/workflows/ci.yml)
 [![Latest Version](https://img.shields.io/github/release/hotaruma/http-router.svg)](https://github.com/hotaruma/http-router/releases)
 [![License](https://img.shields.io/github/license/hotaruma/http-router.svg)](https://github.com/hotaruma/http-router/blob/master/LICENSE)
 ![PHP from Packagist](https://img.shields.io/packagist/php-v/hotaruma/http-router)
@@ -34,7 +34,7 @@ composer require hotaruma/http-router
 
 ### Creating Routes
 
-To create routes, you need to use the RouteMap class. Here's an example of creating a route:
+To create routes, you need to use the `RouteMap` class. Here's an example of creating a route:
 
 ```php
 use Hotaruma\HttpRouter\RouteMap;
@@ -229,11 +229,11 @@ class ApiUserController
 
 The Route Scanner scans the provided classes for attributes that extend the `RouteInterface` and `RouteGroupInterface`.
 It
-extracts the route configuration from these attributes and registers the routes in the RouteMap, a data structure that
+extracts the route configuration from these attributes and registers the routes in the `RouteMap`, a data structure that
 holds all the defined routes.
 
 By calling the `scanRoutes` method of the `RouteScanner` class and passing the `ApiController` class as an argument, the
-routes defined in the class will be scanned and registered in the RouteMap.
+routes defined in the class will be scanned and registered in the `RouteMap`.
 
 ```php
 use Hotaruma\HttpRouter\RouteScanner\RouteScanner;

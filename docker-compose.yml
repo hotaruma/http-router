@@ -3,11 +3,14 @@ version: "3"
 services:
   php-cli:
     user: $UID:$GID
-    image: ${PROJECT_NAME}_php_cli:1.0
+    image: ${PROJECT_NAME}:1.0
     environment:
       - PHP_IDE_CONFIG=serverName=${XDEBUG_STORM_SERVER_NAME}
     build:
-      context: ./docker/dev/php-cli
+      args:
+        PHP_VERSION: ${PHP_VERSION}
+        XDEBUG_VERSION: ${XDEBUG_VERSION}
+      context: ./docker/php-cli
     extra_hosts:
       - host.docker.internal:host-gateway
     volumes:
