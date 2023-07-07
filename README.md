@@ -64,15 +64,15 @@ Routes can be configured by defining its defaults, rules, and more.
   the same name in the route.
   In that case, the attribute's value takes precedence.
 - **Rules**: These play a role in pattern validation within `{}` placeholders. They determine if a parameter matches a
-  specific type based on regular
-  expressions. Rules are also used to validate parameters during route generation.
+  specific type based on regular expressions or `Closure`. Rules are also used to validate parameters during route
+  generation.
 - **Middlewares**: Middleware functions can be grouped and returned in their original form.
 - **Name**: This is used to generate a route later on.
 - **Methods**: Methods define whether a route matches the current request.
 
 ```php
-$routeMap->add('/news/{id}', NewsController::class)->config(
-    defaults: ['id' => '1'],
+$routeMap->add('/news/{category:[A-Za-z]+}/{id}', NewsController::class)->config(
+    defaults: ['category' => 'archive', 'id' => '1'],
     rules: ['id' => '\d+'],
     middlewares: [LogMiddleware::class],
     name: 'newsPage',
@@ -86,14 +86,24 @@ readability of your code.
 
 ### Pattern Registry
 
-The patterns are enclosed in curly braces `{}` and follow the format `{placeholder:rule}`. Here's an example:
+The patterns can be defined in both the `rules` array and directly within the route path declaration. When patterns are
+defined in the `rules` array, they take precedence.
+Patterns are enclosed in curly braces `{}` follow the format `{placeholder:rule}`. Here's an example:
 
 ```php
-$routeMap->get('/users/{id:int}', UserController::class . '@show');
-$routeMap->get('/post/{slug:slug}', PostController::class . '@show');
+$routeMap->group(
+    rules: ['id' => 'int'],
+    group: function (RouteMapInterface $routeMap) {
+
+        $routeMap->get('/users/{id}', UserController::class . '@show');
+        $routeMap->get('/post/{category:slug}', PostController::class . '@show');
+    }
+);
 ```
 
-In this example, the `{id:int}` placeholder specifies that the id parameter in the URL should be an integer.
+In this example, `rules` array defines the pattern `id:\d+` and `{category:slug}` placeholder specifies that the
+`category` parameter in the URL should be a `[A-Za-z0-9-_]+`.
+
 By default, we have the following rules:
 
 ```php

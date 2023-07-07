@@ -27,4 +27,10 @@ interface PatternRegistryInterface
      * @phpstan-param TA_PatternRegistryTypes $pattern
      */
     public function addPattern(string $name, string|Closure $pattern): void;
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasPattern(string $name): bool;
 }

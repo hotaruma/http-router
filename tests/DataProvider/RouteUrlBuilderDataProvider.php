@@ -38,6 +38,21 @@ class RouteUrlBuilderDataProvider
                 ['id' => '2', 'page' => 'bob2'],
                 '/news/2/bob2/'
             ],
+
+            [
+                '/news/{id}/{page}/',
+                ['id' => 'int', 'page' => 'alpha'],
+                ['id' => '2', 'page' => 'bob'],
+                [],
+                '/news/2/bob/'
+            ],
+            [
+                '/news/{id:int}/{page:alpha}/',
+                [],
+                ['id' => '2', 'page' => 'bob'],
+                [],
+                '/news/2/bob/'
+            ],
         ];
     }
 
@@ -50,6 +65,15 @@ class RouteUrlBuilderDataProvider
             ['/n$ws/{id}/', [], [], []],
             ['/n$ws/{id}/', ['id' => '[a-z]'], ['id' => '2'], []],
             ['/n$ws/{id}/', ['id' => '[a-z]'], [], ['id' => '2']],
+
+            ['/n$ws/{id}/', ['id' => 'alpha'], ['id' => '2'], []],
+            ['/n$ws/{id}/', ['id' => 'alpha'], [], ['id' => '2']],
+
+            ['/n$ws/{id:[a-z]}/', [], ['id' => '2'], []],
+            ['/n$ws/{id:[a-z]}/', [], [], ['id' => '2']],
+
+            ['/n$ws/{id:alpha}/', [], ['id' => '2'], []],
+            ['/n$ws/{id:alpha}/', [], [], ['id' => '2']],
         ];
     }
 }

@@ -78,9 +78,15 @@ class RouteMatcher implements RouteMatcherInterface
                 [$placeholderName, $placeholderPattern] = explode(string: $placeholderName, separator: ':');
 
                 $placeholderRules = $route->getConfigStore()->getRules()[$placeholderName] ?? null;
-                if (!isset($placeholderRules) && !empty($placeholderPattern)) {
-                    $placeholderRules = $this->getPatternRegistry()->getPattern($placeholderPattern);
-                }
+                $placeholderRules = match (true) {
+                    isset($placeholderRules) => $this->getPatternRegistry()->hasPattern($placeholderRules) ?
+                        $this->getPatternRegistry()->getPattern($placeholderRules) :
+                        $placeholderRules,
+                    !empty($placeholderPattern) => $this->getPatternRegistry()->hasPattern($placeholderPattern) ?
+                        $this->getPatternRegistry()->getPattern($placeholderPattern) :
+                        stripslashes($placeholderPattern),
+                    default => null,
+                };
 
                 if ($placeholderRules instanceof Closure) {
                     $attributesValidators[$placeholderName] = $placeholderRules;
@@ -94,6 +100,8 @@ class RouteMatcher implements RouteMatcherInterface
             },
             $routePath
         );
-        return [sprintf("#^%s$#", $pattern), $attributesValidators];
+        $pattern = sprintf("#^%s$#", $pattern);
+
+        return [$pattern, $attributesValidators];
     }
 }

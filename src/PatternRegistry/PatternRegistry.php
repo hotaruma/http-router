@@ -36,4 +36,12 @@ class PatternRegistry implements PatternRegistryInterface
     {
         $this->patterns[$name] = $pattern;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function hasPattern(string $name): bool
+    {
+        return isset($this->patterns[$name]);
+    }
 }
