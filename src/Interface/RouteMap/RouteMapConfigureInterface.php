@@ -10,7 +10,8 @@ use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
     Factory\RouteFactoryInterface,
     ConfigStore\ConfigStoreInterface,
     RouteScanner\RouteScannerInterface,
-    RouteScanner\RouteScannerToolsInterface};
+    RouteScanner\RouteScannerToolsInterface
+};
 
 /**
  * @mixin RouteScannerToolsInterface
@@ -49,7 +50,7 @@ interface RouteMapConfigureInterface
      * @param string|null $pathPrefix Url path prefix
      * @param string|null $namePrefix Routes name prefix
      * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods
-     * @return void
+     * @return ConfigStoreInterface
      *
      * @throws RouteConfigInvalidArgumentException
      */
@@ -61,7 +62,7 @@ interface RouteMapConfigureInterface
         string                       $pathPrefix = null,
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
-    ): void;
+    ): ConfigStoreInterface;
 
     /**
      * Set base route factory.

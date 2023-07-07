@@ -27,7 +27,7 @@ class RouteMapTest extends TestCase
             methods: HttpMethod::GET,
         );
 
-        $routeMap->group(
+        $groupConfig = $routeMap->group(
             defaults: ['page_c' => '1'],
             rules: ['page_c' => '\d+'],
             middlewares: ['Middleware1_c'],
@@ -46,8 +46,6 @@ class RouteMapTest extends TestCase
                 );
             }
         );
-
-        $groupConfig = $routeMap->getConfigStore();
 
         $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $groupConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_t' => '\d+'], $groupConfig->getRules());
@@ -70,7 +68,7 @@ class RouteMapTest extends TestCase
             methods: HttpMethod::GET,
         );
 
-        $routeMap->group(
+        $groupConfig = $routeMap->group(
             defaults: ['page_c' => '1'],
             rules: ['page_c' => '\d+'],
             middlewares: ['Middleware1_c'],
@@ -83,8 +81,6 @@ class RouteMapTest extends TestCase
                 );
             }
         );
-
-        $groupConfig = $routeMap->getConfigStore();
 
         $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $groupConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_c' => '\d+'], $groupConfig->getRules());

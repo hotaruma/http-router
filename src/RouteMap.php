@@ -134,7 +134,8 @@ class RouteMap implements RouteMapInterface
         string                       $pathPrefix = null,
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
-    ): void {
+    ): ConfigStoreInterface {
+
         $this->mergedConfigStore($this->getConfigStore());
         $this->configStore($this->getGroupConfigStoreFactory()::create());
 
@@ -149,8 +150,11 @@ class RouteMap implements RouteMapInterface
 
         $group($this);
 
+        $config = $this->getConfigStore();
         $this->resetConfigStore();
         $this->resetMergedConfigStore();
+
+        return $config;
     }
 
     /**
