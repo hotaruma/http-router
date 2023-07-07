@@ -9,7 +9,8 @@ use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
 use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
 use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgumentException,
     RouteInvalidArgumentException,
-    RouteMapInvalidArgumentException};
+    RouteMapInvalidArgumentException
+};
 use Hotaruma\HttpRouter\Factory\{RouteFactory, GroupConfigStoreFactory};
 use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     Enum\RequestMethodInterface,
@@ -21,7 +22,8 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     RouteMap\RouteMapConfigureInterface,
     RouteMap\RouteMapInterface,
     RouteScanner\RouteScannerInterface,
-    RouteScanner\RouteScannerToolsInterface};
+    RouteScanner\RouteScannerToolsInterface
+};
 
 /**
  * @mixin RouteScannerToolsInterface
@@ -146,6 +148,9 @@ class RouteMap implements RouteMapInterface
         );
 
         $group($this);
+
+        $this->resetConfigStore();
+        $this->resetMergedConfigStore();
     }
 
     /**
@@ -296,6 +301,14 @@ class RouteMap implements RouteMapInterface
     }
 
     /**
+     * @return void
+     */
+    protected function resetConfigStore(): void
+    {
+        unset($this->configStore);
+    }
+
+    /**
      * Set merged config.
      *
      * @param ConfigStoreInterface $mergedConfigStore
@@ -314,6 +327,14 @@ class RouteMap implements RouteMapInterface
     protected function getMergedConfigStore(): ConfigStoreInterface
     {
         return $this->mergedConfigStore ??= $this->getGroupConfigStoreFactory()::create();
+    }
+
+    /**
+     * @return void
+     */
+    protected function resetMergedConfigStore(): void
+    {
+        unset($this->mergedConfigStore);
     }
 
     /**
@@ -346,7 +367,7 @@ class RouteMap implements RouteMapInterface
      */
     protected function getRouteScanner(): RouteScannerInterface
     {
-        $this->routeScanner ?? $this->routeScanner(new RouteScanner());
+            $this->routeScanner ?? $this->routeScanner(new RouteScanner());
         return $this->routeScanner;
     }
 }
