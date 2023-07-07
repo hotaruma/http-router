@@ -17,4 +17,5 @@
 
     <file>src</file>
     <file>tests</file>
+    <file>benchmark</file>
 </ruleset>

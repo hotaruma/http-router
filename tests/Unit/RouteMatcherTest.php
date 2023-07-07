@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Hotaruma\Tests\Unit;
 
 use Hotaruma\HttpRouter\ConfigStore\ConfigStore;
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 class RouteMatcherTest extends TestCase
 {
     /**
-     * @dataProvider \Tests\DataProvider\RouteMatcherDataProvider::matchRouteByHttpMethodDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteMatcherDataProvider::matchRouteByHttpMethodDataProvider
      * @throws Exception
      */
     public function testMatchRouteByHttpMethod(
@@ -29,7 +29,7 @@ class RouteMatcherTest extends TestCase
     }
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteMatcherDataProvider::matchRouteByRegexDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteMatcherDataProvider::matchRouteByRegexDataProvider
      * @throws Exception
      */
     public function testMatchRouteByRegex(

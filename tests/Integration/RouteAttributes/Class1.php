@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\RouteAttributes;
+namespace Hotaruma\Tests\Integration\RouteAttributes;
 
 use Hotaruma\HttpRouter\Attribute\Route;
 use Hotaruma\HttpRouter\Enum\HttpMethod;

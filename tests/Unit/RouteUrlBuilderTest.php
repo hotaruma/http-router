@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Hotaruma\Tests\Unit;
 
 use Hotaruma\HttpRouter\ConfigStore\ConfigStore;
 use Hotaruma\HttpRouter\Exception\RouteUrlBuilderWrongValuesException;
@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 class RouteUrlBuilderTest extends TestCase
 {
     /**
-     * @dataProvider \Tests\DataProvider\RouteUrlBuilderDataProvider::buildDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteUrlBuilderDataProvider::buildDataProvider
      * @throws Exception
      */
     public function testBuild(
@@ -38,7 +38,7 @@ class RouteUrlBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteUrlBuilderDataProvider::invalidBuildDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteUrlBuilderDataProvider::invalidBuildDataProvider
      * @throws Exception
      */
     public function testInvalidBuild(
