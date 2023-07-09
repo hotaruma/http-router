@@ -267,4 +267,38 @@ class RouteMapTest extends TestCase
 
         $this->assertEquals($baseRouteMapGroupConfigStore->getConfig(), $routeMap->getConfigStore()->getConfig());
     }
+
+    public function testSequentialGroups(): void
+    {
+        $routeMap = new RouteMap();
+
+        $routeMap->group(
+            defaults: ['page_cc' => '1'],
+            rules: ['page_cc' => '\d+'],
+            middlewares: ['Middleware1_cc'],
+            pathPrefix: 'group_cc/path_cc',
+            namePrefix: 'group_cc.name_cc',
+            methods: HttpMethod::GET,
+            group: function (RouteMapInterface $routeMap) {
+            }
+        );
+
+        $groupConfig = $routeMap->group(
+            defaults: ['page_c' => '1'],
+            rules: ['page_c' => '\d+'],
+            middlewares: ['Middleware1_c'],
+            pathPrefix: 'group_c/path_c',
+            namePrefix: 'group_c.name_c',
+            methods: HttpMethod::POST,
+            group: function (RouteMapInterface $routeMap) {
+            }
+        );
+
+        $this->assertEquals(['page_c' => '1'], $groupConfig->getDefaults());
+        $this->assertEquals(['page_c' => '\d+'], $groupConfig->getRules());
+        $this->assertEquals(['Middleware1_c'], $groupConfig->getMiddlewares());
+        $this->assertEquals('/group_c/path_c/', $groupConfig->getPath());
+        $this->assertEquals('group_c.name_c', $groupConfig->getName());
+        $this->assertEquals([HttpMethod::POST], $groupConfig->getMethods());
+    }
 }
