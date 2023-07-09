@@ -12,7 +12,7 @@ class RouteUrlBuilderDataProvider
     public static function buildDataProvider(): array
     {
         return [
-            ['/n$ws/', [], [], [], '/n$ws/'],
+            ['/nws/', [], [], [], '/nws/'],
             ['/news/{id}/', [], ['id' => '2'], [], '/news/2/'],
             ['/news/{id}/', [], [], ['id' => '2'], '/news/2/'],
             ['/news/{id}/', ['id' => '\d+'], ['id' => '2'], [], '/news/2/'],
@@ -62,18 +62,18 @@ class RouteUrlBuilderDataProvider
     public static function invalidBuildDataProvider(): array
     {
         return [
-            ['/n$ws/{id}/', [], [], []],
-            ['/n$ws/{id}/', ['id' => '[a-z]'], ['id' => '2'], []],
-            ['/n$ws/{id}/', ['id' => '[a-z]'], [], ['id' => '2']],
+            ['/nws/{id}/', [], [], []],
+            ['/nws/{id}/', ['id' => '[a-z]'], ['id' => '2'], []],
+            ['/nws/{id}/', ['id' => '[a-z]'], [], ['id' => '2']],
 
-            ['/n$ws/{id}/', ['id' => 'alpha'], ['id' => '2'], []],
-            ['/n$ws/{id}/', ['id' => 'alpha'], [], ['id' => '2']],
+            ['/nws/{id}/', ['id' => 'alpha'], ['id' => '2'], []],
+            ['/nws/{id}/', ['id' => 'alpha'], [], ['id' => '2']],
 
-            ['/n$ws/{id:[a-z]}/', [], ['id' => '2'], []],
-            ['/n$ws/{id:[a-z]}/', [], [], ['id' => '2']],
+            ['/nws/{id:[a-z]}/', [], ['id' => '2'], []],
+            ['/nws/{id:[a-z]}/', [], [], ['id' => '2']],
 
-            ['/n$ws/{id:alpha}/', [], ['id' => '2'], []],
-            ['/n$ws/{id:alpha}/', [], [], ['id' => '2']],
+            ['/nws/{id:alpha}/', [], ['id' => '2'], []],
+            ['/nws/{id:alpha}/', [], [], ['id' => '2']],
         ];
     }
 }

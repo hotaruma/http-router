@@ -52,7 +52,7 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
         }
         [$placeholderName, $placeholderPattern] = explode(string: $placeholderName, separator: ':');
 
-        $placeholderRules = $this->getRoute()->getConfigStore()->getRules()[$placeholderName] ?? null;
+        $placeholderRules = $this->getRoute()->getConfigStore()->getConfig()->getRules()[$placeholderName] ?? null;
         $placeholderRules = match (true) {
             isset($placeholderRules) => $this->getPatternRegistry()->hasPattern($placeholderRules) ?
                 $this->getPatternRegistry()->getPattern($placeholderRules) :
@@ -64,7 +64,7 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
         };
         $placeholderValue =
             $this->getRoute()->getAttributes()[$placeholderName] ??
-            $this->getRoute()->getConfigStore()->getDefaults()[$placeholderName] ??
+            $this->getRoute()->getConfigStore()->getConfig()->getDefaults()[$placeholderName] ??
             throw new RouteUrlBuilderWrongValuesException(
                 sprintf('Route has no value for attribute %s', $placeholderName)
             );

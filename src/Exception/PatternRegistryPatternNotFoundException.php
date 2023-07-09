@@ -9,6 +9,6 @@ class PatternRegistryPatternNotFoundException extends RuntimeException implement
 {
     public function __construct(string $name)
     {
-        parent::__construct("Pattern with name '{$name}' not found in the registry.");
+        parent::__construct("Pattern with name '$name' not found in the registry.");
     }
 }

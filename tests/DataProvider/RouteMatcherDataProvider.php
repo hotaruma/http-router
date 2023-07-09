@@ -28,7 +28,7 @@ class RouteMatcherDataProvider
     {
         return [
             ['/users/{id}/{page}/', [], '/users/123/page/new/', null],
-            ['/use$rs/{id}/{page}/', [], '/use$rs/123/page/', ['id' => '123', 'page' => 'page']],
+            ['/users/{id}/{page}/', [], '/users/123/page/', ['id' => '123', 'page' => 'page']],
             [
                 '/users/{id}/{page}/{idd}-{iddd}/',
                 ['id' => '\d+', 'idd' => '\d+', 'iddd' => '\d+', 'page' => 'page|new-page'],

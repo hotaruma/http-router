@@ -6,6 +6,7 @@ namespace Hotaruma\Tests\Integration;
 
 use Hotaruma\HttpRouter\Config\RouteConfig;
 use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
+use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Attribute\{Route, RouteGroup};
 use Hotaruma\HttpRouter\Enum\HttpMethod;
 use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
@@ -98,7 +99,9 @@ class RouteScannerTest extends TestCase
 
         $routeMap = $routeScanner->scanRoutes($class::class);
         $routes = $routeMap->getRoutes();
-        $route = $routes->getIterator()->current();
+
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
         $this->assertEquals($routeConfig, $route->getConfigStore()->getConfig());
     }
@@ -151,9 +154,10 @@ class RouteScannerTest extends TestCase
         $routeMap = $routeScanner->scanRoutes($class::class, $class2::class);
         $routes = $routeMap->getRoutes();
 
-        $iterator = $routes->getIterator();
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $iterator->current()->getConfigStore()->getConfig();
+        $routeConfig = $route->getConfigStore()->getConfig();
         $this->assertSame(
             [
                 '/group_route1/route1/',
@@ -173,9 +177,10 @@ class RouteScannerTest extends TestCase
             ]
         );
 
-        $iterator->next();
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $iterator->current()->getConfigStore()->getConfig();
+        $routeConfig = $route->getConfigStore()->getConfig();
         $this->assertSame(
             [
                 '/group_route2/route2/',
@@ -220,9 +225,10 @@ class RouteScannerTest extends TestCase
         $routeMap = $routeScanner->scanRoutes($class::class);
         $routes = $routeMap->getRoutes();
 
-        $iterator = $routes->getIterator();
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $this->assertSame(['route1', $class::class], $iterator->current()->getAction());
+        $this->assertSame(['route1', $class::class], $route->getAction());
     }
 
     public function testScanRoutesFromDirectory(): void

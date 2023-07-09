@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hotaruma\Tests\Integration;
 
 use Hotaruma\HttpRouter\Interface\ConfigStore\ConfigStoreInterface;
+use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Attribute\{Route, RouteGroup};
 use Hotaruma\HttpRouter\Enum\HttpMethod;
 use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
@@ -50,7 +51,7 @@ class RouteMapTest extends TestCase
                 $config = $routeMap->getConfigStore();
             }
         );
-        assert($config instanceof ConfigStoreInterface);
+        $this->assertInstanceOf(ConfigStoreInterface::class, $config);
 
         $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $config->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_t' => '\d+'], $config->getRules());
@@ -89,7 +90,7 @@ class RouteMapTest extends TestCase
                 $config = $routeMap->getConfigStore();
             }
         );
-        assert($config instanceof ConfigStoreInterface);
+        $this->assertInstanceOf(ConfigStoreInterface::class, $config);
 
         $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $config->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_c' => '\d+'], $config->getRules());
@@ -122,12 +123,13 @@ class RouteMapTest extends TestCase
         $routeMap->connect('route_t/path_t', StdClass::class)->config();
 
 
-        $routesCollection = $routeMap->getRoutes();
-        $routeIterator = $routesCollection->getIterator();
+        $routes = $routeMap->getRoutes();
+        $this->assertCount(2, $routes);
 
-        $this->assertCount(2, $routesCollection);
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $routeIterator->current()->getConfigStore();
+        $routeConfig = $route->getConfigStore();
         $this->assertEquals(['page_f' => '1', 'page_c' => '1'], $routeConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_c' => '\d+'], $routeConfig->getRules());
         $this->assertEquals(['Middleware1_f', 'Middleware1_c'], $routeConfig->getMiddlewares());
@@ -135,9 +137,10 @@ class RouteMapTest extends TestCase
         $this->assertEquals('group.route_f', $routeConfig->getName());
         $this->assertEquals([HttpMethod::GET, HttpMethod::OPTIONS], $routeConfig->getMethods());
 
-        $routeIterator->next();
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $routeIterator->current()->getConfigStore();
+        $routeConfig = $route->getConfigStore();
         $this->assertEquals(['page_f' => '1'], $routeConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+'], $routeConfig->getRules());
         $this->assertEquals(['Middleware1_f'], $routeConfig->getMiddlewares());
@@ -163,13 +166,18 @@ class RouteMapTest extends TestCase
             }
         );
 
-        $routesCollection = $routeMap->getRoutes();
-        $this->assertCount(2, $routesCollection);
+        $routes = $routeMap->getRoutes();
+        $this->assertCount(2, $routes);
 
-        $iterator = $routesCollection->getIterator();
-        $this->assertEquals([HttpMethod::GET], $iterator->current()->getConfigStore()->getMethods());
-        $iterator->next();
-        $this->assertEquals([HttpMethod::GET, HttpMethod::POST], $iterator->current()->getConfigStore()->getMethods());
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
+
+        $this->assertEquals([HttpMethod::GET], $route->getConfigStore()->getMethods());
+
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
+
+        $this->assertEquals([HttpMethod::GET, HttpMethod::POST], $route->getConfigStore()->getMethods());
     }
 
     public function testInvalidSimpleRoute(): void
@@ -230,9 +238,10 @@ class RouteMapTest extends TestCase
         $routeMap->scanRoutes($class::class, $class2::class);
         $routes = $routeMap->getRoutes();
 
-        $iterator = $routes->getIterator();
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $iterator->current()->getConfigStore()->getConfig();
+        $routeConfig = $route->getConfigStore()->getConfig();
         $this->assertSame(
             [
                 '/group_f/path_f/route1/',
@@ -252,9 +261,10 @@ class RouteMapTest extends TestCase
             ]
         );
 
-        $iterator->next();
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $iterator->current()->getConfigStore()->getConfig();
+        $routeConfig = $route->getConfigStore()->getConfig();
         $this->assertSame(
             [
                 '/group_route2/route2/',
@@ -304,7 +314,7 @@ class RouteMapTest extends TestCase
                 $config = $routeMap->getConfigStore();
             }
         );
-        assert($config instanceof ConfigStoreInterface);
+        $this->assertInstanceOf(ConfigStoreInterface::class, $config);
 
         $this->assertEquals(['page_c' => '1'], $config->getDefaults());
         $this->assertEquals(['page_c' => '\d+'], $config->getRules());
@@ -363,7 +373,7 @@ class RouteMapTest extends TestCase
                 );
             }
         );
-        assert($config instanceof ConfigStoreInterface);
+        $this->assertInstanceOf(ConfigStoreInterface::class, $config);
 
         $this->assertEquals(['page_f' => '1', 'page_cc' => '1'], $config->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_cc' => '\d+'], $config->getRules());

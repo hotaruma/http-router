@@ -11,7 +11,7 @@ use Hotaruma\HttpRouter\Interface\PatternRegistry\PatternRegistryInterface;
 class PatternRegistry implements PatternRegistryInterface
 {
     /**
-     * @var array<string, string|TA_PatternRegistryTypes>
+     * @var array<string, TA_PatternRegistryTypes>
      */
     protected array $patterns = [
         'int' => '\d+',
@@ -43,5 +43,13 @@ class PatternRegistry implements PatternRegistryInterface
     public function hasPattern(string $name): bool
     {
         return isset($this->patterns[$name]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPatterns(): array
+    {
+        return $this->patterns;
     }
 }

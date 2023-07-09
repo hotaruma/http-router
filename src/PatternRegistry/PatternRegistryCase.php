@@ -3,7 +3,6 @@
 namespace Hotaruma\HttpRouter\PatternRegistry;
 
 use Hotaruma\HttpRouter\Interface\PatternRegistry\PatternRegistryInterface;
-use Hotaruma\HttpRouter\Interface\RouteUrlBuilder\RouteUrlBuilderInterface;
 
 trait PatternRegistryCase
 {

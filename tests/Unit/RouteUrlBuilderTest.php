@@ -6,6 +6,7 @@ namespace Hotaruma\Tests\Unit;
 
 use Hotaruma\HttpRouter\ConfigStore\ConfigStore;
 use Hotaruma\HttpRouter\Exception\RouteUrlBuilderWrongValuesException;
+use Hotaruma\HttpRouter\Interface\Config\ConfigInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\RouteUrlBuilder\RouteUrlBuilder;
 use PHPUnit\Framework\MockObject\Exception;
@@ -68,10 +69,18 @@ class RouteUrlBuilderTest extends TestCase
         array  $defaults = [],
         array  $attributes = [],
     ): RouteInterface|MockObject {
+
+        $config = $this->createMock(ConfigInterface::class);
+        $config->method('getPath')->willReturn($path);
+        $config->method('getRules')->willReturn($rules);
+        $config->method('getDefaults')->willReturn($defaults);
+
         $routeConfig = $this->getMockBuilder(ConfigStore::class)
             ->addMethods(['getPath', 'getRules', 'getDefaults'])
+            ->onlyMethods(['getConfig'])
             ->getMock();
 
+        $routeConfig->method('getConfig')->willReturn($config);
         $routeConfig->method('getPath')->willReturn($path);
         $routeConfig->method('getRules')->willReturn($rules);
         $routeConfig->method('getDefaults')->willReturn($defaults);

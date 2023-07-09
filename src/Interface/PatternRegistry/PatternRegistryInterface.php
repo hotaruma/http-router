@@ -33,4 +33,9 @@ interface PatternRegistryInterface
      * @return bool
      */
     public function hasPattern(string $name): bool;
+
+    /**
+     * @return array<string, TA_PatternRegistryTypes>
+     */
+    public function getPatterns(): array;
 }

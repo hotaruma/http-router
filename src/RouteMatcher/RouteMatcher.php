@@ -6,8 +6,7 @@ namespace Hotaruma\HttpRouter\RouteMatcher;
 
 use Closure;
 use Hotaruma\HttpRouter\Enum\AdditionalMethod;
-use Hotaruma\HttpRouter\Exception\RouteMatcherInvalidArgumentException;
-use Hotaruma\HttpRouter\Exception\RouteMatcherRuntimeException;
+use Hotaruma\HttpRouter\Exception\{RouteMatcherInvalidArgumentException, RouteMatcherRuntimeException};
 use Hotaruma\HttpRouter\Interface\Enum\RequestMethodInterface;
 use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Interface\RouteMatcher\RouteMatcherInterface;
@@ -24,7 +23,7 @@ class RouteMatcher implements RouteMatcherInterface
      */
     public function matchRouteByHttpMethod(RouteInterface $route, RequestMethodInterface $requestMethod): bool
     {
-        $routeHttpMethods = $route->getConfigStore()->getMethods();
+        $routeHttpMethods = $route->getConfigStore()->getConfig()->getMethods();
         return in_array($requestMethod, [...$routeHttpMethods, AdditionalMethod::ANY]) ||
             in_array(AdditionalMethod::ANY, $routeHttpMethods);
     }
@@ -32,76 +31,107 @@ class RouteMatcher implements RouteMatcherInterface
     /**
      * @inheritDoc
      */
-    public function matchRouteByRegex(RouteInterface $route, string $requestPath): ?array
+    public function matchRouteByRegex(array $routes, string $requestPath): ?RouteInterface
     {
-        [$pattern, $attributesValidators] = $this->generatePattern($route);
+        $requestPath = $this->normalizePath($requestPath);
+        $simpleRoutes = $closureRoutes = [];
 
-        if (!preg_match($pattern, $this->normalizePath($requestPath), $matches)) {
-            return null;
-        }
-        $attributes = array_filter($matches, '\is_string', ARRAY_FILTER_USE_KEY);
+        foreach ($routes as $index => $route) {
+            $attributesValidators = [];
+            $regexp = $this->generatePattern($route, $attributesValidators);
 
-        foreach ($attributesValidators as $placeholderName => $attributesValidator) {
-            if (!isset($attributes[$placeholderName])) {
-                throw new RouteMatcherRuntimeException(
-                    sprintf('Attribute %s not found', $placeholderName)
-                );
+            if (!empty($attributesValidators)) {
+                $closureRoutes[$index] = [
+                    'route' => $route,
+                    'regexp' => $regexp,
+                    'attributesValidators' => $attributesValidators
+                ];
+                continue;
             }
-            if ($attributesValidator($attributes[$placeholderName], $this->getPatternRegistry()) !== true) {
-                return null;
+            $simpleRoutes[$index] = [
+                'route' => $route,
+                'regexp' => $regexp,
+            ];
+        }
+
+        $variants = array_map(function (array $routesStore, int $key) {
+            return "{$routesStore['regexp']}(*MARK:$key)";
+        }, $simpleRoutes, array_keys($simpleRoutes));
+
+        $pattern = sprintf('#^(?|%s)$#', implode(array: $variants, separator: '|'));
+
+        if (preg_match($pattern, $requestPath, $matches)) {
+            $index = (int)$matches['MARK'];
+            unset($matches['MARK']);
+
+            $route = $simpleRoutes[$index]['route'];
+            $route->attributes(array_filter($matches, '\is_string', ARRAY_FILTER_USE_KEY));
+
+            return $route;
+        }
+
+        foreach ($closureRoutes as $routeData) {
+            if (!preg_match("#^{$routeData['regexp']}$#", $requestPath, $matches)) {
+                continue;
+            }
+            $attributes = array_filter($matches, '\is_string', ARRAY_FILTER_USE_KEY);
+
+            foreach ($routeData['attributesValidators'] as $placeholderName => $attributesValidator) {
+                if (!isset($attributes[$placeholderName])) {
+                    throw new RouteMatcherRuntimeException(
+                        sprintf('Attribute %s not found', $placeholderName)
+                    );
+                }
+                if ($attributesValidator($attributes[$placeholderName], $this->getPatternRegistry()) === true) {
+                    $route = $routeData['route'];
+                    $route->attributes(array_filter($matches, '\is_string', ARRAY_FILTER_USE_KEY));
+
+                    return $route;
+                }
             }
         }
-        return $attributes;
+
+        return null;
     }
 
     /**
      * @param RouteInterface $route
-     * @return array{string, array<string, Closure>} Regex pattern for route matching and attributes validators.
+     * @param array<string, Closure> $attributesValidators
+     * @return string Regex pattern for route matching.
      *
      * @throws RouteMatcherInvalidArgumentException
-     *
-     * @phpstan-return array{0: string, 1: array<string, TA_PatternRegistryClosure>}
      */
-    protected function generatePattern(RouteInterface $route): array
+    protected function generatePattern(RouteInterface $route, array &$attributesValidators): string
     {
-        $routePath = $this->preparePathForRegExp($route->getConfigStore()->getPath());
-        $attributesValidators = [];
+        $routePath = $route->getConfigStore()->getConfig()->getPath();
 
-        $pattern = preg_replace_callback(
-            '#{(?P<placeholderName>[^}]+)}#',
-            function ($subject) use ($route, &$attributesValidators) {
-                $placeholderName = $subject['placeholderName'];
+        return (string)preg_replace_callback('#{([^}]*)}#', function ($subject) use ($route, &$attributesValidators) {
+            $placeholderName = $subject[1];
+            if (empty($placeholderName)) {
+                throw new RouteMatcherInvalidArgumentException('Placeholder has no name');
+            }
+            [$placeholderName, $placeholderPattern] = explode(':', $placeholderName);
 
-                if (empty($placeholderName)) {
-                    throw new RouteMatcherInvalidArgumentException('Placeholder has no name');
-                }
-                [$placeholderName, $placeholderPattern] = explode(string: $placeholderName, separator: ':');
+            $placeholderRules = $route->getConfigStore()->getConfig()->getRules()[$placeholderName] ?? null;
+            $placeholderRules = match (true) {
+                isset($placeholderRules) => $this->getPatternRegistry()->hasPattern($placeholderRules) ?
+                    $this->getPatternRegistry()->getPattern($placeholderRules) :
+                    $placeholderRules,
+                !empty($placeholderPattern) => $this->getPatternRegistry()->hasPattern($placeholderPattern) ?
+                    $this->getPatternRegistry()->getPattern($placeholderPattern) :
+                    $placeholderPattern,
+                default => null,
+            };
 
-                $placeholderRules = $route->getConfigStore()->getRules()[$placeholderName] ?? null;
-                $placeholderRules = match (true) {
-                    isset($placeholderRules) => $this->getPatternRegistry()->hasPattern($placeholderRules) ?
-                        $this->getPatternRegistry()->getPattern($placeholderRules) :
-                        $placeholderRules,
-                    !empty($placeholderPattern) => $this->getPatternRegistry()->hasPattern($placeholderPattern) ?
-                        $this->getPatternRegistry()->getPattern($placeholderPattern) :
-                        stripslashes($placeholderPattern),
-                    default => null,
-                };
-
-                if ($placeholderRules instanceof Closure) {
-                    $attributesValidators[$placeholderName] = $placeholderRules;
-                    unset($placeholderRules);
-                }
-                return sprintf(
-                    '(?P<%s>%s)',
-                    $placeholderName,
-                    $placeholderRules ?? '[^}/]+'
-                );
-            },
-            $routePath
-        );
-        $pattern = sprintf("#^%s$#", $pattern);
-
-        return [$pattern, $attributesValidators];
+            if ($placeholderRules instanceof Closure) {
+                $attributesValidators[$placeholderName] = $placeholderRules;
+                unset($placeholderRules);
+            }
+            return sprintf(
+                '(?P<%s>%s)',
+                $placeholderName,
+                $placeholderRules ?? '[^}/]+'
+            );
+        }, $routePath);
     }
 }

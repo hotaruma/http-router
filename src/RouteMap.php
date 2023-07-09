@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter;
 
-use Hotaruma\HttpRouter\Collection\{GroupConfigStoreCollection, RouteCollection};
+use Hotaruma\HttpRouter\Collection\GroupConfigStoreCollection;
 use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
 use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
 use Hotaruma\HttpRouter\Exception\{GroupConfigStoreCollectionLogicException,
     RouteConfigInvalidArgumentException,
     RouteInvalidArgumentException,
     RouteMapInvalidArgumentException,
-    RouteMapLogicException,
-    RouteMatcherRuntimeException};
+    RouteMapLogicException};
 use Hotaruma\HttpRouter\Factory\{RouteFactory, GroupConfigStoreFactory};
-use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
+use Hotaruma\HttpRouter\Interface\{
     Enum\RequestMethodInterface,
     Factory\ConfigStoreFactoryInterface,
     Factory\RouteFactoryInterface,
@@ -43,11 +42,9 @@ class RouteMap implements RouteMapInterface
     protected ConfigStoreFactoryInterface $groupConfigStoreFactory;
 
     /**
-     * @var RouteCollectionInterface Routes collection
-     *
-     * @phpstan-var TA_RouteCollection
+     * @var array<RouteInterface> Routes collection
      */
-    protected RouteCollectionInterface $routesCollection;
+    protected array $routesCollection;
 
     /**
      * @var RouteScannerInterface
@@ -257,9 +254,9 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function getRoutes(): RouteCollectionInterface
+    public function getRoutes(): array
     {
-        return $this->routesCollection ??= new RouteCollection();
+        return $this->routesCollection ??= [];
     }
 
     /**
@@ -311,7 +308,7 @@ class RouteMap implements RouteMapInterface
         $route->getConfigStore()->mergeConfig($this->getConfigStore());
         $route->config(path: $path, methods: $methods, name: $name);
 
-        $this->getRoutes()->add($route);
+        $this->routesCollection[] = $route;
         return $route;
     }
 

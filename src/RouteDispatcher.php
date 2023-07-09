@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter;
 
-use Hotaruma\HttpRouter\Collection\RouteCollection;
 use Hotaruma\HttpRouter\Enum\AdditionalMethod;
 use Hotaruma\HttpRouter\Exception\RouteDispatcherNotFoundException;
-use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
+use Hotaruma\HttpRouter\Interface\{
     Enum\RequestMethodInterface,
     PatternRegistry\PatternRegistryInterface,
     Route\RouteInterface,
@@ -34,11 +33,9 @@ class RouteDispatcher implements RouteDispatcherInterface
     protected string $requestPath = '';
 
     /**
-     * @var RouteCollectionInterface Route collection for matching
-     *
-     * @phpstan-var TA_RouteCollection
+     * @var array<RouteInterface> Routes
      */
-    protected RouteCollectionInterface $routesCollection;
+    protected array $routes;
 
     /**
      * @var RouteMatcherInterface
@@ -51,12 +48,12 @@ class RouteDispatcher implements RouteDispatcherInterface
     public function config(
         RequestMethodInterface   $requestHttpMethod = null,
         string                   $requestPath = null,
-        RouteCollectionInterface $routes = null,
+        array                    $routes = null,
         PatternRegistryInterface $patternRegistry = null
     ): void {
         isset($requestHttpMethod) and $this->requestHttpMethod($requestHttpMethod);
         isset($requestPath) and $this->requestPath($requestPath);
-        isset($routes) and $this->routesCollection($routes);
+        isset($routes) and $this->routes($routes);
         isset($patternRegistry) and $this->patternRegistry($patternRegistry);
     }
 
@@ -75,16 +72,19 @@ class RouteDispatcher implements RouteDispatcherInterface
     {
         $this->getRouteMatcher()->patternRegistry($this->getPatternRegistry());
 
-        foreach ($this->getRoutesCollection() as $route) {
-            if (
-                $this->getRouteMatcher()->matchRouteByHttpMethod($route, $this->getRequestHttpMethod()) &&
-                ($attributes = $this->getRouteMatcher()->matchRouteByRegex($route, $this->getRequestPath())) !== null
-            ) {
-                $route->attributes($attributes);
-                return $route;
+        $routes = [];
+        foreach ($this->getRoutes() as $route) {
+            if ($this->getRouteMatcher()->matchRouteByHttpMethod($route, $this->getRequestHttpMethod())) {
+                $routes[] = $route;
             }
         }
 
+        if (!empty($routes)) {
+            $route = $this->getRouteMatcher()->matchRouteByRegex($routes, $this->getRequestPath());
+            if (!empty($route)) {
+                return $route;
+            }
+        }
         throw new RouteDispatcherNotFoundException('No matching route found for the current request.');
     }
 
@@ -123,24 +123,20 @@ class RouteDispatcher implements RouteDispatcherInterface
     }
 
     /**
-     * @param RouteCollectionInterface $routeCollection
+     * @param array<RouteInterface> $routes
      * @return void
-     *
-     * @phpstan-param TA_RouteCollection $routeCollection
      */
-    protected function routesCollection(RouteCollectionInterface $routeCollection): void
+    protected function routes(array $routes): void
     {
-        $this->routesCollection = $routeCollection;
+        $this->routes = $routes;
     }
 
     /**
-     * @return RouteCollectionInterface
-     *
-     * @phpstan-return TA_RouteCollection
+     * @return array<RouteInterface>
      */
-    protected function getRoutesCollection(): RouteCollectionInterface
+    protected function getRoutes(): array
     {
-        return $this->routesCollection ??= new RouteCollection();
+        return $this->routes ??= [];
     }
 
     /**
