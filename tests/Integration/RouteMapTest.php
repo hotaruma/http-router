@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration;
+namespace Hotaruma\Tests\Integration;
 
+use Hotaruma\HttpRouter\Interface\ConfigStore\ConfigStoreInterface;
+use Hotaruma\HttpRouter\Interface\Route\RouteInterface;
 use Hotaruma\HttpRouter\Attribute\{Route, RouteGroup};
 use Hotaruma\HttpRouter\Enum\HttpMethod;
 use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
@@ -17,6 +19,7 @@ class RouteMapTest extends TestCase
     public function testChangeGroupConfig(): void
     {
         $routeMap = new RouteMap();
+        $config = null;
 
         $routeMap->changeGroupConfig(
             defaults: ['page_f' => '1'],
@@ -34,7 +37,7 @@ class RouteMapTest extends TestCase
             pathPrefix: 'group_c/path_c',
             namePrefix: 'group_c.name_c',
             methods: HttpMethod::POST,
-            group: function (RouteMapInterface $routeMap) {
+            group: function (RouteMapInterface $routeMap) use (&$config) {
 
                 $routeMap->changeGroupConfig(
                     defaults: ['page_t' => '1'],
@@ -44,22 +47,24 @@ class RouteMapTest extends TestCase
                     namePrefix: 'group_t.name_t',
                     methods: HttpMethod::DELETE,
                 );
+
+                $config = $routeMap->getConfigStore();
             }
         );
+        $this->assertInstanceOf(ConfigStoreInterface::class, $config);
 
-        $groupConfig = $routeMap->getConfigStore();
-
-        $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $groupConfig->getDefaults());
-        $this->assertEquals(['page_f' => '\d+', 'page_t' => '\d+'], $groupConfig->getRules());
-        $this->assertEquals(['Middleware1_f', 'Middleware1_t'], $groupConfig->getMiddlewares());
-        $this->assertEquals('/group_f/path_f/group_t/path_t/', $groupConfig->getPath());
-        $this->assertEquals('group_f.name_f.group_t.name_t', $groupConfig->getName());
-        $this->assertEquals([HttpMethod::GET, HttpMethod::DELETE], $groupConfig->getMethods());
+        $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $config->getDefaults());
+        $this->assertEquals(['page_f' => '\d+', 'page_t' => '\d+'], $config->getRules());
+        $this->assertEquals(['Middleware1_f', 'Middleware1_t'], $config->getMiddlewares());
+        $this->assertEquals('/group_f/path_f/group_t/path_t/', $config->getPath());
+        $this->assertEquals('group_f.name_f.group_t.name_t', $config->getName());
+        $this->assertEquals([HttpMethod::GET, HttpMethod::DELETE], $config->getMethods());
     }
 
     public function testChangeGroupConfigNullMerge(): void
     {
         $routeMap = new RouteMap();
+        $config = null;
 
         $routeMap->changeGroupConfig(
             defaults: ['page_f' => '1'],
@@ -77,21 +82,22 @@ class RouteMapTest extends TestCase
             pathPrefix: 'group_c/path_c',
             namePrefix: 'group_c.name_c',
             methods: HttpMethod::POST,
-            group: function (RouteMapInterface $routeMap) {
+            group: function (RouteMapInterface $routeMap) use (&$config) {
                 $routeMap->changeGroupConfig(
                     defaults: ['page_t' => '1'],
                 );
+
+                $config = $routeMap->getConfigStore();
             }
         );
+        $this->assertInstanceOf(ConfigStoreInterface::class, $config);
 
-        $groupConfig = $routeMap->getConfigStore();
-
-        $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $groupConfig->getDefaults());
-        $this->assertEquals(['page_f' => '\d+', 'page_c' => '\d+'], $groupConfig->getRules());
-        $this->assertEquals(['Middleware1_f', 'Middleware1_c'], $groupConfig->getMiddlewares());
-        $this->assertEquals('/group_f/path_f/group_c/path_c/', $groupConfig->getPath());
-        $this->assertEquals('group_f.name_f.group_c.name_c', $groupConfig->getName());
-        $this->assertEquals([HttpMethod::GET, HttpMethod::POST], $groupConfig->getMethods());
+        $this->assertEquals(['page_f' => '1', 'page_t' => '1'], $config->getDefaults());
+        $this->assertEquals(['page_f' => '\d+', 'page_c' => '\d+'], $config->getRules());
+        $this->assertEquals(['Middleware1_f', 'Middleware1_c'], $config->getMiddlewares());
+        $this->assertEquals('/group_f/path_f/group_c/path_c/', $config->getPath());
+        $this->assertEquals('group_f.name_f.group_c.name_c', $config->getName());
+        $this->assertEquals([HttpMethod::GET, HttpMethod::POST], $config->getMethods());
     }
 
     public function testAddRoute(): void
@@ -117,12 +123,13 @@ class RouteMapTest extends TestCase
         $routeMap->connect('route_t/path_t', StdClass::class)->config();
 
 
-        $routesCollection = $routeMap->getRoutes();
-        $routeIterator = $routesCollection->getIterator();
+        $routes = $routeMap->getRoutes();
+        $this->assertCount(2, $routes);
 
-        $this->assertCount(2, $routesCollection);
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $routeIterator->current()->getConfigStore();
+        $routeConfig = $route->getConfigStore();
         $this->assertEquals(['page_f' => '1', 'page_c' => '1'], $routeConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+', 'page_c' => '\d+'], $routeConfig->getRules());
         $this->assertEquals(['Middleware1_f', 'Middleware1_c'], $routeConfig->getMiddlewares());
@@ -130,9 +137,10 @@ class RouteMapTest extends TestCase
         $this->assertEquals('group.route_f', $routeConfig->getName());
         $this->assertEquals([HttpMethod::GET, HttpMethod::OPTIONS], $routeConfig->getMethods());
 
-        $routeIterator->next();
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $routeIterator->current()->getConfigStore();
+        $routeConfig = $route->getConfigStore();
         $this->assertEquals(['page_f' => '1'], $routeConfig->getDefaults());
         $this->assertEquals(['page_f' => '\d+'], $routeConfig->getRules());
         $this->assertEquals(['Middleware1_f'], $routeConfig->getMiddlewares());
@@ -158,13 +166,18 @@ class RouteMapTest extends TestCase
             }
         );
 
-        $routesCollection = $routeMap->getRoutes();
-        $this->assertCount(2, $routesCollection);
+        $routes = $routeMap->getRoutes();
+        $this->assertCount(2, $routes);
 
-        $iterator = $routesCollection->getIterator();
-        $this->assertEquals([HttpMethod::GET], $iterator->current()->getConfigStore()->getMethods());
-        $iterator->next();
-        $this->assertEquals([HttpMethod::GET, HttpMethod::POST], $iterator->current()->getConfigStore()->getMethods());
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
+
+        $this->assertEquals([HttpMethod::GET], $route->getConfigStore()->getMethods());
+
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
+
+        $this->assertEquals([HttpMethod::GET, HttpMethod::POST], $route->getConfigStore()->getMethods());
     }
 
     public function testInvalidSimpleRoute(): void
@@ -225,9 +238,10 @@ class RouteMapTest extends TestCase
         $routeMap->scanRoutes($class::class, $class2::class);
         $routes = $routeMap->getRoutes();
 
-        $iterator = $routes->getIterator();
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $iterator->current()->getConfigStore()->getConfig();
+        $routeConfig = $route->getConfigStore()->getConfig();
         $this->assertSame(
             [
                 '/group_f/path_f/route1/',
@@ -247,9 +261,10 @@ class RouteMapTest extends TestCase
             ]
         );
 
-        $iterator->next();
+        $route = array_shift($routes);
+        assert($route instanceof RouteInterface);
 
-        $routeConfig = $iterator->current()->getConfigStore()->getConfig();
+        $routeConfig = $route->getConfigStore()->getConfig();
         $this->assertSame(
             [
                 '/group_route2/route2/',
@@ -270,5 +285,101 @@ class RouteMapTest extends TestCase
         );
 
         $this->assertEquals($baseRouteMapGroupConfigStore->getConfig(), $routeMap->getConfigStore()->getConfig());
+    }
+
+    public function testSequentialGroups(): void
+    {
+        $routeMap = new RouteMap();
+        $config = null;
+
+        $routeMap->group(
+            defaults: ['page_cc' => '1'],
+            rules: ['page_cc' => '\d+'],
+            middlewares: ['Middleware1_cc'],
+            pathPrefix: 'group_cc/path_cc',
+            namePrefix: 'group_cc.name_cc',
+            methods: HttpMethod::GET,
+            group: function (RouteMapInterface $routeMap) {
+            }
+        );
+
+        $routeMap->group(
+            defaults: ['page_c' => '1'],
+            rules: ['page_c' => '\d+'],
+            middlewares: ['Middleware1_c'],
+            pathPrefix: 'group_c/path_c',
+            namePrefix: 'group_c.name_c',
+            methods: HttpMethod::POST,
+            group: function (RouteMapInterface $routeMap) use (&$config) {
+                $config = $routeMap->getConfigStore();
+            }
+        );
+        $this->assertInstanceOf(ConfigStoreInterface::class, $config);
+
+        $this->assertEquals(['page_c' => '1'], $config->getDefaults());
+        $this->assertEquals(['page_c' => '\d+'], $config->getRules());
+        $this->assertEquals(['Middleware1_c'], $config->getMiddlewares());
+        $this->assertEquals('/group_c/path_c/', $config->getPath());
+        $this->assertEquals('group_c.name_c', $config->getName());
+        $this->assertEquals([HttpMethod::POST], $config->getMethods());
+    }
+
+    public function testGroupReturnConfig(): void
+    {
+        $routeMap = new RouteMap();
+        $config = null;
+
+        $routeMap->group(
+            defaults: ['page_cc' => '1'],
+            rules: ['page_cc' => '\d+'],
+            middlewares: ['Middleware1_cc'],
+            pathPrefix: 'group_cc/path_cc',
+            namePrefix: 'group_cc.name_cc',
+            methods: HttpMethod::GET,
+            group: function (RouteMapInterface $routeMap) use (&$config) {
+
+                $routeMap->group(
+                    defaults: ['page_c' => '1'],
+                    rules: ['page_c' => '\d+'],
+                    middlewares: ['Middleware1_c'],
+                    pathPrefix: 'group_c/path_c',
+                    namePrefix: 'group_c.name_c',
+                    methods: HttpMethod::POST,
+                    group: function (RouteMapInterface $routeMap) {
+
+                        $routeMap->group(
+                            defaults: ['page_ff' => '1'],
+                            rules: ['page_ff' => '\d+'],
+                            middlewares: ['Middleware1_ff'],
+                            pathPrefix: 'group_ff/path_ff',
+                            namePrefix: 'group_ff.name_ff',
+                            methods: HttpMethod::CONNECT,
+                            group: function (RouteMapInterface $routeMap) {
+                            }
+                        );
+                    }
+                );
+
+                $routeMap->group(
+                    defaults: ['page_f' => '1'],
+                    rules: ['page_f' => '\d+'],
+                    middlewares: ['Middleware1_f'],
+                    pathPrefix: 'group_f/path_f',
+                    namePrefix: 'group_f.name_f',
+                    methods: HttpMethod::PUT,
+                    group: function (RouteMapInterface $routeMap) use (&$config) {
+                        $config = $routeMap->getConfigStore();
+                    }
+                );
+            }
+        );
+        $this->assertInstanceOf(ConfigStoreInterface::class, $config);
+
+        $this->assertEquals(['page_f' => '1', 'page_cc' => '1'], $config->getDefaults());
+        $this->assertEquals(['page_f' => '\d+', 'page_cc' => '\d+'], $config->getRules());
+        $this->assertEquals(['Middleware1_cc', 'Middleware1_f'], $config->getMiddlewares());
+        $this->assertEquals('/group_cc/path_cc/group_f/path_f/', $config->getPath());
+        $this->assertEquals('group_cc.name_cc.group_f.name_f', $config->getName());
+        $this->assertEquals([HttpMethod::GET, HttpMethod::PUT], $config->getMethods());
     }
 }

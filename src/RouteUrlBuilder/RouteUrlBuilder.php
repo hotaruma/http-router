@@ -52,23 +52,28 @@ class RouteUrlBuilder implements RouteUrlBuilderInterface
         }
         [$placeholderName, $placeholderPattern] = explode(string: $placeholderName, separator: ':');
 
-        $placeholderRules = $this->getRoute()->getConfigStore()->getRules()[$placeholderName] ?? null;
+        $placeholderRules = $this->getRoute()->getConfigStore()->getConfig()->getRules()[$placeholderName] ?? null;
+        $placeholderRules = match (true) {
+            isset($placeholderRules) => $this->getPatternRegistry()->hasPattern($placeholderRules) ?
+                $this->getPatternRegistry()->getPattern($placeholderRules) :
+                $placeholderRules,
+            !empty($placeholderPattern) => $this->getPatternRegistry()->hasPattern($placeholderPattern) ?
+                $this->getPatternRegistry()->getPattern($placeholderPattern) :
+                $placeholderPattern,
+            default => null,
+        };
         $placeholderValue =
             $this->getRoute()->getAttributes()[$placeholderName] ??
-            $this->getRoute()->getConfigStore()->getDefaults()[$placeholderName] ??
+            $this->getRoute()->getConfigStore()->getConfig()->getDefaults()[$placeholderName] ??
             throw new RouteUrlBuilderWrongValuesException(
                 sprintf('Route has no value for attribute %s', $placeholderName)
             );
-
-        if (!isset($placeholderRules) && !empty($placeholderPattern)) {
-            $placeholderRules = $this->getPatternRegistry()->getPattern($placeholderPattern);
-        }
 
         if (
             isset($placeholderRules) &&
             (
                 ($placeholderRules instanceof Closure && $placeholderRules($placeholderValue, $this->getPatternRegistry()) !== true) ||
-                (is_string($placeholderRules) && !preg_match(sprintf("/^%s$/", $placeholderRules), $placeholderValue))
+                (is_string($placeholderRules) && !preg_match(sprintf("#^%s$#", $placeholderRules), $placeholderValue))
             )
         ) {
             throw new RouteUrlBuilderWrongValuesException(

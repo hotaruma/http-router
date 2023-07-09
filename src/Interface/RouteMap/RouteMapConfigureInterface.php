@@ -10,7 +10,9 @@ use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
     Factory\RouteFactoryInterface,
     ConfigStore\ConfigStoreInterface,
     RouteScanner\RouteScannerInterface,
-    RouteScanner\RouteScannerToolsInterface};
+    RouteScanner\RouteScannerToolsInterface
+};
+use Hotaruma\HttpRouter\Exception\RouteMapLogicException;
 
 /**
  * @mixin RouteScannerToolsInterface
@@ -28,7 +30,7 @@ interface RouteMapConfigureInterface
      * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods
      * @return void
      *
-     * @throws RouteConfigInvalidArgumentException
+     * @throws RouteConfigInvalidArgumentException|RouteMapLogicException
      */
     public function changeGroupConfig(
         array                        $rules = null,
@@ -51,7 +53,7 @@ interface RouteMapConfigureInterface
      * @param RequestMethodInterface|array<RequestMethodInterface>|null $methods Http methods
      * @return void
      *
-     * @throws RouteConfigInvalidArgumentException
+     * @throws RouteConfigInvalidArgumentException|RouteMapLogicException
      */
     public function group(
         callable                     $group,
@@ -93,6 +95,8 @@ interface RouteMapConfigureInterface
      * Get current group config.
      *
      * @return ConfigStoreInterface
+     *
+     * @throws RouteMapLogicException
      */
     public function getConfigStore(): ConfigStoreInterface;
 

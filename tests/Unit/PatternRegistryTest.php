@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Hotaruma\Tests\Unit;
 
 use Hotaruma\HttpRouter\Exception\PatternRegistryPatternNotFoundException;
 use Hotaruma\HttpRouter\PatternRegistry\PatternRegistry;

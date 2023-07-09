@@ -32,8 +32,8 @@ trait ConfigNormalizeUtils
 
     /**
      * Prepares a given path string for regular expression matching.
-     * Replacing escaped opening and closing curly braces ("{" and "}")
-     * with unescaped counterparts ("{" and "}").
+     * Replacing escaped opening and closing curly braces ("{", "}" and "\:")
+     * with unescaped counterparts ("{", "}" and \:).
      *
      * @param string $path
      * @return string

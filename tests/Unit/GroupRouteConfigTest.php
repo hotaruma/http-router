@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Hotaruma\Tests\Unit;
 
 use Closure;
 use Hotaruma\HttpRouter\Factory\GroupConfigStoreFactory;
@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class GroupRouteConfigTest extends TestCase
 {
     /**
-     * @dataProvider \Tests\DataProvider\GroupRouteConfigDataProvider::pathMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\GroupRouteConfigDataProvider::pathMergeDataProvider
      */
     public function testMergePath(string $groupPath, string $routePath, string $expectedPath): void
     {
@@ -28,7 +28,7 @@ class GroupRouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\GroupRouteConfigDataProvider::methodsMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\GroupRouteConfigDataProvider::methodsMergeDataProvider
      */
     public function testMergeMethods(array $groupMethods, array $routeMethods, array $expectedMethods): void
     {
@@ -45,7 +45,7 @@ class GroupRouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\GroupRouteConfigDataProvider::nameMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\GroupRouteConfigDataProvider::nameMergeDataProvider
      */
     public function testMergeName(string $groupName, string $routeName, string $expectedName): void
     {
@@ -62,7 +62,7 @@ class GroupRouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\GroupRouteConfigDataProvider::rulesMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\GroupRouteConfigDataProvider::rulesMergeDataProvider
      */
     public function testMergeRules(array $groupRules, array $routeRules, array $expectedRules): void
     {
@@ -79,7 +79,7 @@ class GroupRouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\GroupRouteConfigDataProvider::defaultsMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\GroupRouteConfigDataProvider::defaultsMergeDataProvider
      */
     public function testMergeDefaults(array $groupDefaults, array $routeDefaults, array $expectedDefaults): void
     {
@@ -96,7 +96,7 @@ class GroupRouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\GroupRouteConfigDataProvider::middlewaresMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\GroupRouteConfigDataProvider::middlewaresMergeDataProvider
      */
     public function testMergeMiddlewares(mixed $groupMiddlewares, mixed $routeMiddlewares, array $expectedMiddlewares): void
     {

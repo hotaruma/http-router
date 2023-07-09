@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter;
 
-use Hotaruma\HttpRouter\Collection\RouteCollection;
 use Hotaruma\HttpRouter\PatternRegistry\PatternRegistryCase;
 use Hotaruma\HttpRouter\RouteUrlBuilder\RouteUrlBuilder;
 use Hotaruma\HttpRouter\Exception\{RouteUrlGeneratorInvalidArgumentException,
     RouteUrlGeneratorNotFoundException,
 };
-use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
-    PatternRegistry\PatternRegistryInterface,
+use Hotaruma\HttpRouter\Interface\{PatternRegistry\PatternRegistryInterface,
     Route\RouteInterface,
     RouteUrlBuilder\RouteUrlBuilderInterface,
     RouteUrlGenerator\RouteUrlGeneratorInterface
@@ -22,11 +20,9 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
     use PatternRegistryCase;
 
     /**
-     * @var RouteCollectionInterface Route collection
-     *
-     * @phpstan-var TA_RouteCollection
+     * @var array<RouteInterface> Routes
      */
-    protected RouteCollectionInterface $routesCollection;
+    protected array $routesCollection;
 
     /**
      * @var RouteUrlBuilderInterface
@@ -37,10 +33,10 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
      * @inheritDoc
      */
     public function config(
-        RouteCollectionInterface $routes = null,
+        array                    $routes = null,
         PatternRegistryInterface $patternRegistry = null
     ): void {
-        isset($routes) and $this->routesCollection($routes);
+        isset($routes) and $this->routes($routes);
         isset($patternRegistry) and $this->patternRegistry($patternRegistry);
     }
 
@@ -53,8 +49,8 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
             throw new RouteUrlGeneratorInvalidArgumentException('Route name must not be empty');
         }
 
-        foreach ($this->getRoutesCollection() as $route) {
-            if ($route->getConfigStore()->getName() === $routeName) {
+        foreach ($this->getRoutes() as $route) {
+            if ($route->getConfigStore()->getConfig()->getName() === $routeName) {
                 $this->getRouteUrlBuilder()->patternRegistry($this->getPatternRegistry());
                 return $this->getRouteUrlBuilder()->build($route);
             }
@@ -72,24 +68,20 @@ class RouteUrlGenerator implements RouteUrlGeneratorInterface
     }
 
     /**
-     * @param RouteCollectionInterface $routeCollection
+     * @param array<RouteInterface> $routeCollection
      * @return void
-     *
-     * @phpstan-param TA_RouteCollection $routeCollection
      */
-    protected function routesCollection(RouteCollectionInterface $routeCollection): void
+    protected function routes(array $routeCollection): void
     {
         $this->routesCollection = $routeCollection;
     }
 
     /**
-     * @return RouteCollectionInterface
-     *
-     * @phpstan-return TA_RouteCollection
+     * @return array<RouteInterface>
      */
-    protected function getRoutesCollection(): RouteCollectionInterface
+    protected function getRoutes(): array
     {
-        return $this->routesCollection ??= new RouteCollection();
+        return $this->routesCollection ??= [];
     }
 
     /**

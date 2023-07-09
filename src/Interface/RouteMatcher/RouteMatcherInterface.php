@@ -22,11 +22,11 @@ interface RouteMatcherInterface extends HasPatternRegistryInterface
     /**
      * Matches the given route using regular expressions and retrieves the route attributes.
      *
-     * @param RouteInterface $route
+     * @param array<RouteInterface> $routes
      * @param string $requestPath
-     * @return array<string, string>|null Route attributes
+     * @return RouteInterface|null
      *
      * @throws RouteMatcherRuntimeException|RouteMatcherInvalidArgumentException
      */
-    public function matchRouteByRegex(RouteInterface $route, string $requestPath): ?array;
+    public function matchRouteByRegex(array $routes, string $requestPath): ?RouteInterface;
 }

@@ -4,6 +4,7 @@ parameters:
     paths:
         - src
         - tests
+        - benchmark
     excludePaths:
             - 'tests/Unit'
     typeAliases:

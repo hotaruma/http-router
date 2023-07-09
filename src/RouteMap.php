@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Hotaruma\HttpRouter;
 
-use Hotaruma\HttpRouter\Collection\RouteCollection;
+use Hotaruma\HttpRouter\Collection\GroupConfigStoreCollection;
 use Hotaruma\HttpRouter\Enum\{AdditionalMethod, HttpMethod};
 use Hotaruma\HttpRouter\RouteScanner\RouteScanner;
-use Hotaruma\HttpRouter\Exception\{RouteConfigInvalidArgumentException,
+use Hotaruma\HttpRouter\Exception\{GroupConfigStoreCollectionLogicException,
+    RouteConfigInvalidArgumentException,
     RouteInvalidArgumentException,
-    RouteMapInvalidArgumentException};
+    RouteMapInvalidArgumentException,
+    RouteMapLogicException};
 use Hotaruma\HttpRouter\Factory\{RouteFactory, GroupConfigStoreFactory};
-use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
+use Hotaruma\HttpRouter\Interface\{
     Enum\RequestMethodInterface,
     Factory\ConfigStoreFactoryInterface,
     Factory\RouteFactoryInterface,
@@ -21,25 +23,14 @@ use Hotaruma\HttpRouter\Interface\{Collection\RouteCollectionInterface,
     RouteMap\RouteMapConfigureInterface,
     RouteMap\RouteMapInterface,
     RouteScanner\RouteScannerInterface,
-    RouteScanner\RouteScannerToolsInterface};
+    RouteScanner\RouteScannerToolsInterface
+};
 
 /**
  * @mixin RouteScannerToolsInterface
  */
 class RouteMap implements RouteMapInterface
 {
-    /**
-     * @var ConfigStoreInterface
-     */
-    protected ConfigStoreInterface $configStore;
-
-    /**
-     * All previous groups config.
-     *
-     * @var ConfigStoreInterface
-     */
-    protected ConfigStoreInterface $mergedConfigStore;
-
     /**
      * @var RouteFactoryInterface Route factory
      */
@@ -51,16 +42,19 @@ class RouteMap implements RouteMapInterface
     protected ConfigStoreFactoryInterface $groupConfigStoreFactory;
 
     /**
-     * @var RouteCollectionInterface Routes collection
-     *
-     * @phpstan-var TA_RouteCollection
+     * @var array<RouteInterface> Routes collection
      */
-    protected RouteCollectionInterface $routesCollection;
+    protected array $routesCollection;
 
     /**
      * @var RouteScannerInterface
      */
     protected RouteScannerInterface $routeScanner;
+
+    /**
+     * @var GroupConfigStoreCollection
+     */
+    protected GroupConfigStoreCollection $groupConfigStoreCollection;
 
     /**
      * @inheritDoc
@@ -74,9 +68,8 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function groupConfigStoreFactory(
-        ConfigStoreFactoryInterface $groupConfigStoreFactory
-    ): RouteMapConfigureInterface {
+    public function groupConfigStoreFactory(ConfigStoreFactoryInterface $groupConfigStoreFactory): RouteMapConfigureInterface
+    {
         $this->groupConfigStoreFactory = $groupConfigStoreFactory;
         return $this;
     }
@@ -111,7 +104,9 @@ class RouteMap implements RouteMapInterface
         isset($namePrefix) and $groupConfig->name($namePrefix);
         isset($methods) and $groupConfig->methods($methods);
 
-        $groupConfig->mergeConfig($this->getMergedConfigStore());
+        if ($previousConfigStore = $this->getGroupConfigStoreCollection()->getPreviousConfigStore()) {
+            $groupConfig->mergeConfig($previousConfigStore);
+        }
 
         isset($rules) and $this->getConfigStore()->rules($groupConfig->getRules());
         isset($defaults) and $this->getConfigStore()->defaults($groupConfig->getDefaults());
@@ -133,8 +128,9 @@ class RouteMap implements RouteMapInterface
         string                       $namePrefix = null,
         RequestMethodInterface|array $methods = null
     ): void {
-        $this->mergedConfigStore($this->getConfigStore());
-        $this->configStore($this->getGroupConfigStoreFactory()::create());
+
+        $this->getGroupConfigStoreCollection()->raiseGroupLevel();
+        $this->getGroupConfigStoreCollection()->configStore($this->getGroupConfigStoreFactory()::create());
 
         $this->changeGroupConfig(
             rules: $rules,
@@ -146,6 +142,9 @@ class RouteMap implements RouteMapInterface
         );
 
         $group($this);
+
+        $this->getGroupConfigStoreCollection()->resetConfigStore();
+        $this->getGroupConfigStoreCollection()->lowerGroupLevel();
     }
 
     /**
@@ -255,17 +254,9 @@ class RouteMap implements RouteMapInterface
     /**
      * @inheritDoc
      */
-    public function getRoutes(): RouteCollectionInterface
+    public function getRoutes(): array
     {
-        return $this->routesCollection ??= new RouteCollection();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getConfigStore(): ConfigStoreInterface
-    {
-        return $this->configStore ??= $this->getGroupConfigStoreFactory()::create();
+        return $this->routesCollection ??= [];
     }
 
     /**
@@ -285,35 +276,15 @@ class RouteMap implements RouteMapInterface
     }
 
     /**
-     * Set current group config.
-     *
-     * @param ConfigStoreInterface $configStore
-     * @return void
+     * @inheritDoc
      */
-    protected function configStore(ConfigStoreInterface $configStore): void
+    public function getConfigStore(): ConfigStoreInterface
     {
-        $this->configStore = $configStore;
-    }
-
-    /**
-     * Set merged config.
-     *
-     * @param ConfigStoreInterface $mergedConfigStore
-     * @return void
-     */
-    protected function mergedConfigStore(ConfigStoreInterface $mergedConfigStore): void
-    {
-        $this->mergedConfigStore = $mergedConfigStore;
-    }
-
-    /**
-     * Get merged config.
-     *
-     * @return ConfigStoreInterface
-     */
-    protected function getMergedConfigStore(): ConfigStoreInterface
-    {
-        return $this->mergedConfigStore ??= $this->getGroupConfigStoreFactory()::create();
+        try {
+            return $this->getGroupConfigStoreCollection()->getConfigStore();
+        } catch (GroupConfigStoreCollectionLogicException $e) {
+            throw new RouteMapLogicException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -325,7 +296,7 @@ class RouteMap implements RouteMapInterface
      * @param string $name
      * @return RouteInterface
      *
-     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException
+     * @throws RouteConfigInvalidArgumentException|RouteInvalidArgumentException|RouteMapLogicException
      */
     protected function addRoute(string $path, mixed $action, array $methods, string $name = ''): RouteInterface
     {
@@ -337,7 +308,7 @@ class RouteMap implements RouteMapInterface
         $route->getConfigStore()->mergeConfig($this->getConfigStore());
         $route->config(path: $path, methods: $methods, name: $name);
 
-        $this->getRoutes()->add($route);
+        $this->routesCollection[] = $route;
         return $route;
     }
 
@@ -346,7 +317,21 @@ class RouteMap implements RouteMapInterface
      */
     protected function getRouteScanner(): RouteScannerInterface
     {
-        $this->routeScanner ?? $this->routeScanner(new RouteScanner());
+        if (!isset($this->routeScanner)) {
+            $this->routeScanner(new RouteScanner());
+        }
         return $this->routeScanner;
+    }
+
+    /**
+     * @return GroupConfigStoreCollection
+     */
+    protected function getGroupConfigStoreCollection(): GroupConfigStoreCollection
+    {
+        if (!isset($this->groupConfigStoreCollection)) {
+            $this->groupConfigStoreCollection = new GroupConfigStoreCollection();
+            $this->groupConfigStoreCollection->routeMap($this);
+        }
+        return $this->groupConfigStoreCollection;
     }
 }

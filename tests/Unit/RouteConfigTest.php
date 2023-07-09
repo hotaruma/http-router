@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Hotaruma\Tests\Unit;
 
 use Closure;
 use Hotaruma\HttpRouter\Exception\ConfigInvalidArgumentException;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 class RouteConfigTest extends TestCase
 {
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::rulesDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::rulesDataProvider
      */
     public function testRules(array $rules): void
     {
@@ -22,7 +22,7 @@ class RouteConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::invalidRulesDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::invalidRulesDataProvider
      */
     public function testInvalidRules(array $rules): void
     {
@@ -34,7 +34,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::defaultsDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::defaultsDataProvider
      */
     public function testDefaults(array $defaults): void
     {
@@ -44,7 +44,7 @@ class RouteConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::invalidDefaultsDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::invalidDefaultsDataProvider
      */
     public function testInvalidDefaults(array $defaults): void
     {
@@ -56,7 +56,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::middlewaresDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::middlewaresDataProvider
      */
     public function testMiddlewares(mixed $middlewares, mixed $expected = null): void
     {
@@ -67,7 +67,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::pathDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::pathDataProvider
      */
     public function testPath(string $path, string $expectedPath): void
     {
@@ -77,7 +77,7 @@ class RouteConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::invalidPathDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::invalidPathDataProvider
      */
     public function testInvalidPath(string $path): void
     {
@@ -89,7 +89,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::nameDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::nameDataProvider
      */
     public function testName(string $name, string $expectedName): void
     {
@@ -100,7 +100,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::methodsDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::methodsDataProvider
      */
     public function testMethods($methods, array $expectedMethods): void
     {
@@ -110,7 +110,7 @@ class RouteConfigTest extends TestCase
     }
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::invalidMethodsDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::invalidMethodsDataProvider
      */
     public function testInvalidMethods(array $methods): void
     {
@@ -122,7 +122,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::pathMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::pathMergeDataProvider
      */
     public function testMergePath(string $mergePath, string $initialPath, string $expectedPath): void
     {
@@ -139,7 +139,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::methodsMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::methodsMergeDataProvider
      */
     public function testMergeMethods(array $mergeMethods, array $initialMethods, array $expectedMethods): void
     {
@@ -156,7 +156,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::nameMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::nameMergeDataProvider
      */
     public function testMergeName(string $mergeName, string $initialName, string $expectedName): void
     {
@@ -173,7 +173,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::rulesMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::rulesMergeDataProvider
      */
     public function testMergeRules(array $mergeRules, array $initialRules, array $expectedRules): void
     {
@@ -190,7 +190,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::defaultsMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::defaultsMergeDataProvider
      */
     public function testMergeDefaults(array $mergeDefaults, array $initialDefaults, array $expectedDefaults): void
     {
@@ -207,7 +207,7 @@ class RouteConfigTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteConfigDataProvider::middlewaresMergeDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteConfigDataProvider::middlewaresMergeDataProvider
      */
     public function testMergeMiddlewares(array $mergeMiddlewares, array $initialMiddlewares, array $expectedMiddlewares): void
     {

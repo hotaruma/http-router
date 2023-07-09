@@ -13,6 +13,7 @@ use Hotaruma\HttpRouter\Interface\{Enum\RequestMethodInterface,
 };
 use Hotaruma\HttpRouter\Factory\ConfigStoreFactory;
 use Hotaruma\HttpRouter\Utils\{ConfigNormalizeUtils, ConfigValidateUtils};
+use WeakReference;
 
 class Route implements RouteInterface
 {
@@ -35,9 +36,9 @@ class Route implements RouteInterface
     protected string $url = '';
 
     /**
-     * @var null|ConfigStoreInterface
+     * @var null|WeakReference<ConfigStoreInterface>
      */
-    protected ?ConfigStoreInterface $routeMapConfigStore = null;
+    protected ?WeakReference $routeMapConfigStore = null;
 
     /**
      * @var ConfigStoreInterface
@@ -140,7 +141,7 @@ class Route implements RouteInterface
         isset($name) and $configStore->name($name);
         isset($methods) and $configStore->methods($methods);
 
-        if ($routeMapConfigStore = $this->getRouteMapConfigStore()) {
+        if ($routeMapConfigStore = $this->getRouteMapConfigStore()?->get()) {
             $configStore->mergeConfig($routeMapConfigStore);
         }
 
@@ -165,13 +166,13 @@ class Route implements RouteInterface
      */
     public function routeMapConfigStore(ConfigStoreInterface $routeMapConfigStore): void
     {
-        $this->routeMapConfigStore = $routeMapConfigStore;
+        $this->routeMapConfigStore = WeakReference::create($routeMapConfigStore);
     }
 
     /**
-     * @return ConfigStoreInterface|null
+     * @return WeakReference<ConfigStoreInterface>|null
      */
-    protected function getRouteMapConfigStore(): ?ConfigStoreInterface
+    protected function getRouteMapConfigStore(): ?WeakReference
     {
         return $this->routeMapConfigStore;
     }

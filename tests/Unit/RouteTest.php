@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Hotaruma\Tests\Unit;
 
 use Hotaruma\HttpRouter\Exception\RouteInvalidArgumentException;
 use Hotaruma\HttpRouter\Factory\RouteFactory;
@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 class RouteTest extends TestCase
 {
     /**
-     * @dataProvider \Tests\DataProvider\RouteDataProvider::actionDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteDataProvider::actionDataProvider
      */
     public function testAction(mixed $action): void
     {
@@ -21,7 +21,7 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteDataProvider::invalidActionDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteDataProvider::invalidActionDataProvider
      */
     public function testInvalidAction(mixed $action): void
     {
@@ -33,7 +33,7 @@ class RouteTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteDataProvider::attributesDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteDataProvider::attributesDataProvider
      */
     public function testAttributes(array $attributes): void
     {
@@ -43,7 +43,7 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteDataProvider::invalidAttributesDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteDataProvider::invalidAttributesDataProvider
      */
     public function testInvalidAttributes(array $attributes): void
     {
@@ -55,7 +55,7 @@ class RouteTest extends TestCase
 
 
     /**
-     * @dataProvider \Tests\DataProvider\RouteDataProvider::urlDataProvider
+     * @dataProvider \Hotaruma\Tests\DataProvider\RouteDataProvider::urlDataProvider
      */
     public function testUrl(string $url, string $expectedUrl): void
     {

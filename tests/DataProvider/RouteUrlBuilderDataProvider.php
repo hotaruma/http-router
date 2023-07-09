@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\DataProvider;
+namespace Hotaruma\Tests\DataProvider;
 
 class RouteUrlBuilderDataProvider
 {
@@ -12,7 +12,7 @@ class RouteUrlBuilderDataProvider
     public static function buildDataProvider(): array
     {
         return [
-            ['/n$ws/', [], [], [], '/n$ws/'],
+            ['/nws/', [], [], [], '/nws/'],
             ['/news/{id}/', [], ['id' => '2'], [], '/news/2/'],
             ['/news/{id}/', [], [], ['id' => '2'], '/news/2/'],
             ['/news/{id}/', ['id' => '\d+'], ['id' => '2'], [], '/news/2/'],
@@ -38,6 +38,21 @@ class RouteUrlBuilderDataProvider
                 ['id' => '2', 'page' => 'bob2'],
                 '/news/2/bob2/'
             ],
+
+            [
+                '/news/{id}/{page}/',
+                ['id' => 'int', 'page' => 'alpha'],
+                ['id' => '2', 'page' => 'bob'],
+                [],
+                '/news/2/bob/'
+            ],
+            [
+                '/news/{id:int}/{page:alpha}/',
+                [],
+                ['id' => '2', 'page' => 'bob'],
+                [],
+                '/news/2/bob/'
+            ],
         ];
     }
 
@@ -47,9 +62,18 @@ class RouteUrlBuilderDataProvider
     public static function invalidBuildDataProvider(): array
     {
         return [
-            ['/n$ws/{id}/', [], [], []],
-            ['/n$ws/{id}/', ['id' => '[a-z]'], ['id' => '2'], []],
-            ['/n$ws/{id}/', ['id' => '[a-z]'], [], ['id' => '2']],
+            ['/nws/{id}/', [], [], []],
+            ['/nws/{id}/', ['id' => '[a-z]'], ['id' => '2'], []],
+            ['/nws/{id}/', ['id' => '[a-z]'], [], ['id' => '2']],
+
+            ['/nws/{id}/', ['id' => 'alpha'], ['id' => '2'], []],
+            ['/nws/{id}/', ['id' => 'alpha'], [], ['id' => '2']],
+
+            ['/nws/{id:[a-z]}/', [], ['id' => '2'], []],
+            ['/nws/{id:[a-z]}/', [], [], ['id' => '2']],
+
+            ['/nws/{id:alpha}/', [], ['id' => '2'], []],
+            ['/nws/{id:alpha}/', [], [], ['id' => '2']],
         ];
     }
 }
