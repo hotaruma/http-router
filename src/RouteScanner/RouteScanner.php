@@ -57,7 +57,7 @@ class RouteScanner implements RouteScannerInterface
                 $routeGroupReflectionAttribute = array_shift($routeGroupReflectionAttributes);
 
                 if ($routeGroupReflectionAttribute) {
-                    $this->mergeRouteMapConfig($routeGroupReflectionAttribute->newInstance());
+                    $this->setRouteMapConfig($routeGroupReflectionAttribute->newInstance());
                 }
 
                 foreach ($reflectionController->getMethods() as $method) {
@@ -147,7 +147,7 @@ class RouteScanner implements RouteScannerInterface
      * @param ConfigInterface $routeGroupConfig
      * @return void
      */
-    protected function mergeRouteMapConfig(ConfigInterface $routeGroupConfig): void
+    protected function setRouteMapConfig(ConfigInterface $routeGroupConfig): void
     {
         $this->getRouteMap()->getConfigStore()->config($routeGroupConfig);
     }
