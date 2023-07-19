@@ -2,6 +2,8 @@
 .phpunit.result.cache
 .env
 
+phpbench.json
+
 vendor
 tests/tmp
 tmp
