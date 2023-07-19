@@ -4,6 +4,7 @@
 
 phpbench.json
 phpcs.xml
+phpstan.neon
 
 vendor
 tests/tmp
