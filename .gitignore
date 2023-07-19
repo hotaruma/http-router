@@ -2,6 +2,7 @@
 .phpunit.result.cache
 .env
 
+phpunit.xml
 phpbench.json
 phpcs.xml
 phpstan.neon
