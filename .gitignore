@@ -3,6 +3,7 @@
 .env
 
 phpbench.json
+phpcs.xml
 
 vendor
 tests/tmp
